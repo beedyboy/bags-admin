@@ -6,8 +6,7 @@ import { CSSTransition } from 'react-transition-group';
 import { AppTopbar } from './AppTopbar';
 import { AppFooter } from './AppFooter';
 import { AppMenu } from './AppMenu';
-import { AppProfile } from './AppProfile';
-import { AppConfig } from './AppConfig';
+import { AppProfile } from './AppProfile'; 
 
 import { Dashboard } from './components/Dashboard';
 import { ButtonDemo } from './components/ButtonDemo';
@@ -54,6 +53,7 @@ import '@fullcalendar/timegrid/main.css';
 import './layout/flags/flags.css';
 import './layout/layout.scss';
 import './App.scss';
+import Brand from './pages/Brand';
 
 const App = () => {
 
@@ -134,6 +134,7 @@ const App = () => {
 
     const menu = [
         { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
+        { label: 'Brand', icon: 'pi pi-fw pi-home', to: '/brand' },
         {
             label: 'UI Kit', icon: 'pi pi-fw pi-sitemap',
             items: [
@@ -287,11 +288,12 @@ const App = () => {
                 </div>
             </CSSTransition>
 
-            <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange}
-                layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
+            {/* <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange}
+                layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} /> */}
 
             <div className="layout-main">
                 <Route path="/" exact component={Dashboard} />
+                <Route path="/brand" exact component={Brand} />
                 <Route path="/formlayout" component={FormLayoutDemo} />
                 <Route path="/input" component={InputDemo} />
                 <Route path="/floatlabel" component={FloatLabelDemo} />
