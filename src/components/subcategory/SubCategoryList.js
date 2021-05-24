@@ -27,7 +27,7 @@ import { InputText } from "primereact/inputtext";
       </span>
     </div>
   );
-
+ 
   const bodyTemplate = (data, props) => {
     return (
       <>
@@ -65,8 +65,9 @@ import { InputText } from "primereact/inputtext";
 
   const actionTemplate = (data) => (
     <span className="p-buttonset">
-    <Button label="Edit" icon="pi pi-pencil" onClick={(e) => editData(e, data)} />
-    <Button label="Delete" icon="pi pi-trash" onClick={(e) => deleteData(e, data.id)} /> 
+        <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2"  onClick={(e) => editData(e, data)}/>
+                <Button icon="pi pi-trash" className="p-button-rounded p-button-warning"  onClick={(e) => deleteData(e, data.id)}/>
+      
 </span>
   );
 

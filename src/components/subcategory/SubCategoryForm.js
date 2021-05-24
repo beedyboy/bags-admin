@@ -2,34 +2,48 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
-import { Button } from "primereact/button"; 
+import { Dropdown } from "primereact/dropdown";
+import { Button } from "primereact/button";
 import dataHero from "data-hero";
-
+import categories from '../../shared/categories.json';
+const ct = [
+  { name: "New York", code: "NY" },
+  { name: "Rome", code: "RM" },
+  { name: "London", code: "LDN" },
+  { name: "Istanbul", code: "IST" },
+  { name: "Paris", code: "PRS" },
+];
 const schema = {
   name: {
     isEmpty: false,
     min: 1,
     message: "sub category name is required",
   },
-};
+  category: {
+    isEmpty: false,
+    min: 1,
+    message: "category is required",
+  },
+}; 
 const SubCategoryForm = ({
-  mode, 
+  mode,
   error,
   exist,
   action,
   confirm,
-  sending, 
+  sending,
   checking,
   addSubCat,
   updateSubCat,
   handleClose,
   initial_data,
-}) => { 
-  const [title, setTitle] = useState("Add Brand");
+}) => {
+  const [title, setTitle] = useState("Add SubCategory");
   const [formState, setFormState] = useState({
     values: {
       id: "",
       name: "",
+      category: "",
       description: "",
     },
     touched: {},
@@ -38,7 +52,7 @@ const SubCategoryForm = ({
   const { touched, errors, values, isValid } = formState;
   useEffect(() => {
     if (mode === "Edit") {
-      setTitle("Edit Brand");
+      setTitle("Edit SubCategory");
       let shouldSetData = typeof initial_data !== "undefined" ? true : false;
       if (shouldSetData) {
         const data = initial_data;
@@ -48,6 +62,7 @@ const SubCategoryForm = ({
             ...state.values,
             id: data && data.id,
             name: data && data.name,
+            category: data && data.category,
             description: data && data.description,
           },
         }));
@@ -60,6 +75,7 @@ const SubCategoryForm = ({
           ...prev.values,
           id: "",
           name: "",
+          category: "",
           description: "",
         },
       }));
@@ -87,8 +103,12 @@ const SubCategoryForm = ({
         [event.target.name]: true,
       },
     }));
-    if (event.target.name === "name") {
-      confirm(event.target.value);
+    if (
+      event.target.name === "name" &&
+      values.category !== "" &&
+      event.target.value.length >= 2
+    ) {
+      confirm(values.category, event.target.value);
     }
   };
   useEffect(() => {
@@ -103,13 +123,25 @@ const SubCategoryForm = ({
   }, [action]);
 
   useEffect(() => {
-     
-    return () => { 
+    return () => {
       resetForm();
       handleClose();
     };
   }, [error]);
 
+  const onCategoryChange = (e) => {
+    setFormState((formState) => ({
+      ...formState,
+      values: {
+        ...formState.values,
+        category: e.value,
+      },
+      touched: {
+        ...formState.touched,
+        category: true,
+      },
+    }));
+  };
   const hasError = (field) => touched[field] && errors[field].error;
 
   const handleSubmit = (e) => {
@@ -123,11 +155,13 @@ const SubCategoryForm = ({
         ...prev.values,
         id: "",
         name: "",
+        category: "",
         description: "",
       },
       touched: {
         ...prev.touched,
         name: false,
+        category: false,
         description: false,
       },
       errors: {},
@@ -139,6 +173,24 @@ const SubCategoryForm = ({
         <div className="p-col-12">
           <div className="card p-fluid">
             <h5>{title}</h5>
+            <div className="p-field">
+              <label htmlFor="name">Category</label>
+              <Dropdown
+                value={values.category}
+                options={categories.data}
+                onChange={onCategoryChange} 
+                filter
+                showClear
+                filterBy="name"
+                placeholder="Select a Category"
+                // valueTemplate={selectedCountryTemplate}
+                // itemTemplate={countryOptionTemplate}
+              />
+
+              <small id="name-help" className="p-error p-d-block">
+                {hasError("name") ? errors.name && errors.name.message : null}
+              </small>
+            </div>
             <div className="p-field">
               <label htmlFor="name">Name</label>
               <InputText
@@ -169,13 +221,14 @@ const SubCategoryForm = ({
         <div className="p-col">
           <Button
             label="Cancel"
-            // icon="pi pi-arrow-right"
+            icon="pi pi-times"
             onClick={handleClose}
             className="p-button-warning p-mr-2 p-mb-2"
           />
 
           <Button
             label="Save"
+            icon="pi pi-check"
             className="p-button-secondary p-mr-2 p-mb-2"
             onClick={handleSubmit}
             disabled={!isValid || sending || exist}

@@ -42,15 +42,15 @@ class SubCategoryStore {
       this.loading = false;
     });
   };
-  confirmRow = (cat_id, sub_name) => { 
+  confirmRow = (category, name) => { 
     try {
       this.checking = true;
       this.exist = false;
       const data = {
-        cat_id,
-        sub_name
+        category,
+        name
       }
-      backend.post(`subcategory/${sub_name}`, data).then((res) => {
+      backend.post(`subcategory/confirm`, data).then((res) => {
         this.checking = false;
         if (res.status === 200) { 
           this.message = res.data.message;

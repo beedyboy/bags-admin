@@ -1,6 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { Fragment, useState, useEffect, useContext, useRef } from "react";
-import  SubCategoryList from "../components/subcategory/SubCategoryList";
+import React, {
+  Fragment,
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+} from "react";
+import SubCategoryList from "../components/subcategory/SubCategoryList";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
@@ -13,11 +19,11 @@ const SubCategory = () => {
   const store = useContext(SubCategoryStore);
   const {
     loading,
-    getSubCategorys,
+    getSubCategories,
     subcategory,
     error,
     checking,
-    confirmName, 
+    confirmRow,
     exist,
     action,
     message,
@@ -32,14 +38,14 @@ const SubCategory = () => {
   const [mode, setMode] = useState("");
   const [rowData, setRowData] = useState();
   const createNew = () => {
-    setMode('Add')
+    setMode("Add");
     setOpen(!open);
-  }; 
+  };
   const toggle = () => {
     setOpen(!open);
-  }; 
+  };
   useEffect(() => {
-    getSubCategorys();
+    getSubCategories();
   }, []);
 
   useEffect(() => {
@@ -55,44 +61,44 @@ const SubCategory = () => {
       resetProperty("message", "");
     };
   }, [removed]);
-  useEffect(() => { 
-      if (action === "newSubCategory") {
-        toast.current.show({
-          severity: "success",
-          summary: "Success Message",
-          detail: message,
-        }); 
-        toggle();
-      }
-      return () => { 
-        resetProperty("message", "");
-        resetProperty("action", ""); 
-        toggle();
-      };
-    }, [action]);
-    useEffect(() => {
-      if (error === true && action === "newSubCategoryError") {
-        toast.current.show({
-          severity: "error",
-          summary: "Error Message",
-          detail: message,
-        });
-      }
-      return () => {
-        resetProperty("error", false);
-        resetProperty("message", "");
-        resetProperty("action", ""); 
-        toggle();
-      };
-    }, [error]);
+  useEffect(() => {
+    if (action === "newSubCategory") {
+      toast.current.show({
+        severity: "success",
+        summary: "Success Message",
+        detail: message,
+      });
+      toggle();
+    }
+    return () => {
+      resetProperty("message", "");
+      resetProperty("action", "");
+      toggle();
+    };
+  }, [action]);
+  useEffect(() => {
+    if (error === true && action === "newSubCategoryError") {
+      toast.current.show({
+        severity: "error",
+        summary: "Error Message",
+        detail: message,
+      });
+    }
+    return () => {
+      resetProperty("error", false);
+      resetProperty("message", "");
+      resetProperty("action", "");
+      toggle();
+    };
+  }, [error]);
   return (
     <Fragment>
       <div className="p-grid">
         <div className="p-col-12 p-md-12 p-lg-12">
-        <div className="p-d-flex p-jc-between">
-    <div>SubCategorys</div>
-    <Button label="Create New" onClick={createNew} />
-</div>  
+          <div className="p-d-flex p-jc-between">
+            <div>SubCategorys</div>
+            <Button label="Create New" onClick={createNew} />
+          </div>
         </div>
         <div className="p-col-12 p-md-12 p-lg-12">
           <SubCategoryList
@@ -110,16 +116,18 @@ const SubCategory = () => {
         onHide={toggle}
         breakpoints={{ "960px": "75vw", "640px": "100vw" }}
         style={{ width: "50vw" }}
+        modal
+        className="p-fluid"
       >
         <SubCategoryForm
           mode={mode}
-          action={action} 
+          action={action}
           error={error}
           exist={exist}
           message={message}
           sending={sending}
           checking={checking}
-          confirm={confirmName}
+          confirm={confirmRow}
           handleClose={toggle}
           initial_data={rowData}
           reset={resetProperty}

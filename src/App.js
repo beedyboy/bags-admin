@@ -10,8 +10,7 @@ import { AppProfile } from './AppProfile';
 
 import { Dashboard } from './components/Dashboard';
 import { ButtonDemo } from './components/ButtonDemo';
-import { ChartDemo } from './components/ChartDemo';
-import { Documentation } from './components/Documentation';
+import { ChartDemo } from './components/ChartDemo'; 
 import { FileDemo } from './components/FileDemo';
 import { FloatLabelDemo } from './components/FloatLabelDemo';
 import { FormLayoutDemo } from './components/FormLayoutDemo';
@@ -54,16 +53,17 @@ import './layout/flags/flags.css';
 import './layout/layout.scss';
 import './App.scss';
 import Brand from './pages/Brand';
+import SubCategory from './pages/SubCategory';
 
 const App = () => {
 
-    const [layoutMode, setLayoutMode] = useState('static');
-    const [layoutColorMode, setLayoutColorMode] = useState('dark')
+    const [layoutMode] = useState('static');
+    const [layoutColorMode] = useState('dark')
     const [staticMenuInactive, setStaticMenuInactive] = useState(false);
     const [overlayMenuActive, setOverlayMenuActive] = useState(false);
     const [mobileMenuActive, setMobileMenuActive] = useState(false);
-    const [inputStyle, setInputStyle] = useState('outlined');
-    const [ripple, setRipple] = useState(false);
+    const [inputStyle] = useState('outlined');
+    const [ripple] = useState(false);
     const sidebar = useRef();
 
     const history = useHistory();
@@ -78,23 +78,7 @@ const App = () => {
             removeClass(document.body, 'body-overflow-hidden');
         }
     }, [mobileMenuActive]);
-
-    const onInputStyleChange = (inputStyle) => {
-        setInputStyle(inputStyle);
-    }
-
-    const onRipple = (e) => {
-        PrimeReact.ripple = e.value;
-        setRipple(e.value)
-    }
-
-    const onLayoutModeChange = (mode) => {
-        setLayoutMode(mode)
-    }
-
-    const onColorModeChange = (mode) => {
-        setLayoutColorMode(mode)
-    }
+ 
 
     const onWrapperClick = (event) => {
         if (!menuClick) {
@@ -134,7 +118,8 @@ const App = () => {
 
     const menu = [
         { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
-        { label: 'Brand', icon: 'pi pi-fw pi-briefcase', to: '/brand' },
+        { label: 'Brand', icon: 'pi pi-fw pi-briefcase', to: '/brands' },
+        { label: 'Sub Category', icon: 'pi pi-fw pi-briefcase', to: '/subcategory' },
         {
             label: 'UI Kit', icon: 'pi pi-fw pi-sitemap',
             items: [
@@ -176,55 +161,8 @@ const App = () => {
                 { label: 'Timeline', icon: 'pi pi-fw pi-calendar', to: '/timeline' },
                 { label: 'Empty Page', icon: 'pi pi-fw pi-circle-off', to: '/empty' }
             ]
-        },
-        {
-            label: 'Menu Hierarchy', icon: 'pi pi-fw pi-search',
-            items: [
-                {
-                    label: 'Submenu 1', icon: 'pi pi-fw pi-bookmark',
-                    items: [
-                        {
-                            label: 'Submenu 1.1', icon: 'pi pi-fw pi-bookmark',
-                            items: [
-                                { label: 'Submenu 1.1.1', icon: 'pi pi-fw pi-bookmark' },
-                                { label: 'Submenu 1.1.2', icon: 'pi pi-fw pi-bookmark' },
-                                { label: 'Submenu 1.1.3', icon: 'pi pi-fw pi-bookmark' },
-                            ]
-                        },
-                        {
-                            label: 'Submenu 1.2', icon: 'pi pi-fw pi-bookmark',
-                            items: [
-                                { label: 'Submenu 1.2.1', icon: 'pi pi-fw pi-bookmark' },
-                                { label: 'Submenu 1.2.2', icon: 'pi pi-fw pi-bookmark' }
-                            ]
-                        },
-                    ]
-                },
-                {
-                    label: 'Submenu 2', icon: 'pi pi-fw pi-bookmark',
-                    items: [
-                        {
-                            label: 'Submenu 2.1', icon: 'pi pi-fw pi-bookmark',
-                            items: [
-                                { label: 'Submenu 2.1.1', icon: 'pi pi-fw pi-bookmark' },
-                                { label: 'Submenu 2.1.2', icon: 'pi pi-fw pi-bookmark' },
-                                { label: 'Submenu 2.1.3', icon: 'pi pi-fw pi-bookmark' },
-                            ]
-                        },
-                        {
-                            label: 'Submenu 2.2', icon: 'pi pi-fw pi-bookmark',
-                            items: [
-                                { label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' },
-                                { label: 'Submenu 2.2.2', icon: 'pi pi-fw pi-bookmark' }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        { label: 'Documentation', icon: 'pi pi-fw pi-question', command: () => { window.location = "#/documentation" } },
-        { label: 'View Source', icon: 'pi pi-fw pi-search', command: () => { window.location = "https://github.com/primefaces/sigma-react" } }
-    ];
+        }, 
+             ];
 
     const addClass = (element, className) => {
         if (element.classList)
@@ -293,7 +231,8 @@ const App = () => {
 
             <div className="layout-main">
                 <Route path="/" exact component={Dashboard} />
-                <Route path="/brand" exact component={Brand} />
+                <Route path="/brands" exact component={Brand} />
+                <Route path="/subcategory" exact component={SubCategory} />
                 <Route path="/formlayout" component={FormLayoutDemo} />
                 <Route path="/input" component={InputDemo} />
                 <Route path="/floatlabel" component={FloatLabelDemo} />
@@ -320,8 +259,7 @@ const App = () => {
                 <Route path="/calendar" component={Calendar} />
                 <Route path="/timeline" component={TimelineDemo} />
                 <Route path="/crud" component={Crud} />
-                <Route path="/empty" component={EmptyPage} />
-                <Route path="/documentation" component={Documentation} />
+                <Route path="/empty" component={EmptyPage} /> 
             </div>
 
             <AppFooter />
