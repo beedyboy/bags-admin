@@ -1,20 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { Fragment, useState, useEffect, useContext, useRef } from "react";
-import  BrandList from "../components/brand/BrandList";
+import  SubCategoryList from "../components/subcategory/SubCategoryList";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
 import { observer } from "mobx-react-lite";
-import BrandStore from "../stores/BrandStore";
-import BrandForm from "../components/brand/BrandForm";
+import SubCategoryStore from "../stores/SubCategoryStore";
+import SubCategoryForm from "../components/subcategory/SubCategoryForm";
 
-const Brand = () => {
+const SubCategory = () => {
   const toast = useRef(null);
-  const store = useContext(BrandStore);
+  const store = useContext(SubCategoryStore);
   const {
     loading,
-    getBrands,
-    brands,
+    getSubCategorys,
+    subcategory,
     error,
     checking,
     confirmName, 
@@ -22,11 +22,11 @@ const Brand = () => {
     action,
     message,
     removed,
-    removeBrand,
+    removeSubCategory,
     resetProperty,
     sending,
-    createBrand,
-    updateBrand,
+    addSubCat,
+    updateSubCat,
   } = store;
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState("");
@@ -39,7 +39,7 @@ const Brand = () => {
     setOpen(!open);
   }; 
   useEffect(() => {
-    getBrands();
+    getSubCategorys();
   }, []);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const Brand = () => {
     };
   }, [removed]);
   useEffect(() => { 
-      if (action === "newBrand") {
+      if (action === "newSubCategory") {
         toast.current.show({
           severity: "success",
           summary: "Success Message",
@@ -71,7 +71,7 @@ const Brand = () => {
       };
     }, [action]);
     useEffect(() => {
-      if (error === true && action === "newBrandError") {
+      if (error === true && action === "newSubCategoryError") {
         toast.current.show({
           severity: "error",
           summary: "Error Message",
@@ -90,18 +90,18 @@ const Brand = () => {
       <div className="p-grid">
         <div className="p-col-12 p-md-12 p-lg-12">
         <div className="p-d-flex p-jc-between">
-    <div>Brands</div>
+    <div>SubCategorys</div>
     <Button label="Create New" onClick={createNew} />
 </div>  
         </div>
         <div className="p-col-12 p-md-12 p-lg-12">
-          <BrandList
-            data={brands}
+          <SubCategoryList
+            data={subcategory}
             setMode={setMode}
             toggle={toggle}
             loading={loading}
             rowData={setRowData}
-            removeData={removeBrand}
+            removeData={removeSubCategory}
           />
         </div>
       </div>
@@ -111,7 +111,7 @@ const Brand = () => {
         breakpoints={{ "960px": "75vw", "640px": "100vw" }}
         style={{ width: "50vw" }}
       >
-        <BrandForm
+        <SubCategoryForm
           mode={mode}
           action={action} 
           error={error}
@@ -123,8 +123,8 @@ const Brand = () => {
           handleClose={toggle}
           initial_data={rowData}
           reset={resetProperty}
-          createBrand={createBrand}
-          updateBrand={updateBrand}
+          addSubCat={addSubCat}
+          updateSubCat={updateSubCat}
         />
       </Dialog>
       <Toast ref={toast} position="top-right" />
@@ -132,4 +132,4 @@ const Brand = () => {
   );
 };
 
-export default observer(Brand);
+export default observer(SubCategory);

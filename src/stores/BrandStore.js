@@ -4,8 +4,7 @@ import backend from "../config";
 
 class BrandStore {
   error = false;
-  exist = false;
-  saved = false;
+  exist = false; 
   loading = false;
   sending = false;
   removed = false;
@@ -13,6 +12,7 @@ class BrandStore {
   brands = [];
   brand = [];
   message = "";
+  action = null;
 
   constructor() {
     makeObservable(this, {
@@ -20,6 +20,7 @@ class BrandStore {
       sending: observable,
       checking: observable,
       error: observable,
+      action: observable,
       removed: observable,
       exist: observable, 
       stats: computed,
@@ -50,7 +51,7 @@ class BrandStore {
   confirmName = (data) => {
     try {
       this.checking = true;
-      backend.post("brand/confirm", { name: data }).then((res) => {
+      backend.post("brands/confirm", { name: data }).then((res) => {
         this.checking = false;
         if (res.status === 200) {
           this.message = res.data.message;
@@ -71,13 +72,12 @@ class BrandStore {
   createBrand = (data) => {
     try {
       this.sending = true;
-      backend.post("brand", data).then((res) => {
+      backend.post("brands", data).then((res) => {
         this.sending = false;
         if (res.status === 201) {
           this.getBrands();
           this.message = res.data.message;
-          this.action = "newBrand";
-          this.saved = true;
+          this.action = "newBrand"; 
         } else {
           this.message = res.data.error;
           this.action = "newBrandError";
@@ -97,16 +97,17 @@ class BrandStore {
     try {
       this.sending = true;
       backend
-        .put(`brand`, brand)
+        .put(`brands`, brand)
         .then((res) => {
           this.sending = false;
           if (res.status === 200) {
             this.getBrands();
             this.message = res.data.message;
-            this.saved = true;
+            this.action = "newBrand"; 
           } else {
             this.message = res.data.error;
             this.error = true;
+            this.action = "newBrandError";
           }
         })
         .catch((err) => {
@@ -124,7 +125,7 @@ class BrandStore {
   removeBrand = (id) => {
     this.removed = false;
     try {
-      backend.delete(`brand/${id}`).then((res) => {
+      backend.delete(`brands/${id}`).then((res) => {
         if (res.status === 200) {
           this.getBrands();
           this.message = res.data.message;

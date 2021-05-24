@@ -4,7 +4,7 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button"; 
 import { InputText } from "primereact/inputtext";  
 
- const BrandList = ({
+ const SubCategoryList = ({
   data,
   setMode,
   loading,
@@ -12,16 +12,16 @@ import { InputText } from "primereact/inputtext";
   rowData,
   toggle,
 }) => {
-  const [globalFilter1, setGlobalFilter1] = useState(""); 
+  const [globalFilter, setGlobalFilter] = useState(""); 
  
   const tableHeader = (
     <div className="table-header">
-      List of Brands
+      List of Sub Categories
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText
-          value={globalFilter1}
-          onChange={(e) => setGlobalFilter1(e.target.value)}
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
           placeholder="Global Search"
         />
       </span>
@@ -95,8 +95,8 @@ import { InputText } from "primereact/inputtext";
             rows={10}
             dataKey="id"
             rowHover
-            globalFilter={globalFilter1}
-            emptyMessage="No brands found."
+            globalFilter={globalFilter}
+            emptyMessage="No sub category found."
             loading={loading}
             header={tableHeader}
           >
@@ -144,4 +144,4 @@ import { InputText } from "primereact/inputtext";
   );
 };
 
-export default BrandList;
+export default SubCategoryList;

@@ -134,7 +134,7 @@ const App = () => {
 
     const menu = [
         { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
-        { label: 'Brand', icon: 'pi pi-fw pi-home', to: '/brand' },
+        { label: 'Brand', icon: 'pi pi-fw pi-briefcase', to: '/brand' },
         {
             label: 'UI Kit', icon: 'pi pi-fw pi-sitemap',
             items: [

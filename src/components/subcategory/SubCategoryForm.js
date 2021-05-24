@@ -9,10 +9,10 @@ const schema = {
   name: {
     isEmpty: false,
     min: 1,
-    message: "Brand name is required",
+    message: "sub category name is required",
   },
 };
-const BrandForm = ({
+const SubCategoryForm = ({
   mode, 
   error,
   exist,
@@ -20,8 +20,8 @@ const BrandForm = ({
   confirm,
   sending, 
   checking,
-  createBrand,
-  updateBrand,
+  addSubCat,
+  updateSubCat,
   handleClose,
   initial_data,
 }) => { 
@@ -92,7 +92,7 @@ const BrandForm = ({
     }
   };
   useEffect(() => {
-    if (action === "newBrand") {
+    if (action === "newSubCategory") {
       resetForm();
       handleClose();
     }
@@ -114,7 +114,7 @@ const BrandForm = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    mode === "Add" ? createBrand(values) : updateBrand(values);
+    mode === "Add" ? addSubCat(values) : updateSubCat(values);
   };
   const resetForm = () => {
     setFormState((prev) => ({
@@ -188,4 +188,4 @@ const BrandForm = ({
   );
 };
 
-export default BrandForm;
+export default SubCategoryForm;
