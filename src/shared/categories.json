@@ -1,20 +1,20 @@
 {
     "data": [
       {
-        "label": "Dashboard",
-        "value": "/dashboard" 
+        "label": "Bags",
+        "value": "bags" 
       },
       {
-        "label": "Category",
-        "value": "/category" 
+        "label": "Jewelries",
+        "value": "jewelries" 
       },
       {
-        "label": "Orders",
-        "value": "/orders" 
+        "label": "Footwears",
+        "value": "footwears" 
       },
       {
-        "label": "Fulfillment",
-        "value": "/fulfillments" 
+        "label": "Fashion Accessories",
+        "value": "fashion-accessories" 
       }
 
     ]

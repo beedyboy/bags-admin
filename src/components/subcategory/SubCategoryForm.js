@@ -4,15 +4,9 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
+import { Message } from "primereact/message";
 import dataHero from "data-hero";
-import categories from '../../shared/categories.json';
-const ct = [
-  { name: "New York", code: "NY" },
-  { name: "Rome", code: "RM" },
-  { name: "London", code: "LDN" },
-  { name: "Istanbul", code: "IST" },
-  { name: "Paris", code: "PRS" },
-];
+import categories from "../../shared/categories.json";
 const schema = {
   name: {
     isEmpty: false,
@@ -24,7 +18,7 @@ const schema = {
     min: 1,
     message: "category is required",
   },
-}; 
+};
 const SubCategoryForm = ({
   mode,
   error,
@@ -32,6 +26,7 @@ const SubCategoryForm = ({
   action,
   confirm,
   sending,
+  message,
   checking,
   addSubCat,
   updateSubCat,
@@ -178,7 +173,7 @@ const SubCategoryForm = ({
               <Dropdown
                 value={values.category}
                 options={categories.data}
-                onChange={onCategoryChange} 
+                onChange={onCategoryChange}
                 filter
                 showClear
                 filterBy="name"
@@ -200,11 +195,16 @@ const SubCategoryForm = ({
                 value={values.name || ""}
                 onChange={handleChange}
                 aria-describedby="name-help"
-                className="p-invalid p-d-block"
+                className={` ${hasError("name") ? "p-invalid" : null} " p-d-block"`}
               />
               <small id="name-help" className="p-error p-d-block">
                 {hasError("name") ? errors.name && errors.name.message : null}
               </small>
+              {exist ? (
+                <Message severity="error" text={message} />
+              ) : checking ? (
+                <Message severity="info" text="checking server for duplicate" />
+              ) : null}
             </div>
             <div className="p-field">
               <label htmlFor="description">Description</label>
