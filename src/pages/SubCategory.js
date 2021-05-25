@@ -16,6 +16,7 @@ import SubCategoryForm from "../components/subcategory/SubCategoryForm";
 
 const SubCategory = () => {
   const toast = useRef(null);
+  const [title, setTitle] = useState("Add SubCategory");
   const store = useContext(SubCategoryStore);
   const {
     loading,
@@ -96,7 +97,7 @@ const SubCategory = () => {
       <div className="p-grid">
         <div className="p-col-12 p-md-12 p-lg-12">
           <div className="p-d-flex p-jc-between">
-            <div>SubCategorys</div>
+            <div>SubCategory Management</div>
             <Button label="Create New" onClick={createNew} />
           </div>
         </div>
@@ -105,6 +106,7 @@ const SubCategory = () => {
             data={subcategory}
             setMode={setMode}
             toggle={toggle}
+            setTitle={setTitle}
             loading={loading}
             rowData={setRowData}
             removeData={removeSubCategory}
@@ -117,6 +119,7 @@ const SubCategory = () => {
         breakpoints={{ "960px": "75vw", "640px": "100vw" }}
         style={{ width: "50vw" }}
         modal
+        header={title}
         className="p-fluid"
       >
         <SubCategoryForm

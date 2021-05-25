@@ -119,7 +119,8 @@ const App = () => {
     const menu = [
         { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
         { label: 'Brand', icon: 'pi pi-fw pi-briefcase', to: '/brands' },
-        { label: 'Sub Category', icon: 'pi pi-fw pi-briefcase', to: '/subcategory' },
+        { label: 'Sub Category', icon: 'pi pi-fw pi-sitemap', to: '/subcategory' },
+        { label: 'Staff', icon: 'pi pi-fw pi-users', to: '/staffs' },
         {
             label: 'UI Kit', icon: 'pi pi-fw pi-sitemap',
             items: [

@@ -11,6 +11,7 @@ import { InputText } from "primereact/inputtext";
   removeData,
   rowData,
   toggle,
+  setTitle
 }) => {
   const [globalFilter, setGlobalFilter] = useState(""); 
  
@@ -74,6 +75,7 @@ import { InputText } from "primereact/inputtext";
   const editData = (e, row) => {
     e.persist();
     setMode("Edit");
+    setTitle("Edit SubCategory");
     rowData(row);
     toggle(true);
   };

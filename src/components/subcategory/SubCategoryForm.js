@@ -32,8 +32,7 @@ const SubCategoryForm = ({
   updateSubCat,
   handleClose,
   initial_data,
-}) => {
-  const [title, setTitle] = useState("Add SubCategory");
+}) => { 
   const [formState, setFormState] = useState({
     values: {
       id: "",
@@ -46,8 +45,7 @@ const SubCategoryForm = ({
   });
   const { touched, errors, values, isValid } = formState;
   useEffect(() => {
-    if (mode === "Edit") {
-      setTitle("Edit SubCategory");
+    if (mode === "Edit") { 
       let shouldSetData = typeof initial_data !== "undefined" ? true : false;
       if (shouldSetData) {
         const data = initial_data;
@@ -166,8 +164,7 @@ const SubCategoryForm = ({
     <Fragment>
       <div className="p-grid">
         <div className="p-col-12">
-          <div className="card p-fluid">
-            <h5>{title}</h5>
+          <div className="card p-fluid"> 
             <div className="p-field">
               <label htmlFor="name">Category</label>
               <Dropdown
@@ -219,12 +216,13 @@ const SubCategoryForm = ({
           </div>
         </div>
         <div className="p-col">
+        <div className="p-d-flex p-jc-end"> 
           <Button
             label="Cancel"
             icon="pi pi-times"
             onClick={handleClose}
             className="p-button-warning p-mr-2 p-mb-2"
-          />
+            />
 
           <Button
             label="Save"
@@ -234,7 +232,8 @@ const SubCategoryForm = ({
             disabled={!isValid || sending || exist}
             loading={sending}
             loadingOptions={{ position: "right" }}
-          />
+            />
+            </div>
         </div>
       </div>
     </Fragment>
