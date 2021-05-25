@@ -1,23 +1,23 @@
 import React, { useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { Button } from "primereact/button"; 
-import { InputText } from "primereact/inputtext";  
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
 
- const SubCategoryList = ({
+const AccountList = ({
   data,
   setMode,
   loading,
   removeData,
   rowData,
   toggle,
-  setTitle
+  setTitle,
 }) => {
-  const [globalFilter, setGlobalFilter] = useState(""); 
- 
+  const [globalFilter, setGlobalFilter] = useState("");
+
   const tableHeader = (
     <div className="table-header">
-      List of Sub Categories
+      Staff List
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText
@@ -28,7 +28,7 @@ import { InputText } from "primereact/inputtext";
       </span>
     </div>
   );
- 
+
   const bodyTemplate = (data, props) => {
     return (
       <>
@@ -38,15 +38,15 @@ import { InputText } from "primereact/inputtext";
     );
   };
 
-  const descBodyTemplate = (data) => {
+  const addressTemp = (data) => {
     return (
       <>
-        <span className="p-column-title">Description</span>
+        <span className="p-column-title">Address</span>
         <span
           style={{ marginLeft: ".5em", verticalAlign: "middle" }}
           className="image-text"
         >
-          {data.description}
+          {data.address}
         </span>
       </>
     );
@@ -62,20 +62,26 @@ import { InputText } from "primereact/inputtext";
       </>
     );
   };
- 
 
   const actionTemplate = (data) => (
     <span className="p-buttonset">
-        <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2"  onClick={(e) => editData(e, data)}/>
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-warning"  onClick={(e) => deleteData(e, data.id)}/>
-      
-</span>
+      <Button
+        icon="pi pi-pencil"
+        className="p-button-rounded p-button-success p-mr-2"
+        onClick={(e) => editData(e, data)}
+      />
+      <Button
+        icon="pi pi-trash"
+        className="p-button-rounded p-button-warning"
+        onClick={(e) => deleteData(e, data.id)}
+      />
+    </span>
   );
 
   const editData = (e, row) => {
     e.persist();
     setMode("Edit");
-    setTitle("Edit SubCategory");
+    setTitle("Edit Staff");
     rowData(row);
     toggle(true);
   };
@@ -99,13 +105,11 @@ import { InputText } from "primereact/inputtext";
             dataKey="id"
             rowHover
             globalFilter={globalFilter}
-            emptyMessage="No sub category found."
+            emptyMessage="No account found."
             loading={loading}
             header={tableHeader}
           >
-            <Column 
-              headerStyle={{ width: "3em" }}
-            ></Column>
+            <Column headerStyle={{ width: "3em" }}></Column>
             <Column
               field="name"
               header="Name"
@@ -113,10 +117,10 @@ import { InputText } from "primereact/inputtext";
               body={bodyTemplate}
             ></Column>
             <Column
-              field="description"
-              header="Description"
+              field="address"
+              header="Address"
               sortable
-              body={descBodyTemplate}
+              body={addressTemp}
             ></Column>
             <Column
               field="created_at"
@@ -147,4 +151,4 @@ import { InputText } from "primereact/inputtext";
   );
 };
 
-export default SubCategoryList;
+export default AccountList;

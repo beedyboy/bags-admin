@@ -144,7 +144,7 @@ const AccountForm = ({
     }));
   };
   useEffect(() => {
-    if (action === "newSubCategory") {
+    if (action === "newStaff") {
       resetForm();
       handleClose();
     }
@@ -246,9 +246,9 @@ const AccountForm = ({
                 name="phone"
                 type="text"
                 value={values.phone || ""}
-                onChange={handleChange} 
-                className= "p-d-block" 
-              /> 
+                onChange={handleChange}
+                className="p-d-block"
+              />
             </div>
 
             <div className="p-field">
@@ -276,23 +276,25 @@ const AccountForm = ({
               ) : null}
             </div>
 
-            <div className="p-field">
-              <label htmlFor="password">Password</label>
-              <Password
-                onChange={(e) => handlePasswordChange(e)}
-                toggleMask
-                value={values.password || ""}
-                aria-describedby="password-help"
-                className={` ${
-                  hasError("password") ? "p-invalid" : null
-                } " p-d-block"`}
-              />
-              <small id="password-help" className="p-error p-d-block">
-                {hasError("password")
-                  ? errors.password && errors.password.message
-                  : null}
-              </small>
-            </div>
+            {mode === "Add" ? (
+              <div className="p-field">
+                <label htmlFor="password">Password</label>
+                <Password
+                  onChange={(e) => handlePasswordChange(e)}
+                  toggleMask
+                  value={values.password || ""}
+                  aria-describedby="password-help"
+                  className={` ${
+                    hasError("password") ? "p-invalid" : null
+                  } " p-d-block"`}
+                />
+                <small id="password-help" className="p-error p-d-block">
+                  {hasError("password")
+                    ? errors.password && errors.password.message
+                    : null}
+                </small>
+              </div>
+            ) : null}
 
             <div className="p-field">
               <label htmlFor="address">Address</label>
