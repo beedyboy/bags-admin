@@ -36,6 +36,7 @@ const Account = () => {
     updateSubCat,
   } = store;
   const [open, setOpen] = useState(false);
+  const [modal, setModal] = useState(false);
   const [mode, setMode] = useState("");
   const [rowData, setRowData] = useState();
   const createNew = () => {
