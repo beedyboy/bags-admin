@@ -2,10 +2,10 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
-import { Dropdown } from "primereact/dropdown";
+import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { Message } from "primereact/message";
-import dataHero from "data-hero"; 
+import dataHero from "data-hero";
 const schema = {
   firstname: {
     isEmpty: false,
@@ -16,12 +16,17 @@ const schema = {
     isEmpty: false,
     min: 1,
     message: "Lastname is required",
-  }, 
+  },
   email: {
     isEmpty: false,
     min: 5,
     message: "A valid email is required",
-  }, 
+  },
+  password: {
+    min: 6,
+    isEmpty: false,
+    message: "a minimum of 6 characters password is required",
+  },
 };
 const AccountForm = ({
   mode,
@@ -32,19 +37,19 @@ const AccountForm = ({
   sending,
   message,
   checking,
-  addSubCat,
-  updateSubCat,
+  addStaff,
+  updateStaff,
   handleClose,
   initial_data,
-}) => { 
+}) => {
   const [formState, setFormState] = useState({
     values: {
       id: "",
       firstname: "",
       lastname: "",
-      staffId: "",
+      username: "",
       email: "",
-      branch: "",
+      password: "",
       phone: "",
       address: "",
     },
@@ -52,8 +57,9 @@ const AccountForm = ({
     errors: {},
   });
   const { touched, errors, values, isValid } = formState;
+
   useEffect(() => {
-    if (mode === "Edit") { 
+    if (mode === "Edit") {
       let shouldSetData = typeof initial_data !== "undefined" ? true : false;
       if (shouldSetData) {
         const data = initial_data;
@@ -62,9 +68,12 @@ const AccountForm = ({
           values: {
             ...state.values,
             id: data && data.id,
-            name: data && data.name,
-            category: data && data.category,
-            description: data && data.description,
+            firstname: data && data.firstname,
+            lastname: data && data.lastname,
+            username: data && data.username,
+            email: data && data.email,
+            phone: data && data.phone,
+            address: data && data.address,
           },
         }));
       }
@@ -75,9 +84,13 @@ const AccountForm = ({
         values: {
           ...prev.values,
           id: "",
-          name: "",
-          category: "",
-          description: "",
+          firstname: "",
+          lastname: "",
+          username: "",
+          email: "",
+          password: "",
+          phone: "",
+          address: "",
         },
       }));
     };
@@ -86,7 +99,14 @@ const AccountForm = ({
     const errors = dataHero.validate(schema, values);
     setFormState((formState) => ({
       ...formState,
-      isValid: errors.name.error || exist ? false : true,
+      isValid:
+        errors.firstname.error ||
+        errors.lastname.error ||
+        errors.password.error ||
+        errors.email.error ||
+        exist
+          ? false
+          : true,
       errors: errors || {},
     }));
   }, [values]);
@@ -104,13 +124,24 @@ const AccountForm = ({
         [event.target.name]: true,
       },
     }));
-    if (
-      event.target.name === "name" &&
-      values.category !== "" &&
-      event.target.value.length >= 2
-    ) {
-      confirm(values.category, event.target.value);
+    if (event.target.name === "email") {
+      confirm(event.target.value);
     }
+  };
+
+  const handlePasswordChange = (event) => {
+    event.persist();
+    setFormState((formState) => ({
+      ...formState,
+      values: {
+        ...formState.values,
+        password: event.target.value,
+      },
+      touched: {
+        ...formState.touched,
+        password: true,
+      },
+    }));
   };
   useEffect(() => {
     if (action === "newSubCategory") {
@@ -130,12 +161,11 @@ const AccountForm = ({
     };
   }, [error]);
 
-  
   const hasError = (field) => touched[field] && errors[field].error;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    mode === "Add" ? addSubCat(values) : updateSubCat(values);
+    mode === "Add" ? addStaff(values) : updateStaff(values);
   };
   const resetForm = () => {
     setFormState((prev) => ({
@@ -143,15 +173,23 @@ const AccountForm = ({
       values: {
         ...prev.values,
         id: "",
-        name: "",
-        category: "",
-        description: "",
+        firstname: "",
+        lastname: "",
+        username: "",
+        email: "",
+        password: "",
+        phone: "",
+        address: "",
       },
       touched: {
         ...prev.touched,
-        name: false,
-        category: false,
-        description: false,
+        firstname: false,
+        lastname: false,
+        password: false,
+        username: false,
+        email: false,
+        phone: false,
+        address: false,
       },
       errors: {},
     }));
@@ -160,21 +198,76 @@ const AccountForm = ({
     <Fragment>
       <div className="p-grid">
         <div className="p-col-12">
-          <div className="card p-fluid"> 
-            
+          <div className="card p-fluid">
             <div className="p-field">
-              <label htmlFor="name">Name</label>
+              <label htmlFor="firstname">Firstname</label>
               <InputText
-                id="name"
-                name="name"
+                id="firstname"
+                name="firstname"
                 type="text"
+                value={values.firstname || ""}
+                onChange={handleChange}
+                aria-describedby="firstname-help"
+                className={` ${
+                  hasError("firstname") ? "p-invalid" : null
+                } " p-d-block"`}
+              />
+              <small id="firstname-help" className="p-error p-d-block">
+                {hasError("firstname")
+                  ? errors.firstname && errors.firstname.message
+                  : null}
+              </small>
+            </div>
+
+            <div className="p-field">
+              <label htmlFor="lastname">Lastname</label>
+              <InputText
+                id="lastname"
+                name="lastname"
+                type="text"
+                value={values.lastname || ""}
+                onChange={handleChange}
+                aria-describedby="lastname-help"
+                className={` ${
+                  hasError("lastname") ? "p-invalid" : null
+                } " p-d-block"`}
+              />
+              <small id="lastname-help" className="p-error p-d-block">
+                {hasError("lastname")
+                  ? errors.lastname && errors.lastname.message
+                  : null}
+              </small>
+            </div>
+
+            <div className="p-field">
+              <label htmlFor="phone">Phone</label>
+              <InputText
+                id="phone"
+                name="phone"
+                type="text"
+                value={values.phone || ""}
+                onChange={handleChange} 
+                className= "p-d-block" 
+              /> 
+            </div>
+
+            <div className="p-field">
+              <label htmlFor="email">Email</label>
+              <InputText
+                id="email"
+                name="email"
+                type="email"
                 value={values.name || ""}
                 onChange={handleChange}
-                aria-describedby="name-help"
-                className={` ${hasError("name") ? "p-invalid" : null} " p-d-block"`}
+                aria-describedby="email-help"
+                className={` ${
+                  hasError("email") ? "p-invalid" : null
+                } " p-d-block"`}
               />
-              <small id="name-help" className="p-error p-d-block">
-                {hasError("name") ? errors.name && errors.name.message : null}
+              <small id="email-help" className="p-error p-d-block">
+                {hasError("email")
+                  ? errors.email && errors.email.message
+                  : null}
               </small>
               {exist ? (
                 <Message severity="error" text={message} />
@@ -182,37 +275,56 @@ const AccountForm = ({
                 <Message severity="info" text="checking server for duplicate" />
               ) : null}
             </div>
+
             <div className="p-field">
-              <label htmlFor="description">Description</label>
+              <label htmlFor="password">Password</label>
+              <Password
+                onChange={(e) => handlePasswordChange(e)}
+                toggleMask
+                value={values.password || ""}
+                aria-describedby="password-help"
+                className={` ${
+                  hasError("password") ? "p-invalid" : null
+                } " p-d-block"`}
+              />
+              <small id="password-help" className="p-error p-d-block">
+                {hasError("password")
+                  ? errors.password && errors.password.message
+                  : null}
+              </small>
+            </div>
+
+            <div className="p-field">
+              <label htmlFor="address">Address</label>
               <InputTextarea
-                id="description"
-                value={values.description || ""}
+                id="address"
+                value={values.address || ""}
                 onChange={handleChange}
-                name="description"
+                name="address"
                 rows="4"
               />
             </div>
           </div>
         </div>
         <div className="p-col">
-        <div className="p-d-flex p-jc-end"> 
-          <Button
-            label="Cancel"
-            icon="pi pi-times"
-            onClick={handleClose}
-            className="p-button-warning p-mr-2 p-mb-2"
+          <div className="p-d-flex p-jc-end">
+            <Button
+              label="Cancel"
+              icon="pi pi-times"
+              onClick={handleClose}
+              className="p-button-warning p-mr-2 p-mb-2"
             />
 
-          <Button
-            label="Save"
-            icon="pi pi-check"
-            className="p-button-secondary p-mr-2 p-mb-2"
-            onClick={handleSubmit}
-            disabled={!isValid || sending || exist}
-            loading={sending}
-            loadingOptions={{ position: "right" }}
+            <Button
+              label="Save"
+              icon="pi pi-check"
+              className="p-button-secondary p-mr-2 p-mb-2"
+              onClick={handleSubmit}
+              disabled={!isValid || sending || exist}
+              loading={sending}
+              loadingOptions={{ position: "right" }}
             />
-            </div>
+          </div>
         </div>
       </div>
     </Fragment>

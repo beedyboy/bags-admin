@@ -41,16 +41,18 @@ class AccountStore {
       error: observable,
       exist: observable,
       saved: observable,
-      users: observable, 
-      register: action,
+      users: observable,
+      addStaff: action,
+      setRole: action,
       getUsers: action,
       removeStaff: action,
       updateStaff: action,
-      getProfile: action, 
+      getProfile: action,
       updateProfile: action,
+      getProfileById: action,
       resetProperty: action,
-      confirmEmail: action,  
-      stats: computed
+      confirmEmail: action,
+      stats: computed,
     });
   }
 
@@ -116,7 +118,7 @@ class AccountStore {
           if (res.status === 201) {
             // console.log(res.data.acl)
             Utils.save("name", res.data.lastname + " " + res.data.firstname);
-            Utils.save("staff_token", res.data.token);
+            Utils.save("admin_token", res.data.token);
             Utils.save("acl", JSON.stringify(res.data.acl));
             this.message = res.data.message;
             this.isAuthenticated = true;
@@ -129,7 +131,7 @@ class AccountStore {
         .catch((err) => {
           this.sending = false;
           if (err && err.response && err.response.status === 401) {
-          console.log({ err });
+            console.log({ err });
             console.log("status", err.response.status);
             this.errMessage = err.response.data.error;
             this.error = true;
@@ -141,7 +143,7 @@ class AccountStore {
       console.log({ error });
     }
   };
-  register = (data) => {
+  addStaff = (data) => {
     try {
       this.sending = true;
       backend
@@ -170,8 +172,38 @@ class AccountStore {
       this.sending = false;
       console.log({ error });
     }
-  }; 
-  
+  };
+
+  setRole = (data) => {
+    try {
+      this.sending = true;
+      backend
+        .post("account/auth", data)
+        .then((res) => {
+          this.sending = false;
+          if (res.status === 200) {
+            this.getUsers();
+            this.message = res.data.message;
+            this.action = "hasRole";
+            this.saved = true;
+          } else {
+            this.action = "hasRoleError";
+            this.message = res.data.error;
+            this.error = true;
+          }
+        })
+        .catch((err) => {
+          this.sending = false;
+          console.log({ err });
+          if (err && err.response) {
+            console.log("status", err.response.status);
+          }
+        });
+    } catch (error) {
+      this.sending = false;
+      console.log({ error });
+    }
+  };
 
   updateStaff = (data) => {
     try {
@@ -227,7 +259,6 @@ class AccountStore {
         });
     } catch (error) {}
   };
- 
 
   getProfileById = (id) => {
     this.profileLoading = true;
@@ -252,7 +283,6 @@ class AccountStore {
         });
     } catch (error) {}
   };
- 
 
   updateProfile = (data) => {
     this.sending = true;
@@ -284,7 +314,7 @@ class AccountStore {
   get stats() {
     return this.users.length;
   }
-  
+
   removeStaff = (id) => {
     try {
       this.removed = false;
@@ -307,13 +337,6 @@ class AccountStore {
   resetProperty = (key, value) => {
     this[key] = value;
   };
-  get info() {
-    return Object.keys(this.addresses || {}).map((key) => ({
-      ...this.addresses[key],
-      uid: key,
-    }));
-  }
 }
- 
 
 export default createContext(new AccountStore());
