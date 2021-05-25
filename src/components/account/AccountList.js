@@ -11,6 +11,7 @@ const AccountList = ({
   removeData,
   rowData,
   toggle,
+  setModal,
   setTitle,
 }) => {
   const [globalFilter, setGlobalFilter] = useState("");
@@ -71,12 +72,23 @@ const AccountList = ({
         onClick={(e) => editData(e, data)}
       />
       <Button
+        icon="pi pi-key"
+        className="p-button-rounded p-button-success p-mr-2"
+        onClick={(e) => setAcl(e, data)}
+      />
+      <Button
         icon="pi pi-trash"
         className="p-button-rounded p-button-warning"
         onClick={(e) => deleteData(e, data.id)}
       />
     </span>
   );
+
+  const setAcl = (e, row) => {
+    e.persist(); 
+    rowData(row);
+    setModal(true);
+  };
 
   const editData = (e, row) => {
     e.persist();

@@ -12,8 +12,7 @@ import { Dashboard } from './components/Dashboard';
 import { ButtonDemo } from './components/ButtonDemo';
 import { ChartDemo } from './components/ChartDemo'; 
 import { FileDemo } from './components/FileDemo';
-import { FloatLabelDemo } from './components/FloatLabelDemo';
-import { FormLayoutDemo } from './components/FormLayoutDemo';
+import { FloatLabelDemo } from './components/FloatLabelDemo'; 
 import { InputDemo } from './components/InputDemo';
 import { ListDemo } from './components/ListDemo';
 import { MenuDemo } from './components/MenuDemo';
@@ -54,6 +53,7 @@ import './layout/layout.scss';
 import './App.scss';
 import Brand from './pages/Brand';
 import SubCategory from './pages/SubCategory';
+import Account from './pages/Account';
 
 const App = () => {
 
@@ -122,7 +122,7 @@ const App = () => {
         { label: 'Sub Category', icon: 'pi pi-fw pi-sitemap', to: '/subcategory' },
         { label: 'Staff', icon: 'pi pi-fw pi-users', to: '/staffs' },
         {
-            label: 'Reconcillation', icon: 'pi pi-fw pi-sitemap',
+            label: 'Reconcillation', icon: 'pi pi-fw pi-dollar',
             items: [
                 { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/formlayout' },
                 { label: 'Input', icon: 'pi pi-fw pi-check-square', to: '/input' },
@@ -201,7 +201,7 @@ const App = () => {
                 <Route path="/" exact component={Dashboard} />
                 <Route path="/brands" exact component={Brand} />
                 <Route path="/subcategory" exact component={SubCategory} />
-                <Route path="/formlayout" component={FormLayoutDemo} />
+                <Route path="/staffs" component={Account} />
                 <Route path="/input" component={InputDemo} />
                 <Route path="/floatlabel" component={FloatLabelDemo} />
                 <Route path="/invalidstate" component={InvalidStateDemo} />

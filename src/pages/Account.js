@@ -13,27 +13,29 @@ import { Toast } from "primereact/toast";
 import { observer } from "mobx-react-lite";
 import AccountStore from "../stores/AccountStore";
 import AccountForm from "../components/account/AccountForm";
+import ACLForm from '../components/account/ACL';
 
 const Account = () => {
   const toast = useRef(null);
   const [title, setTitle] = useState("Add Staff");
   const store = useContext(AccountStore);
   const {
-    loading,
-    getSubCategories,
-    users,
     error,
-    checking,
-    confirmRow,
+    loading,
     exist,
     action,
     message,
     removed,
-    removeAccount,
-    resetProperty,
     sending,
-    addSubCat,
-    updateSubCat,
+    users,
+    checking,
+    confirmEmail,
+    resetProperty,
+    getUsers,
+    addStaff,
+    updateStaff,
+    setRole,
+    removeStaff,
   } = store;
   const [open, setOpen] = useState(false);
   const [modal, setModal] = useState(false);
@@ -47,7 +49,7 @@ const Account = () => {
     setOpen(!open);
   };
   useEffect(() => {
-    getSubCategories();
+    getUsers();
   }, []);
 
   useEffect(() => {
@@ -64,7 +66,7 @@ const Account = () => {
     };
   }, [removed]);
   useEffect(() => {
-    if (action === "newStaff") {
+    if (action === "newStaff" || action === "hasRole") {
       toast.current.show({
         severity: "success",
         summary: "Success Message",
@@ -79,7 +81,10 @@ const Account = () => {
     };
   }, [action]);
   useEffect(() => {
-    if (error === true && action === "newStaffError") {
+    if (
+      error === true &&
+      (action === "newStaffError" || action === "hasRoleError")
+    ) {
       toast.current.show({
         severity: "error",
         summary: "Error Message",
@@ -105,12 +110,13 @@ const Account = () => {
         <div className="p-col-12 p-md-12 p-lg-12">
           <AccountList
             data={users}
-            setMode={setMode}
             toggle={toggle}
-            setTitle={setTitle}
+            setMode={setMode}
             loading={loading}
+            setModal={setModal}
+            setTitle={setTitle}
             rowData={setRowData}
-            removeData={removeAccount}
+            removeData={removeStaff}
           />
         </div>
       </div>
@@ -131,13 +137,33 @@ const Account = () => {
           message={message}
           sending={sending}
           checking={checking}
-          confirm={confirmRow}
+          confirm={confirmEmail}
           handleClose={toggle}
           initial_data={rowData}
           reset={resetProperty}
-          addSubCat={addSubCat}
-          updateSubCat={updateSubCat}
+          addStaff={addStaff}
+          updateStaff={updateStaff}
         />
+      </Dialog>
+      <Dialog
+        visible={modal}
+        onHide={setModal}
+        breakpoints={{ "960px": "75vw", "640px": "100vw" }}
+        style={{ width: "50vw" }}
+        modal
+        header="Set Roles"
+        className="p-fluid"
+      >
+       <ACLForm 
+          error={error}
+          action={action}
+          message={message}
+          sending={sending}
+          reset={resetProperty}
+          assignRole={setRole}
+          toggle={setModal}
+          initial_data={rowData}
+          />
       </Dialog>
       <Toast ref={toast} position="top-right" />
     </Fragment>

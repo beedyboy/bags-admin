@@ -86,7 +86,7 @@ class AccountStore {
     try {
       this.checking = true;
       this.exist = false;
-      backend.get(`account/confirm`).then((res) => {
+      backend.get(`accounts/confirm`).then((res) => {
         this.checking = false;
         if (res.status === 200) {
           this.message = res.data.message;
@@ -112,7 +112,7 @@ class AccountStore {
     this.isAuthenticated = false;
     try {
       backend
-        .post("auth/login", data)
+        .post("accounts/auth", data)
         .then((res) => {
           this.sending = false;
           if (res.status === 201) {
@@ -147,7 +147,7 @@ class AccountStore {
     try {
       this.sending = true;
       backend
-        .post("account", data)
+        .post("accounts", data)
         .then((res) => {
           this.sending = false;
           if (res.status === 201) {
@@ -178,7 +178,7 @@ class AccountStore {
     try {
       this.sending = true;
       backend
-        .post("account/auth", data)
+        .post("accounts/auth", data)
         .then((res) => {
           this.sending = false;
           if (res.status === 200) {
@@ -209,7 +209,7 @@ class AccountStore {
     try {
       this.sending = true;
       backend
-        .put("account", data)
+        .put("accounts", data)
         .then((res) => {
           this.sending = false;
           if (res.status === 200) {
@@ -240,7 +240,7 @@ class AccountStore {
     this.profileLoading = true;
     try {
       backend
-        .get("account/profile")
+        .get("accounts/profile")
         .then((res) => {
           if (res.status === 200) {
             this.myProfile = res.data;
@@ -264,7 +264,7 @@ class AccountStore {
     this.profileLoading = true;
     try {
       backend
-        .get(`account/staff/${id}`)
+        .get(`accounts/staff/${id}`)
         .then((res) => {
           if (res.status === 200) {
             this.profile = res.data;
@@ -287,7 +287,7 @@ class AccountStore {
   updateProfile = (data) => {
     this.sending = true;
     backend
-      .put("account/profile", data)
+      .put("accounts/profile", data)
       .then((res) => {
         this.sending = false;
         if (res.status === 200) {
@@ -318,7 +318,7 @@ class AccountStore {
   removeStaff = (id) => {
     try {
       this.removed = false;
-      backend.delete(`account/${id}`).then((res) => {
+      backend.delete(`accounts/${id}`).then((res) => {
         if (res.status === 200) {
           this.getUsers();
           this.message = res.data.message;
