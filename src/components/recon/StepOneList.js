@@ -1,24 +1,23 @@
 import React, { useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { Button } from "primereact/button";
-import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button"; 
+import { InputText } from "primereact/inputtext";  
 
-const AccountList = ({
+ const StepOneList = ({
   data,
   setMode,
   loading,
   removeData,
   rowData,
   toggle,
-  setModal,
-  setTitle,
+  setTitle
 }) => {
-  const [globalFilter, setGlobalFilter] = useState("");
-
+  const [globalFilter, setGlobalFilter] = useState(""); 
+ 
   const tableHeader = (
     <div className="table-header">
-      Staff List
+      Stage One List
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText
@@ -29,25 +28,25 @@ const AccountList = ({
       </span>
     </div>
   );
-
+ 
   const bodyTemplate = (data, props) => {
     return (
       <>
         <span className="p-column-title">{props.header}</span>
-        {data.lastname}  {data.firstname}
+        {data[props.field]}
       </>
     );
   };
 
-  const addressTemp = (data) => {
+  const descBodyTemplate = (data) => {
     return (
       <>
-        <span className="p-column-title">Address</span>
+        <span className="p-column-title">Description</span>
         <span
           style={{ marginLeft: ".5em", verticalAlign: "middle" }}
           className="image-text"
         >
-          {data.address}
+          {data.description}
         </span>
       </>
     );
@@ -63,37 +62,20 @@ const AccountList = ({
       </>
     );
   };
+ 
 
   const actionTemplate = (data) => (
     <span className="p-buttonset">
-      <Button
-        icon="pi pi-pencil"
-        className="p-button-rounded p-button-success p-mr-2"
-        onClick={(e) => editData(e, data)}
-      />
-      <Button
-        icon="pi pi-key"
-        className="p-button-rounded p-button-success p-mr-2"
-        onClick={(e) => setAcl(e, data)}
-      />
-      <Button
-        icon="pi pi-trash"
-        className="p-button-rounded p-button-warning"
-        onClick={(e) => deleteData(e, data.id)}
-      />
-    </span>
+        <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2"  onClick={(e) => editData(e, data)}/>
+                <Button icon="pi pi-trash" className="p-button-rounded p-button-warning"  onClick={(e) => deleteData(e, data.id)}/>
+      
+</span>
   );
-
-  const setAcl = (e, row) => {
-    e.persist(); 
-    rowData(row);
-    setModal(true);
-  };
 
   const editData = (e, row) => {
     e.persist();
     setMode("Edit");
-    setTitle("Edit Staff");
+    setTitle("Edit SubCategory");
     rowData(row);
     toggle(true);
   };
@@ -117,22 +99,24 @@ const AccountList = ({
             dataKey="id"
             rowHover
             globalFilter={globalFilter}
-            emptyMessage="No account found."
+            emptyMessage="No record found."
             loading={loading}
             header={tableHeader}
           >
-            <Column headerStyle={{ width: "3em" }}></Column>
+            <Column 
+              headerStyle={{ width: "3em" }}
+            ></Column>
             <Column
-              // field="name"
-              header="Fullname"
+              field="name"
+              header="Name"
               sortable
               body={bodyTemplate}
             ></Column>
             <Column
-              field="address"
-              header="Address"
+              field="description"
+              header="Description"
               sortable
-              body={addressTemp}
+              body={descBodyTemplate}
             ></Column>
             <Column
               field="created_at"
@@ -163,4 +147,4 @@ const AccountList = ({
   );
 };
 
-export default AccountList;
+export default StepOneList;

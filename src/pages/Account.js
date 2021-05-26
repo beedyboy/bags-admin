@@ -13,7 +13,7 @@ import { Toast } from "primereact/toast";
 import { observer } from "mobx-react-lite";
 import AccountStore from "../stores/AccountStore";
 import AccountForm from "../components/account/AccountForm";
-import ACLForm from '../components/account/ACL';
+import ACLForm from "../components/account/ACL";
 
 const Account = () => {
   const toast = useRef(null);
@@ -66,7 +66,7 @@ const Account = () => {
     };
   }, [removed]);
   useEffect(() => {
-    if (action === "newStaff" || action === "hasRole") {
+    if (action === "newStaff") {
       toast.current.show({
         severity: "success",
         summary: "Success Message",
@@ -81,10 +81,22 @@ const Account = () => {
     };
   }, [action]);
   useEffect(() => {
-    if (
-      error === true &&
-      (action === "newStaffError" || action === "hasRoleError")
-    ) {
+    if (action === "hasRole") {
+      toast.current.show({
+        severity: "success",
+        summary: "Success Message",
+        detail: message,
+      });
+      setModal(false);
+    }
+    return () => {
+      resetProperty("message", "");
+      resetProperty("action", "");
+      setModal(false);
+    };
+  }, [action]);
+  useEffect(() => {
+    if (error === true && action === "newStaffError") {
       toast.current.show({
         severity: "error",
         summary: "Error Message",
@@ -96,6 +108,21 @@ const Account = () => {
       resetProperty("message", "");
       resetProperty("action", "");
       toggle();
+    };
+  }, [error]);
+  useEffect(() => {
+    if (error === true && action === "hasRoleError") {
+      toast.current.show({
+        severity: "error",
+        summary: "Error Message",
+        detail: message,
+      });
+    }
+    return () => {
+      resetProperty("error", false);
+      resetProperty("message", "");
+      resetProperty("action", "");
+      setModal(false);
     };
   }, [error]);
   return (
@@ -154,7 +181,7 @@ const Account = () => {
         header="Set Roles"
         className="p-fluid"
       >
-       <ACLForm 
+        <ACLForm
           error={error}
           action={action}
           message={message}
@@ -163,7 +190,7 @@ const Account = () => {
           assignRole={setRole}
           toggle={setModal}
           initial_data={rowData}
-          />
+        />
       </Dialog>
       <Toast ref={toast} position="top-right" />
     </Fragment>

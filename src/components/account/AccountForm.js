@@ -124,7 +124,7 @@ const AccountForm = ({
         [event.target.name]: true,
       },
     }));
-    if (event.target.name === "email") {
+    if (event.target.name === "email" && event.target.value.length > 5) {
       confirm(event.target.value);
     }
   };
@@ -257,7 +257,7 @@ const AccountForm = ({
                 id="email"
                 name="email"
                 type="email"
-                value={values.name || ""}
+                value={values.email || ""}
                 onChange={handleChange}
                 aria-describedby="email-help"
                 className={` ${

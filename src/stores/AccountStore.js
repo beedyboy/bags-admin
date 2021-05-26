@@ -86,7 +86,7 @@ class AccountStore {
     try {
       this.checking = true;
       this.exist = false;
-      backend.get(`accounts/confirm`).then((res) => {
+      backend.post(`accounts/confirm`, {email}).then((res) => {
         this.checking = false;
         if (res.status === 200) {
           this.message = res.data.message;
@@ -178,7 +178,7 @@ class AccountStore {
     try {
       this.sending = true;
       backend
-        .post("accounts/auth", data)
+        .put("accounts/auth", data)
         .then((res) => {
           this.sending = false;
           if (res.status === 200) {
