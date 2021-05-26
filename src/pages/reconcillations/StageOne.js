@@ -17,11 +17,13 @@ import { Tooltip } from "primereact/tooltip";
 import { Toast } from "primereact/toast";
 import { FileUpload } from "primereact/fileupload";
 import { observer } from "mobx-react-lite";
+import StepOneForm from "../../components/recon/StepOneForm";
 
 const StageOne = () => {
   const toast = useRef(null);
   const dt = useRef(null);
   const [upload, setUpload] = useState(false);
+  const [approval, setApproval] = useState(false);
   const [rowData, setRowData] = useState();
   const [globalFilter, setGlobalFilter] = useState("");
   const store = useContext(ReconStore);
@@ -217,6 +219,25 @@ const StageOne = () => {
             }
           />
         </div>
+      </Dialog>
+
+      <Dialog
+        visible={approval}
+        onHide={(e) => setApproval(false)}
+        breakpoints={{ "960px": "75vw", "640px": "100vw" }}
+        style={{ width: "50vw" }}
+        header="Approve Record"
+      >
+        <StepOneForm
+          action={action}
+          error={error}
+          message={message}
+          sending={sending}
+          saveApproval={saveApproval}
+          toggle={setApproval}
+          initial_data={rowData}
+          reset={resetProperty}
+        />
       </Dialog>
     </Fragment>
   );
