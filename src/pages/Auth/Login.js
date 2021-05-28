@@ -10,7 +10,6 @@ import React, {
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
-import { Message } from "primereact/message";
 import { Toast } from "primereact/toast";
 import dataHero from "data-hero";
 import AccountStore from "../../stores/AccountStore";
@@ -99,13 +98,10 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated === true) {
-      toast({
-        title: "Server Response.",
-        description: message,
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-        position: "top-right",
+      toast.current.show({
+        summary: "Server Response.",
+        detail: message,
+        severity: "success",
       });
       //   router.push("/");
     }
@@ -116,13 +112,10 @@ const Login = () => {
   }, [isAuthenticated]);
   useEffect(() => {
     if (error === true) {
-      toast({
-        title: "Server Response.",
-        description: errMessage,
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-        position: "top-right",
+      toast.current.show({
+        summary: "Server Response.",
+        detail: errMessage,
+        severity: "error",
       });
     }
   }, [error]);
@@ -131,13 +124,22 @@ const Login = () => {
   return (
     <Fragment>
       <Toast ref={toast} position="top-right" />
-      <div className="p-d-flex">
+      <div className="p-grid" style={{ height: "100vh" }}>
         <div
-          className="p-col-md-4 p-col-12"
+          className="p-col-sm-12 p-col-md-4"
           style={{ backgroundColor: "green" }}
-        ></div>
-        <div className="p-col-md-8 p-col-12">
-          <div className="p-grid">
+        >
+          <div className="p-d-flex p-flex-column p-ac-center">
+            <div className="p-mb-2">
+              {/* <img src="assets/layout/images/logo.jpeg" width="100%" alt="logo" /> */}
+            </div>
+            <div className="p-mb-2">Bags, Footwears & More</div>
+          </div>
+        </div>
+        <div className="p-col-sm-12 p-col-md-8">
+          <div className="p-d-flex p-flex-column p-ac-center p-jc-center"  style={{ height: "100vh" }}>
+           <div>Login </div>
+            {/* <i className="pi-shopping-cart"    style={{ color: "red", height: "40px" }}/> */}
             <div className="card p-fluid">
               <div className="p-field">
                 <label htmlFor="email">Email</label>
@@ -178,14 +180,12 @@ const Login = () => {
               </div>
               <div className="p-col">
                 <div className="p-d-flex p-jc-end">
-                  
-
                   <Button
                     label="Save"
                     icon="pi pi-check"
                     className="p-button-secondary p-mr-2 p-mb-2"
                     onClick={handleSignIn}
-                    disabled={!isValid || sending }
+                    disabled={!isValid || sending}
                     loading={sending}
                     loadingOptions={{ position: "right" }}
                   />
