@@ -19,7 +19,7 @@ import { FileUpload } from "primereact/fileupload";
 import { observer } from "mobx-react-lite";
 import StepOneForm from "../../components/recon/StepOneForm";
 
-const StageOne = () => {
+const StageTwo = () => {
   const toast = useRef(null);
   const dt = useRef(null);
   const [upload, setUpload] = useState(false);
@@ -33,14 +33,14 @@ const StageOne = () => {
     uploadStatement,
     error,
     action,
-    pristine,
+    finales,
     message,
     resetProperty,
     sending,
     saveApproval,
   } = store;
   useEffect(() => {
-    filterRecord("approved_one", false, "pristine");
+    filterRecord("approved_two", false, "finales");
   }, []);
   const exportCSV = () => {
     dt.current.exportCSV();
@@ -86,7 +86,7 @@ const StageOne = () => {
   }, [error]);
   const tableHeader = (
     <div className="table-header">
-      Stage One List
+      Stage Two List
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText
@@ -104,6 +104,7 @@ const StageOne = () => {
         <span className={`product-badge status-${data.approved_one}`}>
           {data.approved_one ? "Yes" : "No"}
         </span>
+     
       </>
     );
   };
@@ -154,7 +155,7 @@ const StageOne = () => {
 
   const editData = (e, row) => {
     e.persist();
-    setRowData(row);
+    setRowData(row); 
     setApproval(true);
   };
 
@@ -170,7 +171,7 @@ const StageOne = () => {
 
         <DataTable
           ref={dt}
-          value={pristine}
+          value={finales}
           paginator
           className="p-datatable-customers"
           rows={10}
@@ -270,4 +271,4 @@ const StageOne = () => {
   );
 };
 
-export default observer(StageOne);
+export default observer(StageTwo);

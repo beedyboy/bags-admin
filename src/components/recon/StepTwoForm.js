@@ -11,7 +11,7 @@ const schema = {
     message: "Field is required",
   }
 };
-const StepOneForm = ({ 
+const StepTwoForm = ({ 
   action, 
   sending, 
   saveApproval, 
@@ -120,7 +120,7 @@ const StepOneForm = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-   saveApproval(values, 'first') 
+   saveApproval(values, 'second') 
   }
   const resetForm = () => {
     setFormState((prev) => ({
@@ -217,4 +217,4 @@ const StepOneForm = ({
   );
 };
 
-export default StepOneForm;
+export default StepTwoForm;

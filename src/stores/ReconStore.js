@@ -27,7 +27,7 @@ class ReconStore {
       finales: observable,
       pristine: observable,
       reconcillations: observable,
-      getAllData: action, 
+      getAllData: action,
       uploadStatement: action,
       saveApproval: action,
       filterRecord: action,
@@ -66,22 +66,30 @@ class ReconStore {
   uploadStatement = (data) => {
     try {
       this.sending = true;
-      backend.post("reconcillations", data,{
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }).then((res) => {
-        this.sending = false;
-        if (res.status === 201) {
-          this.getAllData();
-          this.message = res.data.message;
-          this.action = "accountUploaded";
-        } else {
-          this.message = res.data.error;
-          this.action = "uploadError";
-          this.error = true;
-        }
-      });
+      backend
+        .post("reconcillations", data)
+        .then((res) => {
+          this.sending = false;
+          if (res.status === 201) {
+            this.getAllData();
+            this.filterRecord("approved_one", false, "pristine");
+            this.message = res.data.message;
+            this.action = "accountUploaded";
+          } else {
+            this.message = res.data.error;
+            this.action = "uploadError";
+            this.error = true;
+          }
+        })
+        .catch((err) => {
+          if (err.response && err.response.status === 404) {
+            console.log("error in axios catch");
+            this.message = err.response.data.message;
+            this.error = true;
+          } else {
+            console.log({ err });
+          }
+        });
     } catch (err) {
       if (err.response.status === 500) {
         console.log("There was a problem with the server");
@@ -102,9 +110,8 @@ class ReconStore {
           if (res.status === 200) {
             if (stage === "first") {
               this.filterRecord("approved_one", false, "pristine");
-            } else { 
-                this.filterRecord("approved_two", false, "finales");
-              
+            } else {
+              this.filterRecord("approved_two", false, "finales");
             }
             this.message = res.data.message;
             this.action = "approved";
