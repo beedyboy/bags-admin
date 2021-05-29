@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import { CSSTransition } from 'react-transition-group';
+import Utils from './shared/localStorage';
 
 export const AppProfile = () => {
 
@@ -9,7 +10,9 @@ export const AppProfile = () => {
     const onClick = (event) => {
         setExpanded(prevState => !prevState);
         event.preventDefault();
-    }
+    } 
+
+ const user = Utils.get("name") ?? "guest";
 
     return (
         <div className="layout-profile">
@@ -17,7 +20,7 @@ export const AppProfile = () => {
                 <img src="assets/layout/images/profile.png" alt="Profile" />
             </div>
             <button className="p-link layout-profile-link" onClick={onClick}>
-                <span className="username">Claire Williams</span>
+                <span className="username">{user}</span>
                 <i className="pi pi-fw pi-cog" />
             </button>
             <CSSTransition classNames="p-toggleable-content" timeout={{ enter: 1000, exit: 450 }} in={expanded} unmountOnExit>
