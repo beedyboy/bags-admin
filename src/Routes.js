@@ -1,7 +1,7 @@
 import React from "react";
 import { HashRouter as Router, Switch, Redirect } from "react-router-dom"; 
 import {
-  BrandView, LoginView
+  BrandView, LoginView, StageOneView, StageTwoView, SubCategoryView
 } from "./pages";
 import { PrivateRoute, NormalRoute } from "./HOC"; 
 import MainLayout from "./layout/MainLayout";
@@ -18,30 +18,31 @@ const Routes = () => {
         layout={MainLayout}
         path="/brands"
       />
+      <PrivateRoute
+        component={StageOneView}
+        exact
+        layout={MainLayout}
+        path="/stage-one"
+      />
+      <PrivateRoute
+        component={StageTwoView}
+        exact
+        layout={MainLayout}
+        path="/stage-two"
+      /> 
+       <PrivateRoute
+      component={SubCategoryView}
+      exact
+      layout={MainLayout}
+      path="/subcategory"
+    />
       {/* <PrivateRoute
         component={DashboardView}
         exact
         layout={MainLayout}
         path="/dashboard"
       />
-      <PrivateRoute
-        component={LeaveApplicationView}
-        exact
-        layout={MainLayout}
-        path="/vacations"
-      />
-      <PrivateRoute
-        component={LeaveAppDetailsView}
-        exact
-        layout={MainLayout}
-        path="/vacation-applications/:id/:user/:leave/:type"
-      />
-      <PrivateRoute
-        component={LeaveAppManagerView}
-        exact
-        layout={MainLayout}
-        path="/vacation-applications"
-      />
+    
       <PrivateRoute
         component={OnboardingView}
         exact

@@ -19,7 +19,9 @@ const Utils = {
     },
      logout: () => {
         localStorage.removeItem('admin_token');  
-        window.location.href = '/login'; 
+        localStorage.removeItem('acl');  
+        localStorage.removeItem('name');  
+        window.location.href = '/#/auth/login'; 
     }
 }
  
