@@ -5,8 +5,7 @@ const Utils = {
     },
     get:(key) => {
       
-        if (localStorage.getItem(key) === null) {
-            //...
+        if (localStorage.getItem(key) === null) { 
             return "";
           }
           return localStorage.getItem(key);

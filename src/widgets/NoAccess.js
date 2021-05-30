@@ -1,15 +1,18 @@
 import React from 'react';
 
-export const EmptyPage = () => {
-
+const NoAccess = (props) => {
+    const { page } = props;
     return (
         <div className="p-grid">
             <div className="p-col-12">
                 <div className="card">
-                    <h5>Empty Page</h5>
-                    <p>Use this page to start from scratch and place your custom content.</p>
+                    <h5>Access Denied!!!</h5>
+                    <p> {`You do not have access to ${page} Page`}
+</p>
                 </div>
             </div>
         </div>
     );
 }
+
+export default NoAccess;

@@ -1,23 +1,32 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { Fragment, useState, useEffect, useContext, useRef } from "react";
-import  BrandList from "../components/brand/BrandList";
+import React, {
+  Fragment,
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+} from "react";
+import BrandList from "../components/brand/BrandList";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
 import { observer } from "mobx-react-lite";
 import BrandStore from "../stores/BrandStore";
 import BrandForm from "../components/brand/BrandForm";
+import NoAccess from "../widgets/NoAccess";
 
-const Brand = () => {
+const Brand = (props) => {
+  const { pageAccess, canAdd } = props;
   const toast = useRef(null);
   const store = useContext(BrandStore);
+  console.log({canAdd})
   const {
     loading,
     getBrands,
     brands,
     error,
     checking,
-    confirmName, 
+    confirmName,
     exist,
     action,
     message,
@@ -32,12 +41,12 @@ const Brand = () => {
   const [mode, setMode] = useState("");
   const [rowData, setRowData] = useState();
   const createNew = () => {
-    setMode('Add')
+    setMode("Add");
     setOpen(!open);
-  }; 
+  };
   const toggle = () => {
     setOpen(!open);
-  }; 
+  };
   useEffect(() => {
     getBrands();
   }, []);
@@ -55,55 +64,62 @@ const Brand = () => {
       resetProperty("message", "");
     };
   }, [removed]);
-  useEffect(() => { 
-      if (action === "newBrand") {
-        toast.current.show({
-          severity: "success",
-          summary: "Success Message",
-          detail: message,
-        }); 
-        toggle();
-      }
-      return () => { 
-        resetProperty("message", "");
-        resetProperty("action", ""); 
-        toggle();
-      };
-    }, [action]);
-    useEffect(() => {
-      if (error === true && action === "newBrandError") {
-        toast.current.show({
-          severity: "error",
-          summary: "Error Message",
-          detail: message,
-        });
-      }
-      return () => {
-        resetProperty("error", false);
-        resetProperty("message", "");
-        resetProperty("action", ""); 
-        toggle();
-      };
-    }, [error]);
+  useEffect(() => {
+    if (action === "newBrand") {
+      toast.current.show({
+        severity: "success",
+        summary: "Success Message",
+        detail: message,
+      });
+      toggle();
+    }
+    return () => {
+      resetProperty("message", "");
+      resetProperty("action", ""); 
+    };
+  }, [action]);
+  useEffect(() => {
+    if (error === true && action === "newBrandError") {
+      toast.current.show({
+        severity: "error",
+        summary: "Error Message",
+        detail: message,
+      });
+    }
+    return () => {
+      resetProperty("error", false);
+      resetProperty("message", "");
+      resetProperty("action", ""); 
+    };
+  }, [error]);
   return (
     <Fragment>
       <div className="p-grid">
-        <div className="p-col-12 p-md-12 p-lg-12">
-        <div className="p-d-flex p-jc-between">
-    <div>Brands</div>
-    <Button label="Create New" onClick={createNew} />
-</div>  
-        </div>
-        <div className="p-col-12 p-md-12 p-lg-12">
-          <BrandList
-            data={brands}
-            setMode={setMode}
-            toggle={toggle}
-            loading={loading}
-            rowData={setRowData}
-            removeData={removeBrand}
-          />
-        </div>
+        {pageAccess ? (
+          <>
+            <div className="p-col-12 p-md-12 p-lg-12">
+              <div className="p-d-flex p-jc-between">
+                <div>Brands</div>
+                {canAdd ? (
+                  <Button label="Create New" onClick={(e) => createNew} />
+                ) : null}{" "}
+              </div>
+            </div>
+            <div className="p-col-12 p-md-12 p-lg-12">
+              <BrandList
+                data={brands}
+                setMode={setMode}
+                toggle={toggle}
+                loading={loading}
+                rowData={setRowData}
+                removeData={removeBrand}
+                {...props}
+              />
+            </div>
+          </>
+        ) : (
+          <NoAccess page="branch" />
+        )}{" "}
       </div>
       <Dialog
         visible={open}
@@ -113,7 +129,7 @@ const Brand = () => {
       >
         <BrandForm
           mode={mode}
-          action={action} 
+          action={action}
           error={error}
           exist={exist}
           message={message}

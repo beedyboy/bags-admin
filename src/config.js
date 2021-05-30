@@ -22,7 +22,7 @@ const db = axios.create({
 });
 
 db.interceptors.request.use(function (config) {
-  var token = Utils.get("customer_token");
+  var token = Utils.get("admin_token");
   config.headers.Authorization = `Bearer ${token}`;
   return config;
 });

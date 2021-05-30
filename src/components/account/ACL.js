@@ -2,8 +2,7 @@ import React, { useEffect, useState, Fragment } from "react";
 import { Checkbox } from "primereact/checkbox";
 import { Button } from "primereact/button";
 import { Accordion, AccordionTab } from "primereact/accordion";
-import { toJS } from "mobx";
-
+ 
 const ACLForm = ({
   reset,
   action,
@@ -34,11 +33,10 @@ const ACLForm = ({
   });
 
   useEffect(() => {
-    const test = toJS(initial_data && initial_data.acl);
+    const data = initial_data && initial_data.roles;
     const id = initial_data && initial_data.id;
     setId(id);
-    if (test && test.length > 0) {
-      const data = initial_data && initial_data.acl[0];
+    if (data) { 
       setPriviledges((state) => ({
         ...state,
         brands: {

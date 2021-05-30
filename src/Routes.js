@@ -1,54 +1,82 @@
 import React from "react";
-import { HashRouter as Router, Switch, Redirect } from "react-router-dom"; 
+import { HashRouter as Router, Switch, Redirect } from "react-router-dom";
 import {
-  BrandView, LoginView, StageOneView, StageTwoView, SubCategoryView
+  AccountView,
+  BrandView,
+  LoginView,
+  StageOneView,
+  StageTwoView,
+  SubCategoryView,
 } from "./pages";
-import { PrivateRoute, NormalRoute } from "./HOC"; 
+import { PrivateRoute, NormalRoute } from "./HOC";
 import MainLayout from "./layout/MainLayout";
-import NormalLayout from './layout/NormalLayout';
+import NormalLayout from "./layout/NormalLayout";
+import Utils from "./shared/localStorage";
 
-const Routes = () => { 
+ const Routes = (props) => { 
+  const loggedIn = Utils.get("admin_token") === "" ? false : true;
+  let acl;
+  let brandsAdd, brandsView, brandsDel, totalBrands;
+  if (loggedIn === true) {
+    console.log({loggedIn})
+    const obj = Utils.get("acl");
+    if (obj && obj !== "") {
+      // console.log({obj})
+      acl = JSON.parse(obj);
+      // acl = obj;
+    }
+
+    brandsAdd = acl && acl.brands && acl.brands.add;
+    brandsView = acl && acl.brands && acl.brands.view;
+    brandsDel = acl && acl.brands && acl.brands.del;
+
+    totalBrands = brandsAdd || brandsView || brandsDel;
+    // console.log('brands', acl && acl.brands.add)
+  }
   return (
-     <Router>
-    <Switch>
-      <Redirect exact from="/" to="/dashboard" />
-      <PrivateRoute
-        component={BrandView}
-        exact
-        layout={MainLayout}
-        path="/brands"
-      />
-      <PrivateRoute
-        component={StageOneView}
-        exact
-        layout={MainLayout}
-        path="/stage-one"
-      />
-      <PrivateRoute
-        component={StageTwoView}
-        exact
-        layout={MainLayout}
-        path="/stage-two"
-      /> 
-       <PrivateRoute
-      component={SubCategoryView}
-      exact
-      layout={MainLayout}
-      path="/subcategory"
-    />
-      {/* <PrivateRoute
+    <Router>
+      <Switch>
+        <Redirect exact from="/" to="/dashboard" />
+        <PrivateRoute
+          component={BrandView}
+          exact
+          layout={MainLayout}
+          path="/brands"
+          pageAccess={totalBrands}
+          canAdd={brandsAdd}
+          canView={brandsView}
+          canDel={brandsDel}
+        />
+        <PrivateRoute
+          component={StageOneView}
+          exact
+          layout={MainLayout}
+          path="/stage-one"
+        />
+        <PrivateRoute
+          component={StageTwoView}
+          exact
+          layout={MainLayout}
+          path="/stage-two"
+        />
+        <PrivateRoute
+          component={AccountView}
+          exact
+          layout={MainLayout}
+          path="/staffs"
+        />
+        <PrivateRoute
+          component={SubCategoryView}
+          exact
+          layout={MainLayout}
+          path="/subcategory"
+        />
+        {/* <PrivateRoute
         component={DashboardView}
         exact
         layout={MainLayout}
         path="/dashboard"
-      />
-    
-      <PrivateRoute
-        component={OnboardingView}
-        exact
-        layout={MainLayout}
-        path="/onboarding"
-      />
+      /> 
       <PrivateRoute
         component={ProfileView}
         exact
@@ -112,14 +140,14 @@ const Routes = () => {
         path="/adminticket/view/:id"
       />
       <PrivateRoute component={ReportView} layout={MainLayout} path="/report" />
-    */} 
-     <NormalRoute
-        component={LoginView}
-        exact
-        layout={NormalLayout}
-        path="/auth/login"
-      /> 
-      {/* <NormalRoute
+    */}
+        <NormalRoute
+          component={LoginView}
+          exact
+          layout={NormalLayout}
+          path="/auth/login"
+        />
+        {/* <NormalRoute
         component={ResetRequestView}
         exact
         layout={NormalLayout}
@@ -137,9 +165,9 @@ const Routes = () => {
         layout={NormalLayout}
         path="/not-found"
       /> */}
-      <Redirect to="/not-found" />
-    </Switch>
- </Router>
+        <Redirect to="/not-found" />
+      </Switch>
+    </Router>
   );
 };
 export default Routes;

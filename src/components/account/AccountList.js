@@ -3,6 +3,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
+import { toJS } from "mobx";
 
 const AccountList = ({
   data,
@@ -86,12 +87,13 @@ const AccountList = ({
 
   const setAcl = (e, row) => {
     e.persist(); 
-    rowData(row);
+    const d = toJS(row) 
+    rowData(d);
     setModal(true);
   };
 
   const editData = (e, row) => {
-    e.persist();
+    e.persist(); 
     setMode("Edit");
     setTitle("Edit Staff");
     rowData(row);
@@ -146,13 +148,12 @@ const AccountList = ({
               sortable
               body={statusBodyTemplate}
             ></Column>
-            {/* <Column field="activity" header="Activity" sortable body={activityBody}></Column> */}
-            <Column
+             <Column
               headerStyle={{ width: "8rem", textAlign: "center" }}
               bodyStyle={{
                 textAlign: "center",
                 overflow: "visible",
-                justifyContent: "center",
+                justifyContent: "start",
               }}
               body={actionTemplate}
             ></Column>

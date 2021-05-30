@@ -104,7 +104,7 @@ const Login = () => {
         history.push("/brands");
     }
     return () => {
-      // resetProperty("isAuthenticated", false);
+      resetProperty("isAuthenticated", false);
       resetProperty("message", "");
     };
   }, [isAuthenticated]);

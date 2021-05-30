@@ -3,6 +3,7 @@ import { Route, Redirect } from "react-router-dom";
 import Utils from '../../shared/localStorage';
 
 const PrivateRoute = (props) => {
+  // console.log({props})
   const { layout: Layout, component: Component, ...rest } = props;
 
   return (
@@ -11,7 +12,7 @@ const PrivateRoute = (props) => {
       render={(matchProps) =>
         Utils.get("admin_token") ? (
           <Layout>
-            <Component {...matchProps} />
+            <Component {...matchProps} {...rest} />
           </Layout>
         ) : (
           <Redirect to={{ pathname: "/auth/login", state: { from: props.location } }} />
