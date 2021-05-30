@@ -14,9 +14,23 @@ import { observer } from "mobx-react-lite";
 import BrandStore from "../stores/BrandStore";
 import BrandForm from "../components/brand/BrandForm";
 import NoAccess from "../widgets/NoAccess";
+import Utils from "../shared/localStorage";
 
 const Brand = (props) => {
-  const { pageAccess, canAdd } = props;
+  let acl;
+  let canAdd,
+  canView,
+    canDel,
+    pageAccess;  
+  const obj = Utils.get("acl");
+  if (obj && obj !== "") { 
+    acl = JSON.parse(obj); 
+  }
+  canAdd = acl && acl.brands && acl.brands.add;
+  canView = acl && acl.brands && acl.brands.view;
+  canDel = acl && acl.brands && acl.brands.del;
+  pageAccess = canAdd || canView || canDel;
+
   const toast = useRef(null);
   const store = useContext(BrandStore); 
   const {
@@ -112,7 +126,8 @@ const Brand = (props) => {
                 loading={loading}
                 rowData={setRowData}
                 removeData={removeBrand}
-                {...props}
+                canAdd={canAdd}
+                canDel={canDel}
               />
             </div>
           </>

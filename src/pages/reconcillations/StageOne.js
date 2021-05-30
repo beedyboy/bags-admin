@@ -19,9 +19,21 @@ import { FileUpload } from "primereact/fileupload";
 import { observer } from "mobx-react-lite";
 import StepOneForm from "../../components/recon/StepOneForm";
 import NoAccess from "../../widgets/NoAccess";
+import Utils from "../../shared/localStorage";
 
-const StageOne = (props) => {
-  const { reconUpload, reconOne } = props;
+const StageOne = () => {
+  let acl;
+  let reconOne,
+  reconUpload;
+
+  const obj = Utils.get("acl");
+  if (obj && obj !== "") { 
+    acl = JSON.parse(obj); 
+  }
+
+  reconUpload = acl && (acl.reconcillation && acl.reconcillation.upload);  
+  reconOne = acl && (acl.reconcillation && acl.reconcillation.approval_one); 
+ 
   const toast = useRef(null);
   const dt = useRef(null);
   const [upload, setUpload] = useState(false);

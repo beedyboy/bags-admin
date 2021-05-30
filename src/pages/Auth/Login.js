@@ -101,7 +101,7 @@ const Login = () => {
         detail: message,
         severity: "success",
       });
-        history.push("/brands");
+        history.push("/dashboard");
     }
     return () => {
       resetProperty("isAuthenticated", false);

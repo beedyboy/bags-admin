@@ -18,36 +18,18 @@ import Utils from "./shared/localStorage";
 const Routes = () => {
   const loggedIn = Utils.get("admin_token") === "" ? false : true;
   let acl;
-  let brandsAdd,
-    brandsView,
-    brandsDel,
-    totalBrands,
+  let  
     reconUpload,
     reconOne,
-    reconTwo,
-    reconReport,
-    reconModify, 
-    reconDel;
+    reconTwo;
   if (loggedIn === true) {
     console.log({ loggedIn });
     const obj = Utils.get("acl");
     if (obj && obj !== "") {
       // console.log({obj})
-      acl = JSON.parse(obj);
-      // acl = obj;
+      acl = JSON.parse(obj); 
     }
-    brandsAdd = acl && acl.brands && acl.brands.add;
-    brandsView = acl && acl.brands && acl.brands.view;
-    brandsDel = acl && acl.brands && acl.brands.del;
-
-    totalBrands = brandsAdd || brandsView || brandsDel;
-
-    reconUpload = acl && (acl.reconcillation && acl.reconcillation.upload); 
-    reconDel = acl && acl.reconcillation && acl.reconcillation.del;
-    reconOne = acl && (acl.reconcillation && acl.reconcillation.approval_one);
-    reconTwo = acl && (acl.reconcillation && acl.reconcillation.approval_two);
-    reconReport = acl && acl.reconcillation && acl.reconcillation.report;
-    reconModify = acl && acl.reconcillation && acl.reconcillation.modify;
+  
   }
  console.log({reconOne})
   return (
@@ -58,11 +40,7 @@ const Routes = () => {
           component={BrandView}
           exact
           layout={MainLayout}
-          path="/brands"
-          pageAccess={totalBrands}
-          canAdd={brandsAdd}
-          canView={brandsView}
-          canDel={brandsDel}
+          path="/brands" 
         />
         <PrivateRoute
         component={DashboardView}
@@ -74,16 +52,13 @@ const Routes = () => {
           component={StageOneView}
           exact
           layout={MainLayout}
-          path="/stage-one"
-          reconUpload={reconUpload}
-          reconOne={reconOne}
+          path="/stage-one" 
         />
         <PrivateRoute
           component={StageTwoView}
           exact
           layout={MainLayout}
-          path="/stage-two"
-          reconTwo={reconTwo}
+          path="/stage-two" 
         />
         <PrivateRoute
           component={AccountView}

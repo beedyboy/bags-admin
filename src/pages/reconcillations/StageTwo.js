@@ -18,9 +18,21 @@ import { Toast } from "primereact/toast";
 import { observer } from "mobx-react-lite";
 import NoAccess from "../../widgets/NoAccess";
 import StepTwoForm from "../../components/recon/StepTwoForm";
+import Utils from "../../shared/localStorage";
 
-const StageTwo = (props) => {
-  const { reconTwo } = props;
+const StageTwo = () => {
+  let acl;
+  let reconTwo;
+  
+  const obj = Utils.get("acl");
+  if (obj && obj !== "") { 
+    acl = JSON.parse(obj); 
+  }
+   
+  reconTwo = acl && (acl.reconcillation && acl.reconcillation.approval_two);
+  // reconReport = acl && acl.reconcillation && acl.reconcillation.report;
+  // reconModify = acl && acl.reconcillation && acl.reconcillation.modify;
+  
   const toast = useRef(null);
   const dt = useRef(null);
   const [upload, setUpload] = useState(false);
