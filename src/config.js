@@ -4,10 +4,10 @@ import Utils from "./shared/localStorage";
 const env = {
   local: "http://localhost:8080/",
   production: "https://api.wigtools.ng/",
-  development: "https://solutioninflux-wigtools.herokuapp.com/",
+  test: "https://bags.youarecaptured.com/",
 };
 
-const serverUrl = env.local;
+const serverUrl = env.test;
 
 const db = axios.create({
   baseURL: serverUrl,
