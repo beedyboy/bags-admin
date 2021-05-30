@@ -5,11 +5,11 @@ import { InputNumber } from 'primereact/inputnumber';
 import { Button } from "primereact/button"; 
 import { Checkbox } from "primereact/checkbox";
 import dataHero from "data-hero"; 
-const schema = {
-  approved_one: {
-    isEmpty: false, 
-    message: "Field is required",
-  }
+const schema = { 
+    approved_two: {
+      isTrue: true,
+      message: "Field is required",
+    },
 };
 const StepTwoForm = ({ 
   action, 
@@ -22,10 +22,11 @@ const StepTwoForm = ({
     values: {
       id: "",
       value_date: "",
-      credit_amount: "",
-      amount_used: "",
-      balance: "",
+      credit_amount: Number(0),
+      amount_used: Number(0),
+      balance: Number(0),
       approved_one: false,
+      approved_two: false,
     },
     touched: {},
     errors: {},
@@ -41,6 +42,7 @@ const StepTwoForm = ({
             ...state.values,
             id: data && data.id,
             approved_one: data && data.approved_one,
+            approved_two: data && data.approved_two,
             credit_amount: data && data.credit_amount,
             amount_used: data && data.amount_used,
             balance: data && data.balance,
@@ -54,10 +56,11 @@ const StepTwoForm = ({
         values: {
           ...prev.values,
           value_date: "",
-      credit_amount: "",
-      amount_used: "",
-      balance: "",
-      approved_one: false,
+          credit_amount: Number(0),
+          amount_used: Number(0),
+          balance: Number(0),
+          approved_one: false,
+          approved_two: false,
         },
       }));
     };
@@ -69,28 +72,7 @@ const StepTwoForm = ({
       isValid: errors.approved_one.error ? false : true,
       errors: errors || {},
     }));
-  }, [values]); 
-
-  const setValue = (value) => { 
-    let balance = 0;
-    const credit = values.credit_amount;
-    if(value <= credit) {
-      balance = credit - value;
-      setFormState((formState) => ({
-        ...formState,
-        values: {
-          ...formState.values,
-          amount_used: value,
-          balance
-        },
-        touched: {
-          ...formState.touched,
-          amount_used: true,
-        },
-      })); 
-    }
-   
-  };
+  }, [values]);  
 
   useEffect(() => {
     if (action === "approved") {
@@ -129,10 +111,11 @@ const StepTwoForm = ({
         ...prev.values,
         id: "",
         value_date: "",
-        credit_amount: "",
-        amount_used: "",
-        balance: "",
+        credit_amount: Number(0),
+        amount_used: Number(0),
+        balance: Number(0),
         approved_one: false,
+        approved_two: false,
       },
       touched: {
         ...prev.touched,
@@ -169,24 +152,24 @@ const StepTwoForm = ({
                 name="amount_used"
                 mode="currency" currency="NGN" locale="en-NG" 
                 value={values.amount_used || ""}
-                onValueChange={(e) => setValue(e.value)}
+                disabled
               /> 
             </div>
           
             
                  <div className="p-field-checkbox">
                     <Checkbox
-                      inputId="approved_one"
-                      name="approved_one"
-                      checked={values.approved_one || false}
-                      onChange={(event) => handleApproval(event, "brands")}
-                aria-describedby="approved_one-help"
-                className={` ${hasError("name") ? "p-invalid" : null} " p-d-block"`}
+                      inputId="approved_two"
+                      name="approved_two"
+                      checked={values.approved_two || false}
+                      onChange={(event) => handleApproval(event)}
+                aria-describedby="approved_two-help"
+                className={` ${hasError("approved_two") ? "p-invalid" : null} " p-d-block"`}
                     />
-                    <label htmlFor="approved_one">Approve</label>
+                    <label htmlFor="approved_two">Approve</label>
                   
-              <small id="approved_one-help" className="p-error p-d-block">
-                {hasError("approved_one") ? errors.approved_one && errors.approved_one.message : null}
+              <small id="approved_two-help" className="p-error p-d-block">
+                {hasError("approved_two") ? errors.approved_two && errors.approved_two.message : null}
               </small> 
             </div>
           
