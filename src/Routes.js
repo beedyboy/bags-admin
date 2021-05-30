@@ -3,7 +3,9 @@ import { HashRouter as Router, Switch, Redirect } from "react-router-dom";
 import {
   AccountView,
   BrandView,
+  DashboardView,
   LoginView,
+  NotFoundView,
   StageOneView,
   StageTwoView,
   SubCategoryView,
@@ -13,26 +15,41 @@ import MainLayout from "./layout/MainLayout";
 import NormalLayout from "./layout/NormalLayout";
 import Utils from "./shared/localStorage";
 
- const Routes = (props) => { 
+const Routes = () => {
   const loggedIn = Utils.get("admin_token") === "" ? false : true;
   let acl;
-  let brandsAdd, brandsView, brandsDel, totalBrands;
+  let brandsAdd,
+    brandsView,
+    brandsDel,
+    totalBrands,
+    reconUpload,
+    reconOne,
+    reconTwo,
+    reconReport,
+    reconModify, 
+    reconDel;
   if (loggedIn === true) {
-    console.log({loggedIn})
+    console.log({ loggedIn });
     const obj = Utils.get("acl");
     if (obj && obj !== "") {
       // console.log({obj})
       acl = JSON.parse(obj);
       // acl = obj;
     }
-
     brandsAdd = acl && acl.brands && acl.brands.add;
     brandsView = acl && acl.brands && acl.brands.view;
     brandsDel = acl && acl.brands && acl.brands.del;
 
     totalBrands = brandsAdd || brandsView || brandsDel;
-    // console.log('brands', acl && acl.brands.add)
+
+    reconUpload = acl && (acl.reconcillation && acl.reconcillation.upload); 
+    reconDel = acl && acl.reconcillation && acl.reconcillation.del;
+    reconOne = acl && (acl.reconcillation && acl.reconcillation.approval_one);
+    reconTwo = acl && (acl.reconcillation && acl.reconcillation.approval_two);
+    reconReport = acl && acl.reconcillation && acl.reconcillation.report;
+    reconModify = acl && acl.reconcillation && acl.reconcillation.modify;
   }
+ console.log({reconOne})
   return (
     <Router>
       <Switch>
@@ -48,16 +65,25 @@ import Utils from "./shared/localStorage";
           canDel={brandsDel}
         />
         <PrivateRoute
+        component={DashboardView}
+        exact
+        layout={MainLayout}
+        path="/dashboard"
+      /> 
+        <PrivateRoute
           component={StageOneView}
           exact
           layout={MainLayout}
           path="/stage-one"
+          reconUpload={reconUpload}
+          reconOne={reconOne}
         />
         <PrivateRoute
           component={StageTwoView}
           exact
           layout={MainLayout}
           path="/stage-two"
+          reconTwo={reconTwo}
         />
         <PrivateRoute
           component={AccountView}
@@ -71,13 +97,8 @@ import Utils from "./shared/localStorage";
           layout={MainLayout}
           path="/subcategory"
         />
-        {/* <PrivateRoute
-        component={DashboardView}
-        exact
-        layout={MainLayout}
-        path="/dashboard"
-      /> 
-      <PrivateRoute
+     
+          {/*<PrivateRoute
         component={ProfileView}
         exact
         layout={MainLayout}
@@ -159,12 +180,13 @@ import Utils from "./shared/localStorage";
         layout={NormalLayout}
         path="/reset-password/:token/:id"
       />
-      <NormalRoute
+     */} 
+     <NormalRoute
         component={NotFoundView}
         exact
         layout={NormalLayout}
         path="/not-found"
-      /> */}
+      /> 
         <Redirect to="/not-found" />
       </Switch>
     </Router>

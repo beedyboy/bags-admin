@@ -146,18 +146,18 @@ const AccountForm = ({
   useEffect(() => {
     if (action === "newStaff") {
       resetForm();
-      handleClose();
+      handleClose(false);
     }
     return () => {
       resetForm();
-      handleClose();
+      handleClose(false);
     };
   }, [action]);
 
   useEffect(() => {
     return () => {
       resetForm();
-      handleClose();
+      handleClose(false);
     };
   }, [error]);
 
@@ -313,7 +313,7 @@ const AccountForm = ({
             <Button
               label="Cancel"
               icon="pi pi-times"
-              onClick={handleClose}
+              onClick={(e) => handleClose(false)}
               className="p-button-warning p-mr-2 p-mb-2"
             />
 

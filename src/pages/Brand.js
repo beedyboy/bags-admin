@@ -18,8 +18,7 @@ import NoAccess from "../widgets/NoAccess";
 const Brand = (props) => {
   const { pageAccess, canAdd } = props;
   const toast = useRef(null);
-  const store = useContext(BrandStore);
-  console.log({canAdd})
+  const store = useContext(BrandStore); 
   const {
     loading,
     getBrands,

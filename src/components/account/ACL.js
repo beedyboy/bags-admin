@@ -21,8 +21,7 @@ const ACLForm = ({
     product: { add: false, view: false, del: false },
     staff: { add: false, view: false, del: false, modify: false },
     reconcillation: {
-      upload: false,
-      view: false,
+      upload: false, 
       del: false,
       approval_one: false,
       approval_two: false,
@@ -69,9 +68,7 @@ const ACLForm = ({
           modify: (data && data.staff.modify) || false,
         },
         reconcillation: {
-          view:
-            (data && data.reconcillation && data.reconcillation.view) || false,
-          del:
+               del:
             (data && data.reconcillation && data.reconcillation.del) || false,
           approval_one: (data && data.reconcillation.approval_one) || false,
           approval_two: (data && data.reconcillation.approval_two) || false,
@@ -106,8 +103,7 @@ const ACLForm = ({
 
   useEffect(() => {
     if (action === "hasRole") {
-      resetForm();
-      toggle(false);
+      resetForm(); 
     }
     return () => {
       reset("saved", false);
@@ -140,8 +136,7 @@ const ACLForm = ({
         product: { add: false, view: false, del: false },
         staff: { add: false, view: false, del: false, modify: false },
         reconcillation: {
-          upload: false,
-          view: false,
+          upload: false, 
           del: false,
           approval_one: false,
           approval_two: false,
@@ -356,14 +351,25 @@ const ACLForm = ({
 
                   <div className="p-field-checkbox">
                     <Checkbox
-                      inputId="view"
-                      name="view"
-                      checked={priviledges.reconcillation.view || false}
+                      inputId="approval_one"
+                      name="approval_one"
+                      checked={priviledges.reconcillation.approval_one || false}
                       onChange={(event) =>
                         handleRoleChange(event, "reconcillation")
                       }
                     />
-                    <label htmlFor="view">View</label>
+                    <label htmlFor="view">Stage One</label>
+                  </div>
+                  <div className="p-field-checkbox">
+                    <Checkbox
+                      inputId="approval_two"
+                      name="approval_two"
+                      checked={priviledges.reconcillation.approval_two || false}
+                      onChange={(event) =>
+                        handleRoleChange(event, "reconcillation")
+                      }
+                    />
+                    <label htmlFor="approval_two">Stage Two</label>
                   </div>
 
                   <div className="p-field-checkbox">

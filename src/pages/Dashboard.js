@@ -7,11 +7,7 @@ import { InputText } from 'primereact/inputtext';
 import { Chart } from 'primereact/chart';
 import { ProgressBar } from 'primereact/progressbar';
 import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
-import { FullCalendar } from 'primereact/fullcalendar';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
+import { Column } from 'primereact/column';  
 import { ProductService } from '../service/ProductService';
 import { EventService } from '../service/EventService';
 
@@ -23,16 +19,7 @@ const dropdownCities = [
     { name: 'Paris', code: 'PRS' }
 ];
 
-const options = {
-    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-    defaultDate: '2023-01-01',
-    header: {
-        left: 'prev,next',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-    },
-    editable: true
-};
+ 
 
 const lineData = {
     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -54,7 +41,7 @@ const lineData = {
     ]
 };
 
-export const Dashboard = () => {
+ const Dashboard = () => {
 
     const [tasksCheckbox, setTasksCheckbox] = useState([]);
     const [dropdownCity, setDropdownCity] = useState(null);
@@ -146,7 +133,7 @@ export const Dashboard = () => {
                     </div>
                 </div>
             </div>
-
+{/* 
             <div className="p-col-12 p-md-6 p-lg-4">
                 <Panel header="Tasks" style={{ height: '100%' }}>
                     <ul className='task-list'>
@@ -263,12 +250,7 @@ export const Dashboard = () => {
                     <Chart type="line" data={lineData} />
                 </div>
             </div>
-
-            <div className="p-col-12 p-lg-8">
-                <Panel header="Calendar" style={{ height: '100%' }}>
-                    <FullCalendar events={events} options={options} />
-                </Panel>
-            </div>
+ 
 
             <div className="p-col-12 p-lg-4">
                 <Panel header="Activity" style={{ height: '100%' }}>
@@ -330,6 +312,8 @@ export const Dashboard = () => {
                     </ul>
                 </Panel>
             </div>
+        */}
         </div>
     );
 }
+export default Dashboard;

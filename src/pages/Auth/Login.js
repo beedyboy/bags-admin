@@ -137,7 +137,7 @@ const Login = () => {
                 alt="logo" 
               />
             </div>
-            <div className="p-mb-2"> Bags, Footwears & More</div>
+            <div className="p-mb-2 p-mt-3"> Bags, Footwears & More</div>
           </div>
         </div>
 
@@ -145,9 +145,9 @@ const Login = () => {
         <div className="p-col-12 p-md-8">
         <div
             className="p-d-flex p-flex-column p-jc-center p-ai-center"
-            style={{ height: "100%" }}
+            style={{ height: "100%", width: "100%" }}
           >
-          <div className="p-mb-2">Login </div>
+          <div className="p-mb-4">Login </div>
           <div className="card p-fluid">
             <div className="p-field">
               <label htmlFor="email">Email</label>
@@ -189,8 +189,8 @@ const Login = () => {
             <div className="p-col">
               <div className="p-d-flex p-jc-end">
                 <Button
-                  label="Save"
-                  icon="pi pi-check"
+                  label="Login"
+                  icon="pi pi-sign-in"
                   className="p-button-secondary p-mr-2 p-mb-2"
                   onClick={handleSignIn}
                   disabled={!isValid || sending}

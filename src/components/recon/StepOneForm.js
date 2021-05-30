@@ -141,6 +141,7 @@ const StepOneForm = ({
         value_date: false,
         balance: false,
         amount_used: false,
+        approved_one: false,
       },
       validator_error: {},
     }));

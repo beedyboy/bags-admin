@@ -73,7 +73,7 @@ const MainLayout = (props) => {
       label: "Reconcillation",
       icon: "pi pi-fw pi-dollar",
       items: [
-        { label: "Stage One", icon: "pi pi-fw pi-id-card", to: "/stage-one" },
+        { label: "Stage One", icon: "pi pi-fw pi-check-square", to: "/stage-one" },
         {
           label: "Stage Two",
           icon: "pi pi-fw pi-check-square",

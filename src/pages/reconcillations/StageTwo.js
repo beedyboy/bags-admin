@@ -15,11 +15,12 @@ import { Dialog } from "primereact/dialog";
 import { Toolbar } from "primereact/toolbar";
 import { Tooltip } from "primereact/tooltip";
 import { Toast } from "primereact/toast";
-import { FileUpload } from "primereact/fileupload";
 import { observer } from "mobx-react-lite";
-import StepOneForm from "../../components/recon/StepOneForm";
+import NoAccess from "../../widgets/NoAccess";
+import StepTwoForm from "../../components/recon/StepTwoForm";
 
-const StageTwo = () => {
+const StageTwo = (props) => {
+  const { reconTwo } = props;
   const toast = useRef(null);
   const dt = useRef(null);
   const [upload, setUpload] = useState(false);
@@ -30,7 +31,6 @@ const StageTwo = () => {
   const {
     loading,
     filterRecord,
-    uploadStatement,
     error,
     action,
     finales,
@@ -45,31 +45,24 @@ const StageTwo = () => {
   const exportCSV = () => {
     dt.current.exportCSV();
   };
-  const myUploader = (event) => {
-    //event.files == files to upload
-    const fd = new FormData();
-    fd.append("file", event.files[0]);
-    uploadStatement(fd);
-  };
+
   useEffect(() => {
-    if (action === "accountUploaded") {
+    if (action === "approved") {
       toast.current.show({
         severity: "success",
         summary: "Success Message",
         detail: message,
       });
       setApproval(false);
-      setUpload(false);
     }
     return () => {
       resetProperty("message", "");
       resetProperty("action", "");
       setApproval(false);
-      setUpload(false);
     };
   }, [action]);
   useEffect(() => {
-    if (error === true && action === "uploadError") {
+    if (error === true && action === "approvedError") {
       toast.current.show({
         severity: "error",
         summary: "Error Message",
@@ -81,11 +74,10 @@ const StageTwo = () => {
       resetProperty("message", "");
       resetProperty("action", "");
       setApproval(false);
-      setUpload(false);
     };
   }, [error]);
   const tableHeader = (
-    <div className="table-header">
+    <div className="p-d-flex p-jc-between">
       Stage Two List
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
@@ -104,7 +96,6 @@ const StageTwo = () => {
         <span className={`product-badge status-${data.approved_one}`}>
           {data.approved_one ? "Yes" : "No"}
         </span>
-     
       </>
     );
   };
@@ -120,29 +111,12 @@ const StageTwo = () => {
     </span>
   );
   const leftToolbarTemplate = () => {
-    return (
-      <React.Fragment>
-        <Button
-          label="New"
-          icon="pi pi-plus"
-          className="p-button-success p-mr-2"
-          onClick={(e) => setUpload(true)}
-        />
-      </React.Fragment>
-    );
+    return <React.Fragment>Stage Two Management</React.Fragment>;
   };
 
   const rightToolbarTemplate = () => {
     return (
       <React.Fragment>
-        <FileUpload
-          mode="basic"
-          accept="image/*"
-          maxFileSize={1000000}
-          label="Import"
-          chooseLabel="Import"
-          className="p-mr-2 p-d-inline-block"
-        />
         <Button
           label="Export"
           icon="pi pi-upload"
@@ -155,7 +129,7 @@ const StageTwo = () => {
 
   const editData = (e, row) => {
     e.persist();
-    setRowData(row); 
+    setRowData(row);
     setApproval(true);
   };
 
@@ -163,52 +137,62 @@ const StageTwo = () => {
     <Fragment>
       <Toast ref={toast} position="top-right" />
       <div className="card">
-        <Toolbar
-          className="p-mb-4"
-          left={leftToolbarTemplate}
-          right={rightToolbarTemplate}
-        ></Toolbar>
-
-        <DataTable
-          ref={dt}
-          value={finales}
-          paginator
-          className="p-datatable-customers"
-          rows={10}
-          dataKey="id"
-          rowHover
-          globalFilter={globalFilter}
-          emptyMessage="No record found."
-          loading={loading}
-          header={tableHeader}
-        >
-          <Column headerStyle={{ width: "3em" }}></Column>
-          <Column field="value_date" header="Value Date" sortable></Column>
-          <Column field="remarks" header="Remarks" sortable></Column>
-          <Column
-            field="credit_amount"
-            header="Credit Amount"
-            sortable
-          ></Column>
-          <Column field="amount_used" header="Amount Used" sortable></Column>
-          <Column field="balance" header="Balance" sortable></Column>
-          <Column
-            field="approved_one"
-            header="Approved"
-            sortable
-            body={approvedTemplate}
-          ></Column>
-          {/* <Column field="activity" header="Activity" sortable body={activityBody}></Column> */}
-          <Column
-            headerStyle={{ width: "8rem", textAlign: "center" }}
-            bodyStyle={{
-              textAlign: "center",
-              overflow: "visible",
-              justifyContent: "center",
-            }}
-            body={actionTemplate}
-          ></Column>
-        </DataTable>
+        {reconTwo ? (
+          <>
+            {" "}
+            <Toolbar
+              className="p-mb-4"
+              left={leftToolbarTemplate}
+              right={rightToolbarTemplate}
+            ></Toolbar>
+            <DataTable
+              ref={dt}
+              value={finales}
+              paginator
+              className="p-datatable-customers"
+              rows={10}
+              dataKey="id"
+              rowHover
+              globalFilter={globalFilter}
+              emptyMessage="No record found."
+              loading={loading}
+              header={tableHeader}
+            >
+              <Column headerStyle={{ width: "3em" }}></Column>
+              <Column field="value_date" header="Value Date" sortable></Column>
+              <Column field="remarks" header="Remarks" sortable></Column>
+              <Column
+                field="credit_amount"
+                header="Credit Amount"
+                sortable
+              ></Column>
+              <Column
+                field="amount_used"
+                header="Amount Used"
+                sortable
+              ></Column>
+              <Column field="balance" header="Balance" sortable></Column>
+              <Column
+                field="approved_one"
+                header="Approved"
+                sortable
+                body={approvedTemplate}
+              ></Column>
+              {/* <Column field="activity" header="Activity" sortable body={activityBody}></Column> */}
+              <Column
+                headerStyle={{ width: "8rem", textAlign: "center" }}
+                bodyStyle={{
+                  textAlign: "center",
+                  overflow: "visible",
+                  justifyContent: "center",
+                }}
+                body={actionTemplate}
+              ></Column>
+            </DataTable>
+          </>
+        ) : (
+          <NoAccess page="stage two" />
+        )}{" "}
       </div>
       <Dialog
         visible={upload}
@@ -232,21 +216,6 @@ const StageTwo = () => {
           content="Clear"
           position="bottom"
         />
-
-        <div className="card">
-          <h5>Advanced</h5>
-          <FileUpload
-            name="demo[]"
-            url="./upload"
-            customUpload
-            uploadHandler={myUploader}
-            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            maxFileSize={1000000}
-            emptyTemplate={
-              <p className="p-m-0">Drag and drop files to here to upload.</p>
-            }
-          />
-        </div>
       </Dialog>
 
       <Dialog
@@ -256,7 +225,7 @@ const StageTwo = () => {
         style={{ width: "50vw" }}
         header="Approve Record"
       >
-        <StepOneForm
+        <StepTwoForm
           action={action}
           error={error}
           message={message}

@@ -18,8 +18,10 @@ import { Toast } from "primereact/toast";
 import { FileUpload } from "primereact/fileupload";
 import { observer } from "mobx-react-lite";
 import StepOneForm from "../../components/recon/StepOneForm";
+import NoAccess from "../../widgets/NoAccess";
 
-const StageOne = () => {
+const StageOne = (props) => {
+  const { reconUpload, reconOne } = props;
   const toast = useRef(null);
   const dt = useRef(null);
   const [upload, setUpload] = useState(false);
@@ -52,7 +54,7 @@ const StageOne = () => {
     uploadStatement(fd);
   };
   useEffect(() => {
-    if (action === "accountUploaded") {
+    if (action === "accountUploaded" || action === "approved") {
       toast.current.show({
         severity: "success",
         summary: "Success Message",
@@ -69,7 +71,10 @@ const StageOne = () => {
     };
   }, [action]);
   useEffect(() => {
-    if (error === true && action === "uploadError") {
+    if (
+      error === true &&
+      (action === "uploadError" || action === "approvedError")
+    ) {
       toast.current.show({
         severity: "error",
         summary: "Error Message",
@@ -85,7 +90,7 @@ const StageOne = () => {
     };
   }, [error]);
   const tableHeader = (
-    <div className="table-header">
+    <div className="p-d-flex p-jc-between">
       Stage One List
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
@@ -110,37 +115,28 @@ const StageOne = () => {
 
   const actionTemplate = (data) => (
     <span className="p-buttonset">
-      <Button
-        icon="pi pi-pencil"
-        className="p-button-rounded p-button-success p-mr-2"
-        onClick={(e) => editData(e, data)}
-      />
+      {reconUpload ? (
+        <Button
+          icon="pi pi-pencil"
+          className="p-button-rounded p-button-success p-mr-2"
+          onClick={(e) => editData(e, data)}
+        />
+      ) : null}
       {/* <Button icon="pi pi-trash" className="p-button-rounded p-button-warning"  onClick={(e) => deleteData(e, data.id)}/> */}
     </span>
   );
   const leftToolbarTemplate = () => {
-    return (
-      <React.Fragment>
-        <Button
-          label="New"
-          icon="pi pi-plus"
-          className="p-button-success p-mr-2"
-          onClick={(e) => setUpload(true)}
-        />
-      </React.Fragment>
-    );
+    return <React.Fragment>Stage One Management</React.Fragment>;
   };
 
   const rightToolbarTemplate = () => {
     return (
       <React.Fragment>
-        <FileUpload
-          mode="basic"
-          accept="image/*"
-          maxFileSize={1000000}
-          label="Import"
-          chooseLabel="Import"
+        <Button
+          label="New"
+          icon="pi pi-plus"
           className="p-mr-2 p-d-inline-block"
+          onClick={(e) => setUpload(true)}
         />
         <Button
           label="Export"
@@ -167,47 +163,56 @@ const StageOne = () => {
           left={leftToolbarTemplate}
           right={rightToolbarTemplate}
         ></Toolbar>
-
-        <DataTable
-          ref={dt}
-          value={pristine}
-          paginator
-          className="p-datatable-customers"
-          rows={10}
-          dataKey="id"
-          rowHover
-          globalFilter={globalFilter}
-          emptyMessage="No record found."
-          loading={loading}
-          header={tableHeader}
-        >
-          <Column headerStyle={{ width: "3em" }}></Column>
-          <Column field="value_date" header="Value Date" sortable></Column>
-          <Column field="remarks" header="Remarks" sortable></Column>
-          <Column
-            field="credit_amount"
-            header="Credit Amount"
-            sortable
-          ></Column>
-          <Column field="amount_used" header="Amount Used" sortable></Column>
-          <Column field="balance" header="Balance" sortable></Column>
-          <Column
-            field="approved_one"
-            header="Approved"
-            sortable
-            body={approvedTemplate}
-          ></Column>
-          {/* <Column field="activity" header="Activity" sortable body={activityBody}></Column> */}
-          <Column
-            headerStyle={{ width: "8rem", textAlign: "center" }}
-            bodyStyle={{
-              textAlign: "center",
-              overflow: "visible",
-              justifyContent: "center",
-            }}
-            body={actionTemplate}
-          ></Column>
-        </DataTable>
+        {reconOne ? (
+          <>
+            <DataTable
+              ref={dt}
+              value={pristine}
+              paginator
+              className="p-datatable-customers"
+              rows={10}
+              dataKey="id"
+              rowHover
+              globalFilter={globalFilter}
+              emptyMessage="No record found."
+              loading={loading}
+              header={tableHeader}
+            >
+              <Column headerStyle={{ width: "3em" }}></Column>
+              <Column field="value_date" header="Value Date" sortable></Column>
+              <Column field="remarks" header="Remarks" sortable></Column>
+              <Column
+                field="credit_amount"
+                header="Credit Amount"
+                sortable
+              ></Column>
+              <Column
+                field="amount_used"
+                header="Amount Used"
+                sortable
+              ></Column>
+              <Column field="balance" header="Balance" sortable></Column>
+              <Column
+                field="approved_one"
+                header="Approved"
+                sortable
+                body={approvedTemplate}
+              ></Column>
+              {/* <Column field="activity" header="Activity" sortable body={activityBody}></Column> */}
+              <Column
+                headerStyle={{ width: "8rem", textAlign: "center" }}
+                bodyStyle={{
+                  textAlign: "center",
+                  overflow: "visible",
+                  justifyContent: "center",
+                }}
+                body={actionTemplate}
+              ></Column>
+            </DataTable>
+          </>
+        ) : (
+          <NoAccess page="stage one" />
+        )}{" "}
       </div>
       <Dialog
         visible={upload}
@@ -233,7 +238,7 @@ const StageOne = () => {
         />
 
         <div className="card">
-          <h5>Advanced</h5>
+          <h5>Excel File only</h5>
           <FileUpload
             name="demo[]"
             url="./upload"

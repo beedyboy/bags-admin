@@ -43,11 +43,8 @@ const Account = () => {
   const [rowData, setRowData] = useState();
   const createNew = () => {
     setMode("Add");
-    setOpen(!open);
-  };
-  const toggle = () => {
-    setOpen(!open);
-  };
+    setOpen(true);
+  }; 
   useEffect(() => {
     getUsers();
   }, []);
@@ -72,12 +69,12 @@ const Account = () => {
         summary: "Success Message",
         detail: message,
       });
-      toggle();
+      setOpen(false);
     }
     return () => {
       resetProperty("message", "");
       resetProperty("action", "");
-      toggle();
+      setOpen(false);
     };
   }, [action]);
   useEffect(() => {
@@ -107,7 +104,7 @@ const Account = () => {
       resetProperty("error", false);
       resetProperty("message", "");
       resetProperty("action", "");
-      toggle();
+      setOpen(false);
     };
   }, [error]);
   useEffect(() => {
@@ -137,7 +134,7 @@ const Account = () => {
         <div className="p-col-12 p-md-12 p-lg-12">
           <AccountList
             data={users}
-            toggle={toggle}
+            toggle={setOpen}
             setMode={setMode}
             loading={loading}
             setModal={setModal}
@@ -149,10 +146,9 @@ const Account = () => {
       </div>
       <Dialog
         visible={open}
-        onHide={toggle}
+        onHide={(e) => setOpen(false)} 
         breakpoints={{ "960px": "75vw", "640px": "100vw" }}
-        style={{ width: "50vw" }}
-        modal
+        style={{ width: "50vw" }} 
         header={title}
         className="p-fluid"
       >
@@ -165,7 +161,7 @@ const Account = () => {
           sending={sending}
           checking={checking}
           confirm={confirmEmail}
-          handleClose={toggle}
+          handleClose={setOpen}
           initial_data={rowData}
           reset={resetProperty}
           addStaff={addStaff}
@@ -174,7 +170,7 @@ const Account = () => {
       </Dialog>
       <Dialog
         visible={modal}
-        onHide={setModal}
+        onHide={(e) => setModal(false)}
         breakpoints={{ "960px": "75vw", "640px": "100vw" }}
         style={{ width: "50vw" }}
         modal
