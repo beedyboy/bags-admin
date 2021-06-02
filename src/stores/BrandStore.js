@@ -4,13 +4,14 @@ import backend from "../config";
 
 class BrandStore {
   error = false;
-  exist = false; 
+  exist = false;
   loading = false;
   sending = false;
   removed = false;
   checking = false;
   brands = [];
   brand = [];
+  productsByBrand = [];
   message = "";
   action = null;
 
@@ -20,19 +21,23 @@ class BrandStore {
       sending: observable,
       checking: observable,
       error: observable,
+      productsByBrand: observable,
       action: observable,
       removed: observable,
-      exist: observable, 
-      stats: computed,
+      exist: observable,
       loading: observable,
       brand: observable,
       brands: observable,
       getBrands: action,
       confirmName: action,
       createBrand: action,
+      getProductsByBrands: action,
       updateBrand: action,
       removeBrand: action,
       resetProperty: action,
+      brandProducts: computed,
+      brandSelect: computed,
+      stats: computed,
     });
   }
   getBrands = () => {
@@ -47,6 +52,18 @@ class BrandStore {
     } catch (err) {
       this.error = err;
     }
+  };
+
+  getProductsByBrands = (brand_id) => {
+    this.loading = true;
+    try {
+      backend.get(`/products?brand=${brand_id}`).then((res) => {
+        this.loading = false;
+        if (res.data.status) {
+          this.productsByBrand = res.data.data;
+        }
+      });
+    } catch (err) {}
   };
   confirmName = (data) => {
     try {
@@ -77,7 +94,7 @@ class BrandStore {
         if (res.status === 201) {
           this.getBrands();
           this.message = res.data.message;
-          this.action = "newBrand"; 
+          this.action = "newBrand";
         } else {
           this.message = res.data.error;
           this.action = "newBrandError";
@@ -103,7 +120,7 @@ class BrandStore {
           if (res.status === 200) {
             this.getBrands();
             this.message = res.data.message;
-            this.action = "newBrand"; 
+            this.action = "newBrand";
           } else {
             this.message = res.data.error;
             this.error = true;
@@ -146,11 +163,17 @@ class BrandStore {
   get stats() {
     return this.brands.length;
   }
-  // get brands() {
-  //   return Object.keys(this.brandList || {}).map((key) => ({
-  //     ...this.brands[key],
-  //   }));
-  // }
+  get brandProducts() {
+    return Object.keys(this.productsByBrand || {}).map((key) => ({
+      ...this.productsByBrand[key],
+    }));
+  }
+  get brandSelect() {
+    return Object.keys(this.brands || {}).map((key) => ({
+      value: this.brands[key].id,
+      label: this.brands[key].name,
+    }));
+  }
 }
 
 export default createContext(new BrandStore());

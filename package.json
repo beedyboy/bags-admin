@@ -36,7 +36,8 @@
         "react-scripts": "4.0.3",
         "react-transition-group": "^4.4.1",
         "short-id": "^0.1.0-1",
-        "suneditor-react": "^3.1.0"
+        "suneditor": "^2.39.0",
+        "suneditor-react": "^3.1.1"
     },
     "scripts": {
         "start": "node server.js",

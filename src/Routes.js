@@ -6,6 +6,7 @@ import {
   DashboardView,
   LoginView,
   NotFoundView,
+  ProductView,
   StageOneView,
   StageTwoView,
   SubCategoryView,
@@ -48,6 +49,13 @@ const Routes = () => {
         layout={MainLayout}
         path="/dashboard"
       /> 
+      
+      <PrivateRoute
+        component={ProductView}
+        exact
+        layout={MainLayout}
+        path="/products"
+      />
         <PrivateRoute
           component={StageOneView}
           exact
@@ -78,25 +86,12 @@ const Routes = () => {
         exact
         layout={MainLayout}
         path="/profile"
-      />
-      <PrivateRoute
-        component={StaffView}
-        exact
-        layout={MainLayout}
-        path="/staff"
-      />{" "}
+      /> 
       <PrivateRoute
         component={StaffDetails}
         exact
         layout={MainLayout}
         path="/staff/:id/view"
-      />
-      
-      <PrivateRoute
-        component={ProductView}
-        exact
-        layout={MainLayout}
-        path="/product"
       />
       <PrivateRoute
         component={ProductDetailsView}

@@ -32,7 +32,7 @@ const SubCategoryForm = ({
   updateSubCat,
   handleClose,
   initial_data,
-}) => { 
+}) => {
   const [formState, setFormState] = useState({
     values: {
       id: "",
@@ -45,7 +45,7 @@ const SubCategoryForm = ({
   });
   const { touched, errors, values, isValid } = formState;
   useEffect(() => {
-    if (mode === "Edit") { 
+    if (mode === "Edit") {
       let shouldSetData = typeof initial_data !== "undefined" ? true : false;
       if (shouldSetData) {
         const data = initial_data;
@@ -164,7 +164,7 @@ const SubCategoryForm = ({
     <Fragment>
       <div className="p-grid">
         <div className="p-col-12">
-          <div className="card p-fluid"> 
+          <div className="card p-fluid">
             <div className="p-field">
               <label htmlFor="name">Category</label>
               <Dropdown
@@ -192,7 +192,9 @@ const SubCategoryForm = ({
                 value={values.name || ""}
                 onChange={handleChange}
                 aria-describedby="name-help"
-                className={` ${hasError("name") ? "p-invalid" : null} " p-d-block"`}
+                className={` ${
+                  hasError("name") ? "p-invalid" : null
+                } " p-d-block"`}
               />
               <small id="name-help" className="p-error p-d-block">
                 {hasError("name") ? errors.name && errors.name.message : null}
@@ -216,24 +218,24 @@ const SubCategoryForm = ({
           </div>
         </div>
         <div className="p-col">
-        <div className="p-d-flex p-jc-end"> 
-          <Button
-            label="Cancel"
-            icon="pi pi-times"
-            onClick={handleClose}
-            className="p-button-warning p-mr-2 p-mb-2"
+          <div className="p-d-flex p-jc-end">
+            <Button
+              label="Cancel"
+              icon="pi pi-times"
+              onClick={handleClose}
+              className="p-button-warning p-mr-2 p-mb-2"
             />
 
-          <Button
-            label="Save"
-            icon="pi pi-check"
-            className="p-button-secondary p-mr-2 p-mb-2"
-            onClick={handleSubmit}
-            disabled={!isValid || sending || exist}
-            loading={sending}
-            loadingOptions={{ position: "right" }}
+            <Button
+              label="Save"
+              icon="pi pi-check"
+              className="p-button-secondary p-mr-2 p-mb-2"
+              onClick={handleSubmit}
+              disabled={!isValid || sending || exist}
+              loading={sending}
+              loadingOptions={{ position: "right" }}
             />
-            </div>
+          </div>
         </div>
       </div>
     </Fragment>

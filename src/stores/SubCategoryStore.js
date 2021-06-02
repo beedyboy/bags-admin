@@ -28,7 +28,7 @@ class SubCategoryStore {
       subcategory: observable,
       confirmRow: action,
       addSubCat: action,
-      getCategoryBySub: action,
+      getSubByCategory: action,
       updateSubCat: action,
       deleteSubCat: action,
       resetProperty: action,
@@ -139,11 +139,11 @@ class SubCategoryStore {
     }
   };
 
-  getCategoryBySub = (id) => {
+  getSubByCategory = (category) => {
     try {
       this.loading = true;
       backend
-        .get("subcategory/" + id)
+        .get("subcategory/" + category)
         .then((res) => {
           this.loading = false;
           this.categorysubs = res.data;
@@ -166,9 +166,9 @@ class SubCategoryStore {
     return this.subcategory.length;
   }
   get subcategorySelect() {
-    return Object.keys(this.subcategory || {}).map((key) => ({
-      value: this.subcategory[key]._id,
-      label: this.subcategory[key].name,
+    return Object.keys(this.categorysubs || {}).map((key) => ({
+      value: this.categorysubs[key].id,
+      label: this.categorysubs[key].name,
     }));
   }
 }

@@ -69,6 +69,7 @@ const MainLayout = (props) => {
     { label: "Brand", icon: "pi pi-fw pi-briefcase", to: "/brands" },
     { label: "Sub Category", icon: "pi pi-fw pi-sitemap", to: "/subcategory" },
     { label: "Staff", icon: "pi pi-fw pi-users", to: "/staffs" },
+    { label: "Product", icon: "pi pi-fw pi-users", to: "/products" },
     {
       label: "Reconcillation",
       icon: "pi pi-fw pi-dollar",

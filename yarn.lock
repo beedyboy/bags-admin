@@ -10927,10 +10927,15 @@ stylehacks@^4.0.0:
     postcss "^7.0.0"
     postcss-selector-parser "^3.0.0"
 
-suneditor-react@^3.1.0:
+suneditor-react@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/suneditor-react/-/suneditor-react-3.1.1.tgz#7bd2b2dd6c82ee72e731455129ca0634a88cb218"
   integrity sha512-n3Ql0qXYzivgNWadwTgqT7bB0rFiM6WLDnRnUfMK5yMd8leoC5khEMaTlu9SRi0X1rH40TwLllVkBAAj4W0hSA==
+
+suneditor@^2.39.0:
+  version "2.39.0"
+  resolved "https://registry.yarnpkg.com/suneditor/-/suneditor-2.39.0.tgz#a5d0958d8123444d743e4e4154c463fbfa53afa1"
+  integrity sha512-xLjOBsiFLgXG63dDxW6jqTxWz8MjBKNzqQkKTZu4F8Eb4LhzbkUXTIoHfiNRalWQ5IE35VctrT1aEmNlutj+DA==
 
 supports-color@^2.0.0:
   version "2.0.0"
