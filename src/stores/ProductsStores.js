@@ -34,10 +34,13 @@ class ProductStore {
       errMessage: observable, 
       productsByCategory: observable, 
       getProducts: action,
+      addProduct: action,
+      updateProduct: action,
       getSimilarProductItem: action, 
       getProductsByCategory: action, 
       productsBySubCategory: observable,
       getProductsBySlug: action, 
+      removeProduct: action,
       resetProperty: action,
       productSlugMenu: computed, 
       getProductsBySubCategory: action, 
@@ -129,6 +132,7 @@ class ProductStore {
           }
         })
         .catch((err) => {
+          this.sending = false;
           if (err.response && err.response.status === 404) {
             console.log("error in axios catch");
             this.message = err.response.data.message;
@@ -138,6 +142,44 @@ class ProductStore {
           }
         });
     } catch (err) {
+      this.sending = false;
+      if (err.response.status === 500) {
+        console.log("There was a problem with the server");
+      } else {
+        console.log(err.response.data.msg);
+      }
+    }
+  };
+
+  updateProduct = (data) => {
+    try {
+      this.sending = true;
+      backend
+        .put("products", data)
+        .then((res) => {
+          this.sending = false;
+          if (res.status === 200) {
+            this.getProducts(); 
+            this.message = res.data.message;
+            this.action = "productAdded";
+          } else {
+            this.message = res.data.error;
+            this.action = "productError";
+            this.error = true;
+          }
+        })
+        .catch((err) => {
+          this.sending = false;
+          if (err.response && err.response.status === 404) {
+            console.log("error in axios catch");
+            this.message = err.response.data.message;
+            this.error = true;
+          } else {
+            console.log({ err });
+          }
+        });
+    } catch (err) {
+      this.sending = false;
       if (err.response.status === 500) {
         console.log("There was a problem with the server");
       } else {
@@ -147,6 +189,24 @@ class ProductStore {
   };
 
 
+  removeProduct = (id) => {
+    this.removed = false;
+    try {
+      backend.delete(`products/${id}`).then((res) => {
+        if (res.status === 200) {
+          this.getProducts();
+          this.message = res.data.message;
+          this.removed = true;
+        } else {
+          this.message = res.data.error;
+          this.error = true;
+          this.removed = false;
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   resetProperty = (key, value) => {
     this[key] = value;
   };  

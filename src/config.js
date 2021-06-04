@@ -7,7 +7,7 @@ const env = {
   test: "https://bags.youarecaptured.com/",
 };
 
-const serverUrl = env.local;
+const serverUrl = env.test;
 
 const db = axios.create({
   baseURL: serverUrl,

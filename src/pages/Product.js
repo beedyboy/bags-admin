@@ -14,19 +14,20 @@ import { Checkbox } from "primereact/checkbox";
 import { Dialog } from "primereact/dialog";
 import { Toolbar } from "primereact/toolbar";
 import { Dropdown } from "primereact/dropdown";
-import { Tooltip } from "primereact/tooltip";
 import { Toast } from "primereact/toast";
 import { FileUpload } from "primereact/fileupload";
 import { observer } from "mobx-react-lite";
-import NoAccess from "../widgets/NoAccess"; 
+import NoAccess from "../widgets/NoAccess";
 import SunEditor from "suneditor-react";
 import "suneditor/dist/css/suneditor.min.css";
 import ProductsStores from "../stores/ProductsStores";
 import categories from "../shared/categories.json";
 import dataHero from "data-hero";
+import ReactHtmlParser from "react-html-parser";
 import SubCategoryStore from "../stores/SubCategoryStore";
 import BrandStore from "../stores/BrandStore";
 import Utils from "../shared/localStorage";
+import EditProduct from "../components/product/EditProduct";
 const schema = {
   category: {
     isEmpty: false,
@@ -51,7 +52,7 @@ const Product = () => {
   const toast = useRef(null);
   const dt = useRef(null);
   const [open, setOpen] = useState(false);
-  const [approval, setApproval] = useState(false);
+  const [edit, setEdit] = useState(false);
   const [rowData, setRowData] = useState();
   const [globalFilter, setGlobalFilter] = useState("");
   const store = useContext(ProductsStores);
@@ -66,6 +67,9 @@ const Product = () => {
     allProduct,
     message,
     resetProperty,
+    removeProduct,
+    updateProduct,
+    removed,
     sending,
   } = store;
   const { getSubByCategory, subcategorySelect } = subStore;
@@ -102,15 +106,38 @@ const Product = () => {
     dt.current.exportCSV();
   };
   const myUploader = (event) => {
-    //event.files == files to open
-    console.log(event.files);
     const fd = new FormData();
-    fd.append("file", event.files);
-     for(const element in values) {
+    for (var x = 0; x < event.files.length; x++) {
+      fd.append("file", event.files[x]);
+    }
+    for (const element in values) {
       fd.append(element, values[element]);
-     }
+    }
     addProduct(fd);
-  }; 
+  };
+
+  const resetForm = () => {
+    setFormState((prev) => ({
+      ...prev,
+      values: {
+        ...prev.values,
+        id: "",
+        sub_id: "",
+        best: false,
+        branded: false,
+        arrival: false,
+        featured: false,
+        brand_id: "",
+        category: "",
+        description: "",
+      },
+      touched: {
+        ...prev.touched,
+        category: false,
+      },
+      errors: {},
+    }));
+  };
   useEffect(() => {
     if (action === "productAdded" || action === "approved") {
       toast.current.show({
@@ -118,13 +145,15 @@ const Product = () => {
         summary: "Success Message",
         detail: message,
       });
-      setApproval(false);
+      setEdit(false);
+      resetForm();
       setOpen(false);
     }
     return () => {
       resetProperty("message", "");
       resetProperty("action", "");
-      setApproval(false);
+      setEdit(false);
+      resetForm();
       setOpen(false);
     };
   }, [action]);
@@ -143,10 +172,24 @@ const Product = () => {
       resetProperty("error", false);
       resetProperty("message", "");
       resetProperty("action", "");
-      setApproval(false);
+      setEdit(false);
       setOpen(false);
     };
   }, [error]);
+
+  useEffect(() => {
+    if (removed === true) {
+      toast.current.show({
+        severity: "success",
+        summary: "Success Message",
+        detail: message,
+      });
+    }
+    return () => {
+      resetProperty("removed", false);
+      resetProperty("message", "");
+    };
+  }, [removed]);
   const tableHeader = (
     <div className="p-d-flex p-jc-between">
       Product List
@@ -165,7 +208,7 @@ const Product = () => {
     return (
       <>
         <span className={`product-badge status-${data.description}`}>
-          {data.description}
+          {ReactHtmlParser(data.description)}
         </span>
       </>
     );
@@ -180,7 +223,11 @@ const Product = () => {
           onClick={(e) => editData(e, data)}
         />
       ) : null}
-      {/* <Button icon="pi pi-trash" className="p-button-rounded p-button-warning"  onClick={(e) => deleteData(e, data.id)}/> */}
+      <Button
+        icon="pi pi-trash"
+        className="p-button-rounded p-button-warning"
+        onClick={(e) => deleteData(e, data.id)}
+      />
     </span>
   );
   const leftToolbarTemplate = () => {
@@ -209,7 +256,11 @@ const Product = () => {
   const editData = (e, row) => {
     e.persist();
     setRowData(row);
-    setOpen(true);
+    setEdit(true);
+  };
+  const deleteData = (e, id) => {
+    e.persist();
+    removeProduct(id);
   };
   const onSelectChange = (e, field) => {
     setFormState((formState) => ({
@@ -275,7 +326,7 @@ const Product = () => {
               header={tableHeader}
             >
               <Column headerStyle={{ width: "3em" }}></Column>
-              <Column field="category" header="category" sortable></Column>
+              <Column field="category" header="Category" sortable></Column>
               <Column field="subName" header="Sub Category" sortable></Column>
               <Column field="brandName" header="Brand" sortable></Column>
 
@@ -307,20 +358,7 @@ const Product = () => {
         style={{ width: "50vw" }}
         header="Product Upload"
       >
-        <Tooltip
-          target=".custom-choose-btn"
-          content="Choose"
-          position="bottom"
-        />
-        <Tooltip target=".custom-open-btn" content="open" position="bottom" />
-        <Tooltip
-          target=".custom-cancel-btn"
-          content="Clear"
-          position="bottom"
-        />
-
-        <div className="card">
-          {/* <h5>Images only</h5> */}
+        <div className="card p-fluid">
           <div className="p-field">
             <label htmlFor="name">Category</label>
             <Dropdown
@@ -337,18 +375,22 @@ const Product = () => {
               {hasError("name") ? errors.name && errors.name.message : null}
             </small>
           </div>
-          <div className="p-field">
-            <label htmlFor="name">Sub Category</label>
-            <Dropdown
-              value={values.sub_id}
-              options={subcategorySelect}
-              onChange={(event) => onSelectChange(event, "sub_id")}
-              filter
-              showClear
-              filterBy="sub_id"
-              placeholder="Select One"
-            />
-          </div>
+          {values.category === "" ? null : (
+              <>
+                <div className="p-field">
+                  <label htmlFor="name">Sub Category</label>
+                  <Dropdown
+                    value={values.sub_id}
+                    options={subcategorySelect}
+                    onChange={(event) => onSelectChange(event, "sub_id")}
+                    filter
+                    showClear
+                    filterBy="sub_id"
+                    placeholder="Select One"
+                  />
+                </div>
+              </>
+            )}
           <div className="p-field">
             <label htmlFor="name">Description</label>
             <SunEditor
@@ -458,31 +500,43 @@ const Product = () => {
             accept="image/*"
             maxFileSize={1000000}
             multiple
+            uploadLabel="Save"
             emptyTemplate={
-              <p className="p-m-0">Drag and drop files to here to open.</p>
+              <p className="p-m-0">Drag and drop files here to upload.</p>
             }
+            disabled={!isValid || sending}
           />
         </div>
       </Dialog>
 
-      {/* <Dialog
-        visible={approval}
-        onHide={(e) => setApproval(false)}
+      <Dialog
+        visible={edit}
+        onHide={(e) => setEdit(false)}
         breakpoints={{ "960px": "75vw", "640px": "100vw" }}
         style={{ width: "50vw" }}
         header="Approve Record"
       >
-        <StepOneForm
+        <EditProduct
           action={action}
           error={error}
           message={message}
           sending={sending}
-          saveApproval={saveApproval}
-          toggle={setApproval}
+          toggle={setEdit}
           initial_data={rowData}
-          reset={resetProperty}
+          reset={resetForm}
+          categories={categories}
+          getSub={getSubByCategory}
+          onSelectChange={onSelectChange}
+          hasError={hasError}
+          updateProduct={updateProduct}
+          subcategorySelect={subcategorySelect}
+          handleContentChange={handleContentChange}
+          brandSelect={brandSelect}
+          formState={formState}
+          setFormState={setFormState}
+          handleSpecialChange={handleSpecialChange}
         />
-      </Dialog> */}
+      </Dialog>
     </Fragment>
   );
 };
