@@ -11,11 +11,8 @@ const MainLayout = (props) => {
 
   const [layoutMode] = useState("static");
   const [layoutColorMode] = useState("dark");
-  const [staticMenuInactive, setStaticMenuInactive] = useState(false);
-  const [overlayMenuActive, setOverlayMenuActive] = useState(false);
-  const [mobileMenuActive, setMobileMenuActive] = useState(false);
-  const [inputStyle] = useState("outlined");
-  const [ripple] = useState(false);
+  const [inputStyle] = useState("outlined"); 
+  const [sidebarActive, setSidebarActive] = useState(true);
   const sidebar = useRef();
 
   const history = useHistory();
@@ -23,17 +20,18 @@ const MainLayout = (props) => {
   let menuClick = false;
 
   useEffect(() => {
-    if (mobileMenuActive) {
+    if (sidebarActive) {
       addClass(document.body, "body-overflow-hidden");
     } else {
       removeClass(document.body, "body-overflow-hidden");
     }
-  }, [mobileMenuActive]);
+  }, [sidebarActive]);
+ 
+  
 
   const onWrapperClick = (event) => {
-    if (!menuClick) {
-      setOverlayMenuActive(false);
-      setMobileMenuActive(false);
+    if (!menuClick && layoutMode === "overlay") {
+      setSidebarActive(false);
     }
     menuClick = false;
   };
@@ -41,15 +39,8 @@ const MainLayout = (props) => {
   const onToggleMenu = (event) => {
     menuClick = true;
 
-    if (isDesktop()) {
-      if (layoutMode === "overlay") {
-        setOverlayMenuActive((prevState) => !prevState);
-      } else if (layoutMode === "static") {
-        setStaticMenuInactive((prevState) => !prevState);
-      }
-    } else {
-      setMobileMenuActive((prevState) => !prevState);
-    }
+    setSidebarActive((prevState) => !prevState);
+
     event.preventDefault();
   };
 
@@ -58,9 +49,8 @@ const MainLayout = (props) => {
   };
 
   const onMenuItemClick = (event) => {
-    if (!event.item.items) {
-      setOverlayMenuActive(false);
-      setMobileMenuActive(false);
+    if (!event.item.items && layoutMode === "overlay") {
+      setSidebarActive(false);
     }
   };
 
@@ -74,7 +64,11 @@ const MainLayout = (props) => {
       label: "Reconcillation",
       icon: "pi pi-fw pi-dollar",
       items: [
-        { label: "Stage One", icon: "pi pi-fw pi-check-square", to: "/stage-one" },
+        {
+          label: "Stage One",
+          icon: "pi pi-fw pi-check-square",
+          to: "/stage-one",
+        },
         {
           label: "Stage Two",
           icon: "pi pi-fw pi-check-square",
@@ -101,35 +95,15 @@ const MainLayout = (props) => {
       );
   };
 
-  const isDesktop = () => {
-    return window.innerWidth > 1024;
-  };
-
   const isSidebarVisible = () => {
-    if (isDesktop()) {
-      if (layoutMode === "static") return !staticMenuInactive;
-      else if (layoutMode === "overlay") return overlayMenuActive;
-      else return true;
-    }
-
-    return true;
+    return sidebarActive;
   };
-
-  const logo =
-    layoutColorMode === "dark"
-      ? "assets/layout/images/logo.svg"
-      : "assets/layout/images/logo.svg";
-
+ 
   const wrapperClass = classNames("layout-wrapper", {
     "layout-overlay": layoutMode === "overlay",
     "layout-static": layoutMode === "static",
-    "layout-static-sidebar-inactive":
-      staticMenuInactive && layoutMode === "static",
-    "layout-overlay-sidebar-active":
-      overlayMenuActive && layoutMode === "overlay",
-    "layout-mobile-sidebar-active": mobileMenuActive,
-    "p-input-filled": inputStyle === "filled",
-    "p-ripple-disabled": ripple === false,
+    "layout-active": sidebarActive,
+    "p-input-filled": inputStyle === "filled", 
   });
 
   const sidebarClassName = classNames("layout-sidebar", {

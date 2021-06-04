@@ -276,7 +276,8 @@ const Product = () => {
             >
               <Column headerStyle={{ width: "3em" }}></Column>
               <Column field="category" header="category" sortable></Column>
-              <Column field="sub_id" header="Sub Category" sortable></Column>
+              <Column field="subName" header="Sub Category" sortable></Column>
+              <Column field="brandName" header="Brand" sortable></Column>
 
               <Column
                 field="description"
