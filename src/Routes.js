@@ -32,7 +32,7 @@ const Routes = () => {
     }
   
   }
- console.log({reconOne})
+//  console.log({reconOne})
   return (
     <Router>
       <Switch>
