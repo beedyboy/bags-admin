@@ -20,6 +20,7 @@ import { observer } from "mobx-react-lite";
 import StepOneForm from "../../components/recon/StepOneForm";
 import NoAccess from "../../widgets/NoAccess";
 import Utils from "../../shared/localStorage";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 const StageOne = () => {
   let acl;
@@ -36,6 +37,7 @@ const StageOne = () => {
   const toast = useRef(null);
   const dt = useRef(null);
   const [upload, setUpload] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [approval, setApproval] = useState(false);
   const [rowData, setRowData] = useState();
   const [globalFilter, setGlobalFilter] = useState("");
@@ -62,6 +64,7 @@ const StageOne = () => {
     //event.files == files to upload
     const fd = new FormData();
     fd.append("file", event.files[0]);
+    setUploading(true);
     uploadStatement(fd);
   };
   useEffect(() => {
@@ -71,6 +74,7 @@ const StageOne = () => {
         summary: "Success Message",
         detail: message,
       });
+      setUploading(false);
       setApproval(false);
       setUpload(false);
     }
@@ -160,7 +164,7 @@ const StageOne = () => {
   };
   const remarkBodyTemplate = (row) => {
     return (
-      <React.Fragment> 
+      <React.Fragment>
         {row.remarks && row.remarks.length > 33
           ? row.remarks.slice(0, 33) + " . . ."
           : row.remarks}
@@ -275,6 +279,14 @@ const StageOne = () => {
             }
           />
         </div>
+        {uploading ? (
+          <ProgressSpinner
+            style={{ width: "50px", height: "50px" }}
+            strokeWidth="8"
+            fill="#EEEEEE"
+            animationDuration=".5s"
+          />
+        ) : null}
       </Dialog>
 
       <Dialog
