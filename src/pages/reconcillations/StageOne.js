@@ -23,23 +23,22 @@ import Utils from "../../shared/localStorage";
 
 const StageOne = () => {
   let acl;
-  let reconOne,
-  reconUpload;
+  let reconOne, reconUpload;
 
   const obj = Utils.get("acl");
-  if (obj && obj !== "") { 
-    acl = JSON.parse(obj); 
+  if (obj && obj !== "") {
+    acl = JSON.parse(obj);
   }
 
-  reconUpload = acl && (acl.reconcillation && acl.reconcillation.upload);  
-  reconOne = acl && (acl.reconcillation && acl.reconcillation.approval_one); 
- 
+  reconUpload = acl && acl.reconcillation && acl.reconcillation.upload;
+  reconOne = acl && acl.reconcillation && acl.reconcillation.approval_one;
+
   const toast = useRef(null);
   const dt = useRef(null);
   const [upload, setUpload] = useState(false);
   const [approval, setApproval] = useState(false);
   const [rowData, setRowData] = useState();
-  const [globalFilter, setGlobalFilter] = useState(""); 
+  const [globalFilter, setGlobalFilter] = useState("");
   const store = useContext(ReconStore);
   const {
     loading,
@@ -161,14 +160,13 @@ const StageOne = () => {
   };
   const remarkBodyTemplate = (row) => {
     return (
-        <React.Fragment>
-            {/* <span className="p-column-title">Remarks</span> */}
-            {row.remarks && row.remarks.length > 25 ? row.remarks.slice(0, 25) + ' . . .' : row.remarks}
-          
-    
-        </React.Fragment>
+      <React.Fragment> 
+        {row.remarks && row.remarks.length > 33
+          ? row.remarks.slice(0, 33) + " . . ."
+          : row.remarks}
+      </React.Fragment>
     );
-}
+  };
 
   const editData = (e, row) => {
     e.persist();
@@ -202,7 +200,11 @@ const StageOne = () => {
             >
               <Column headerStyle={{ width: "3em" }}></Column>
               <Column field="value_date" header="Value Date" sortable></Column>
-              <Column  body={remarkBodyTemplate} header="Remarks" sortable></Column>
+              <Column
+                body={remarkBodyTemplate}
+                header="Remarks"
+                sortable
+              ></Column>
               <Column
                 field="credit_amount"
                 header="Credit Amount"
