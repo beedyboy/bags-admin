@@ -12,7 +12,7 @@ const serverUrl = env.test;
 const db = axios.create({
   baseURL: serverUrl,
   responseType: "json",
-  timeout: 10000,
+  timeout: 30000,
   headers: {
     common: {
       Authorization: `Bearer ${Utils.get("admin_token")}}`,
