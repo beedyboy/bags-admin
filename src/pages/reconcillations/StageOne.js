@@ -79,6 +79,7 @@ const StageOne = () => {
       setUpload(false);
     }
     return () => {
+      setUploading(false);
       resetProperty("message", "");
       resetProperty("action", "");
       setApproval(false);
