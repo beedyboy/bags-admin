@@ -162,7 +162,7 @@ const StageOne = () => {
   const remarkBodyTemplate = (row) => {
     return (
         <React.Fragment>
-            <span className="p-column-title">Remarks</span>
+            {/* <span className="p-column-title">Remarks</span> */}
             {row.remarks && row.remarks.length > 25 ? row.remarks.slice(0, 25) + ' . . .' : row.remarks}
           
     
