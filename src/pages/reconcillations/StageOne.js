@@ -96,8 +96,11 @@ const StageOne = () => {
         summary: "Error Message",
         detail: message,
       });
+
+      setUploading(false);
     }
     return () => {
+      setUploading(false);
       resetProperty("error", false);
       resetProperty("message", "");
       resetProperty("action", "");

@@ -94,8 +94,12 @@ class ReconStore {
     } catch (err) {
       this.sending = false;
       if (err.response.status === 500) {
+        this.message = "Error uploading. Please check your network and retry!!!"
         console.log("There was a problem with the server");
+        this.error = true;
       } else {
+        this.message = err.response.data.msg;
+        this.error = true;
         console.log(err.response.data.msg);
       }
     }
