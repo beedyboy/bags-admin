@@ -39,7 +39,7 @@ const StageOne = () => {
   const [upload, setUpload] = useState(false);
   const [approval, setApproval] = useState(false);
   const [rowData, setRowData] = useState();
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useState(""); 
   const store = useContext(ReconStore);
   const {
     loading,
@@ -159,6 +159,16 @@ const StageOne = () => {
       </React.Fragment>
     );
   };
+  const remarkBodyTemplate = (row) => {
+    return (
+        <React.Fragment>
+            <span className="p-column-title">Remarks</span>
+            {row.remarks && row.remarks.length > 25 ? row.remarks.slice(0, 25) + ' . . .' : row.remarks}
+          
+    
+        </React.Fragment>
+    );
+}
 
   const editData = (e, row) => {
     e.persist();
@@ -192,7 +202,7 @@ const StageOne = () => {
             >
               <Column headerStyle={{ width: "3em" }}></Column>
               <Column field="value_date" header="Value Date" sortable></Column>
-              <Column field="remarks" header="Remarks" sortable></Column>
+              <Column  body={remarkBodyTemplate} header="Remarks" sortable></Column>
               <Column
                 field="credit_amount"
                 header="Credit Amount"
