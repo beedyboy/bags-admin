@@ -257,7 +257,7 @@ const StageOne = () => {
             customUpload
             uploadHandler={myUploader}
             accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            maxFileSize={1000000}
+            maxFileSize={2000000}
             emptyTemplate={
               <p className="p-m-0">Drag and drop files to here to upload.</p>
             }
