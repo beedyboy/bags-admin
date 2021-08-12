@@ -82,6 +82,7 @@ class ReconStore {
           }
         })
         .catch((err) => {
+          this.sending = false;
           if (err.response && err.response.status === 404) {
             console.log("error in axios catch");
             this.message = err.response.data.message;
@@ -91,6 +92,7 @@ class ReconStore {
           }
         });
     } catch (err) {
+      this.sending = false;
       if (err.response.status === 500) {
         console.log("There was a problem with the server");
       } else {
