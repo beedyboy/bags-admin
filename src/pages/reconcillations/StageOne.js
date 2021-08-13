@@ -169,7 +169,7 @@ const StageOne = () => {
   const remarkBodyTemplate = (row) => {
     return (
       <React.Fragment>
-        <div className="p-text-nowrap">
+        <div className="p-text-wrap">
           {row.remarks}
         </div>
         {/* {row.remarks && row.remarks.length > 33
