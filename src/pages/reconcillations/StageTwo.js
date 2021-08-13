@@ -164,6 +164,7 @@ const StageTwo = () => {
               className="p-datatable-customers"
               rows={10}
               columnResizeMode="expand"
+              resizableColumns
               dataKey="id"
               rowHover
               globalFilter={globalFilter}

@@ -200,11 +200,13 @@ const StageOne = () => {
               ref={dt}
               value={pristine}
               paginator
-              className="p-datatable-customers"
+              className="p-datatable-customers p-datatable-responsive"
               rows={10}
               dataKey="id"
               rowHover
               columnResizeMode="expand"
+              resizableColumns
+              scrollable
               globalFilter={globalFilter}
               emptyMessage="No record found."
               loading={loading}
