@@ -44,7 +44,7 @@ const StageOne = () => {
   const store = useContext(ReconStore);
   const {
     loading,
-    filterRecord,
+    pristineRecord,
     uploadStatement,
     error,
     action,
@@ -55,7 +55,7 @@ const StageOne = () => {
     saveApproval,
   } = store;
   useEffect(() => {
-    filterRecord("approved_one", false, "pristine");
+    pristineRecord();
   }, []);
   const exportCSV = () => {
     dt.current.exportCSV();

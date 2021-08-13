@@ -42,7 +42,7 @@ const StageTwo = () => {
   const store = useContext(ReconStore);
   const {
     loading,
-    filterRecord,
+    finaleRecord,
     error,
     action,
     finales,
@@ -52,7 +52,7 @@ const StageTwo = () => {
     saveApproval,
   } = store;
   useEffect(() => {
-    filterRecord("approved_two", false, "finales");
+    finaleRecord();
   }, []);
   const exportCSV = () => {
     dt.current.exportCSV();

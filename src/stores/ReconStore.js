@@ -30,7 +30,8 @@ class ReconStore {
       getAllData: action,
       uploadStatement: action,
       saveApproval: action,
-      filterRecord: action,
+      pristineRecord: action,
+      finaleRecord: action,
       removeRecord: action,
       resetProperty: action,
     });
@@ -49,13 +50,27 @@ class ReconStore {
     }
   };
 
-  filterRecord = (key, value, field) => {
+  pristineRecord = () => {
     this.loading = true;
     try {
-      backend.get(`reconcillations/${key}/${value}`).then((res) => {
+      backend.get(`reconcillations/approved_one/false`).then((res) => {
         this.loading = false;
         if (res.status === 200) {
-          this[field] = res.data;
+          this.pristine = res.data;
+        }
+      });
+    } catch (err) {
+      this.error = err;
+    }
+  };
+
+  finaleRecord = () => {
+    this.loading = true;
+    try {
+      backend.get(`reconcillations/approved_two/false`).then((res) => {
+        this.loading = false;
+        if (res.status === 200) {
+          this.finales = res.data;
         }
       });
     } catch (err) {
@@ -72,7 +87,7 @@ class ReconStore {
           this.sending = false;
           if (res.status === 201) {
             this.getAllData();
-            this.filterRecord("approved_one", false, "pristine");
+            this.pristineRecord();
             this.message = res.data.message;
             this.action = "accountUploaded";
           } else {
@@ -94,7 +109,8 @@ class ReconStore {
     } catch (err) {
       this.sending = false;
       if (err.response.status === 500) {
-        this.message = "Error uploading. Please check your network and retry!!!"
+        this.message =
+          "Error uploading. Please check your network and retry!!!";
         console.log("There was a problem with the server");
         this.error = true;
       } else {
@@ -115,9 +131,9 @@ class ReconStore {
           this.sending = false;
           if (res.status === 200) {
             if (stage === "first") {
-              this.filterRecord("approved_one", false, "pristine");
+              this.pristineRecord();
             } else {
-              this.filterRecord("approved_two", false, "finales");
+              this.finaleRecord();
             }
             this.message = res.data.message;
             this.action = "approved";
