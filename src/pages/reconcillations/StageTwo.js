@@ -163,6 +163,7 @@ const StageTwo = () => {
               paginator
               className="p-datatable-customers"
               rows={10}
+              columnResizeMode="expand"
               dataKey="id"
               rowHover
               globalFilter={globalFilter}
