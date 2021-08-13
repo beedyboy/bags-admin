@@ -169,9 +169,12 @@ const StageOne = () => {
   const remarkBodyTemplate = (row) => {
     return (
       <React.Fragment>
-        {row.remarks && row.remarks.length > 33
+        <div className="p-text-nowrap">
+          {row.remarks}
+        </div>
+        {/* {row.remarks && row.remarks.length > 33
           ? row.remarks.slice(0, 33) + " . . ."
-          : row.remarks}
+          : row.remarks} */}
       </React.Fragment>
     );
   };
@@ -201,6 +204,7 @@ const StageOne = () => {
               rows={10}
               dataKey="id"
               rowHover
+              columnResizeMode="expand"
               globalFilter={globalFilter}
               emptyMessage="No record found."
               loading={loading}
