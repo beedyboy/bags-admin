@@ -1,13 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Panel } from 'primereact/panel';
-import { Checkbox } from 'primereact/checkbox';
-import { Button } from 'primereact/button';
-import { Dropdown } from 'primereact/dropdown';
-import { InputText } from 'primereact/inputtext';
-import { Chart } from 'primereact/chart';
-import { ProgressBar } from 'primereact/progressbar';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';  
+
+import React, {
+    Fragment,
+    useState,
+    useEffect,
+    useContext,
+    useRef,
+  } from "react";
+  import ReconStore from "../stores/ReconStore";
+  import { observer } from "mobx-react-lite";
+// import { Panel } from 'primereact/panel';
+// import { Checkbox } from 'primereact/checkbox';
+// import { Button } from 'primereact/button';
+// import { Dropdown } from 'primereact/dropdown';
+// import { InputText } from 'primereact/inputtext';
+// import { Chart } from 'primereact/chart';
+// import { ProgressBar } from 'primereact/progressbar';
+// import { DataTable } from 'primereact/datatable';
+// import { Column } from 'primereact/column';  
 import { ProductService } from '../service/ProductService';
 import { EventService } from '../service/EventService';
 
@@ -43,8 +52,19 @@ const lineData = {
 
  const Dashboard = () => {
 
-    const [tasksCheckbox, setTasksCheckbox] = useState([]);
-    const [dropdownCity, setDropdownCity] = useState(null);
+    const store = useContext(ReconStore);
+    const {
+      loading,
+      getAllData,
+      pendingPristines,
+      pendingFinales,
+      completed,
+      overdue, 
+    } = store;
+    useEffect(() => {
+      getAllData();
+    }, []);
+    const [tasksCheckbox, setTasksCheckbox] = useState([]); 
     const [events, setEvents] = useState(null);
     const [products, setProducts] = useState(null);
 
@@ -103,23 +123,24 @@ const lineData = {
                     </div>
                 </div>
             </div>
-            <div className="p-col-12 p-md-6 p-xl-3">
-                <div className="highlight-box">
-                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>TI</span></div>
-                    <div className="highlight-details ">
-                        <i className="pi pi-question-circle"></i>
-                        <span>Total Issues</span>
-                        <span className="count">81</span>
-                    </div>
-                </div>
-            </div>
+         
             <div className="p-col-12 p-md-6 p-xl-3">
                 <div className="highlight-box">
                     <div className="initials" style={{ backgroundColor: '#20d077', color: '#038d4a' }}><span>OI</span></div>
                     <div className="highlight-details ">
                         <i className="pi pi-filter"></i>
-                        <span>Open Issues</span>
-                        <span className="count">21</span>
+                        <span>Pending Reconcillation</span>
+                        <span className="count">{pendingPristines}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>TI</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Final Reconcillation</span>
+                        <span className="count">{pendingFinales}</span>
                     </div>
                 </div>
             </div>
@@ -128,8 +149,8 @@ const lineData = {
                     <div className="initials" style={{ backgroundColor: '#f9c851', color: '#b58c2b' }}><span>CI</span></div>
                     <div className="highlight-details ">
                         <i className="pi pi-check"></i>
-                        <span>Closed Issues</span>
-                        <span className="count">60</span>
+                        <span>Closed Reconcillation</span>
+                        <span className="count">{completed}</span>
                     </div>
                 </div>
             </div>
@@ -316,4 +337,4 @@ const lineData = {
         </div>
     );
 }
-export default Dashboard;
+export default observer(Dashboard);

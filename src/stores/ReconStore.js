@@ -23,6 +23,10 @@ class ReconStore {
       action: observable,
       removed: observable,
       stats: computed,
+      pendingPristines: computed,
+      pendingFinales: computed,
+      completed: computed,
+      overdue: computed,
       loading: observable,
       finales: observable,
       pristine: observable,
@@ -179,6 +183,18 @@ class ReconStore {
   };
   get stats() {
     return this.reconcillations.length;
+  }
+  get pendingPristines() {
+    return this.reconcillations.filter(d => d.approved_one === false).length;
+  } 
+  get pendingFinales() {
+    return this.reconcillations.filter(d => d.approved_two === false).length;
+  } 
+  get completed() {
+    return this.reconcillations.filter(d => d.approved_two === true).length;
+  } 
+  get overdue() {
+    return this.reconcillations.filter(d => d.approved_two === true).length;
   }
   // get reconcillations() {
   //   return Object.keys(this.brandList || {}).map((key) => ({
