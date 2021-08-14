@@ -20,7 +20,7 @@ import { observer } from "mobx-react-lite";
 import NoAccess from "../widgets/NoAccess";
 import SunEditor from "suneditor-react";
 import "suneditor/dist/css/suneditor.min.css";
-import ProductsStores from "../stores/ProductsStores";
+import ProductStores from "../stores/ProductStores";
 import categories from "../shared/categories.json";
 import dataHero from "data-hero";
 import ReactHtmlParser from "react-html-parser";
@@ -55,7 +55,7 @@ const Product = () => {
   const [edit, setEdit] = useState(false);
   const [rowData, setRowData] = useState();
   const [globalFilter, setGlobalFilter] = useState("");
-  const store = useContext(ProductsStores);
+  const store = useContext(ProductStores);
   const subStore = useContext(SubCategoryStore);
   const brandStore = useContext(BrandStore);
   const {

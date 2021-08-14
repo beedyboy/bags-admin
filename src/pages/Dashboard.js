@@ -1,13 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 
-import React, {
-    Fragment,
-    useState,
-    useEffect,
-    useContext,
-    useRef,
-  } from "react";
-  import ReconStore from "../stores/ReconStore";
-  import { observer } from "mobx-react-lite";
+import React, { useEffect, useContext } from "react";
+import ReconStore from "../stores/ReconStore";
+import { observer } from "mobx-react-lite";
 // import { Panel } from 'primereact/panel';
 // import { Checkbox } from 'primereact/checkbox';
 // import { Button } from 'primereact/button';
@@ -16,145 +11,118 @@ import React, {
 // import { Chart } from 'primereact/chart';
 // import { ProgressBar } from 'primereact/progressbar';
 // import { DataTable } from 'primereact/datatable';
-// import { Column } from 'primereact/column';  
-import { ProductService } from '../service/ProductService';
-import { EventService } from '../service/EventService';
+// import { Column } from 'primereact/column';
+import ProductStores from "../stores/ProductStores";
+import AccountStore from "../stores/AccountStore";
 
-const dropdownCities = [
-    { name: 'New York', code: 'NY' },
-    { name: 'Rome', code: 'RM' },
-    { name: 'London', code: 'LDN' },
-    { name: 'Istanbul', code: 'IST' },
-    { name: 'Paris', code: 'PRS' }
-];
+const Dashboard = () => {
+  const reconStore = useContext(ReconStore);
+  const prodStore = useContext(ProductStores);
+  const userStore = useContext(AccountStore);
+  const { 
+    getAllData,
+    pendingPristines,
+    pendingFinales,
+    completed,
+    //   overdue,
+  } = reconStore;
+  const { stats: totalProduct, getProducts } = prodStore;
+  const { stats: totalUser, getUsers } = userStore;
+  useEffect(() => {
+      getProducts();
+      getUsers();
+    getAllData();
+  }, []);
+  // const formatCurrency = (value) => {
+  //     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  // };
 
- 
+  return (
+    <div className="p-grid p-fluid dashboard">
+      <div className="p-col-12 p-lg-4">
+        <div className="card summary">
+          <span className="title">Users</span>
+          <span className="detail">Number of users</span>
+          <span className="count visitors">{totalUser || 0}</span>
+        </div>
+      </div>
+      <div className="p-col-12 p-lg-4">
+        <div className="card summary">
+          <span className="title">Products</span>
+          <span className="detail">Number of products</span>
+          <span className="count purchases">{totalProduct || 0}</span>
+        </div>
+      </div>
+      <div className="p-col-12 p-lg-4">
+        <div className="card summary">
+          <span className="title">Revenue</span>
+          <span className="detail">Income for today</span>
+          <span className="count revenue">$3,200</span>
+        </div>
+      </div>
 
-const lineData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [
-        {
-            label: 'First Dataset',
-            data: [65, 59, 80, 81, 56, 55, 40],
-            fill: false,
-            backgroundColor: '#2f4860',
-            borderColor: '#2f4860'
-        },
-        {
-            label: 'Second Dataset',
-            data: [28, 48, 40, 19, 86, 27, 90],
-            fill: false,
-            backgroundColor: '#00bb7e',
-            borderColor: '#00bb7e'
-        }
-    ]
-};
+      <div className="p-col-12 p-md-6 p-xl-3">
+        <div className="highlight-box">
+          <div
+            className="initials"
+            style={{ backgroundColor: "#007be5", color: "#00448f" }}
+          >
+            <span>TV</span>
+          </div>
+          <div className="highlight-details ">
+            <i className="pi pi-search"></i>
+            <span>Total Queries</span>
+            <span className="count">523</span>
+          </div>
+        </div>
+      </div>
 
- const Dashboard = () => {
-
-    const store = useContext(ReconStore);
-    const {
-      loading,
-      getAllData,
-      pendingPristines,
-      pendingFinales,
-      completed,
-      overdue, 
-    } = store;
-    useEffect(() => {
-      getAllData();
-    }, []);
-    const [tasksCheckbox, setTasksCheckbox] = useState([]); 
-    const [events, setEvents] = useState(null);
-    const [products, setProducts] = useState(null);
-
-    useEffect(() => {
-        const productService = new ProductService();
-        const eventService = new EventService();
-        productService.getProductsSmall().then(data => setProducts(data));
-        eventService.getEvents().then(data => setEvents(data));
-    }, []);
-
-    const formatCurrency = (value) => {
-        return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-    };
-
-    const onTaskCheckboxChange = (e) => {
-        let selectedTasks = [...tasksCheckbox];
-        if (e.checked)
-            selectedTasks.push(e.value);
-        else
-            selectedTasks.splice(selectedTasks.indexOf(e.value), 1);
-
-        setTasksCheckbox(selectedTasks);
-    };
-
-    return (
-        <div className="p-grid p-fluid dashboard">
-            <div className="p-col-12 p-lg-4">
-                <div className="card summary">
-                    <span className="title">Users</span>
-                    <span className="detail">Number of visitors</span>
-                    <span className="count visitors">12</span>
-                </div>
-            </div>
-            <div className="p-col-12 p-lg-4">
-                <div className="card summary">
-                    <span className="title">Sales</span>
-                    <span className="detail">Number of purchases</span>
-                    <span className="count purchases">534</span>
-                </div>
-            </div>
-            <div className="p-col-12 p-lg-4">
-                <div className="card summary">
-                    <span className="title">Revenue</span>
-                    <span className="detail">Income for today</span>
-                    <span className="count revenue">$3,200</span>
-                </div>
-            </div>
-
-            <div className="p-col-12 p-md-6 p-xl-3">
-                <div className="highlight-box">
-                    <div className="initials" style={{ backgroundColor: '#007be5', color: '#00448f' }}><span>TV</span></div>
-                    <div className="highlight-details ">
-                        <i className="pi pi-search"></i>
-                        <span>Total Queries</span>
-                        <span className="count">523</span>
-                    </div>
-                </div>
-            </div>
-         
-            <div className="p-col-12 p-md-6 p-xl-3">
-                <div className="highlight-box">
-                    <div className="initials" style={{ backgroundColor: '#20d077', color: '#038d4a' }}><span>OI</span></div>
-                    <div className="highlight-details ">
-                        <i className="pi pi-filter"></i>
-                        <span>Pending Reconcillation</span>
-                        <span className="count">{pendingPristines}</span>
-                    </div>
-                </div>
-            </div>
-            <div className="p-col-12 p-md-6 p-xl-3">
-                <div className="highlight-box">
-                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>TI</span></div>
-                    <div className="highlight-details ">
-                        <i className="pi pi-question-circle"></i>
-                        <span>Final Reconcillation</span>
-                        <span className="count">{pendingFinales}</span>
-                    </div>
-                </div>
-            </div>
-            <div className="p-col-12 p-md-6 p-xl-3">
-                <div className="highlight-box">
-                    <div className="initials" style={{ backgroundColor: '#f9c851', color: '#b58c2b' }}><span>CI</span></div>
-                    <div className="highlight-details ">
-                        <i className="pi pi-check"></i>
-                        <span>Closed Reconcillation</span>
-                        <span className="count">{completed}</span>
-                    </div>
-                </div>
-            </div>
-{/* 
+      <div className="p-col-12 p-md-6 p-xl-3">
+        <div className="highlight-box">
+          <div
+            className="initials"
+            style={{ backgroundColor: "#20d077", color: "#038d4a" }}
+          >
+            <span>PR</span>
+          </div>
+          <div className="highlight-details ">
+            <i className="pi pi-filter"></i>
+            <span>Pending Reconcillation</span>
+            <span className="count">{pendingPristines || 0}</span>
+          </div>
+        </div>
+      </div>
+      <div className="p-col-12 p-md-6 p-xl-3">
+        <div className="highlight-box">
+          <div
+            className="initials"
+            style={{ backgroundColor: "#ef6262", color: "#a83d3b" }}
+          >
+            <span>FR</span>
+          </div>
+          <div className="highlight-details ">
+            <i className="pi pi-question-circle"></i>
+            <span>Final Reconcillation</span>
+            <span className="count">{pendingFinales || 0}</span>
+          </div>
+        </div>
+      </div>
+      <div className="p-col-12 p-md-6 p-xl-3">
+        <div className="highlight-box">
+          <div
+            className="initials"
+            style={{ backgroundColor: "#f9c851", color: "#b58c2b" }}
+          >
+            <span>CR</span>
+          </div>
+          <div className="highlight-details ">
+            <i className="pi pi-check"></i>
+            <span>Closed Reconcillation</span>
+            <span className="count">{completed || 0}</span>
+          </div>
+        </div>
+      </div>
+      {/* 
             <div className="p-col-12 p-md-6 p-lg-4">
                 <Panel header="Tasks" style={{ height: '100%' }}>
                     <ul className='task-list'>
@@ -334,7 +302,7 @@ const lineData = {
                 </Panel>
             </div>
         */}
-        </div>
-    );
-}
+    </div>
+  );
+};
 export default observer(Dashboard);
