@@ -316,6 +316,8 @@ const Product = () => {
               ref={dt}
               value={allProduct}
               paginator
+              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+               rowsPerPageOptions={[10,25,50]} 
               className="p-datatable-customers"
               rows={10}
               dataKey="id"

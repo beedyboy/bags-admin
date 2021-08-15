@@ -12,9 +12,11 @@ import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Dialog } from "primereact/dialog";
+import { confirmDialog } from 'primereact/confirmdialog';
 import { Toolbar } from "primereact/toolbar";
 import { Tooltip } from "primereact/tooltip";
 import { Toast } from "primereact/toast";
+import { ProgressBar } from 'primereact/progressbar';
 import { observer } from "mobx-react-lite";
 import NoAccess from "../../widgets/NoAccess";
 import StepTwoForm from "../../components/recon/StepTwoForm";
@@ -37,8 +39,10 @@ const StageTwo = () => {
   const dt = useRef(null);
   const [upload, setUpload] = useState(false);
   const [approval, setApproval] = useState(false);
+  const [activeId, setActiveId] = useState(0);
   const [rowData, setRowData] = useState();
   const [globalFilter, setGlobalFilter] = useState("");
+ 
   const store = useContext(ReconStore);
   const {
     loading,
@@ -50,6 +54,9 @@ const StageTwo = () => {
     resetProperty,
     sending,
     saveApproval,
+    revertRecord,
+    reverting,
+    reverted
   } = store;
   useEffect(() => {
     finaleRecord();
@@ -88,6 +95,23 @@ const StageTwo = () => {
       setApproval(false);
     };
   }, [error]);
+
+  useEffect(() => {
+    if (reverted) {
+      toast.current.show({
+        severity: "success",
+        summary: "Success Message",
+        detail: message,
+      });
+      setActiveId(0);
+      finaleRecord();
+    }
+    return () => {
+      resetProperty("message", "");
+      resetProperty("reverted", false);
+      setActiveId(0);
+    };
+  }, [reverted]);
   const tableHeader = (
     <div className="p-d-flex p-jc-between">
       Stage Two List
@@ -113,15 +137,30 @@ const StageTwo = () => {
   };
 
   const actionTemplate = (data) => (
-    <span className="p-buttonset">
+    <span className="p-buttonset" id={data.id}>
+      {reverting && activeId === data.id ?
+      <ProgressBar mode="indeterminate" />:
+     <> 
       <Button
-        icon="pi pi-pencil"
-        className="p-button-rounded p-button-success p-mr-2"
-        onClick={(e) => editData(e, data)}
+      icon="pi pi-pencil"
+      className="p-button-rounded p-button-success p-mr-2"
+      onClick={(e) => editData(e, data)}
       />
-      {/* <Button icon="pi pi-trash" className="p-button-rounded p-button-warning"  onClick={(e) => deleteData(e, data.id)}/> */}
-    </span>
+      <Button icon="pi pi-trash" className="p-button-rounded p-button-warning"  onClick={(e) => confirm(e, data)}/>
+  </>
+  }
+  </span>
   );
+  const confirm = (e, row) => {
+    e.persist();
+    confirmDialog({
+        message: 'Are you sure you want to proceed?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => revertData(row),
+        // reject: () => rejectFunc()
+    });
+}
   const leftToolbarTemplate = () => {
     return <React.Fragment>Stage Two Management</React.Fragment>;
   };
@@ -144,7 +183,17 @@ const StageTwo = () => {
     setRowData(row);
     setApproval(true);
   };
-
+  const revertData = (row) => {
+    const values =  {
+      id: row.id,  
+      amount_used: Number(0),
+      balance: Number(0),
+      approved_one: false,
+      approved_two: false,
+    };
+    setActiveId(row.id)
+    revertRecord(values);
+  };
   return (
     <Fragment>
       <Toast ref={toast} position="top-right" />
@@ -161,6 +210,8 @@ const StageTwo = () => {
               ref={dt}
               value={finales}
               paginator
+              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+               rowsPerPageOptions={[10,25,50]} 
               className="p-datatable-customers"
               rows={10}
               columnResizeMode="expand"

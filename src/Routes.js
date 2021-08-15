@@ -19,10 +19,7 @@ import Utils from "./shared/localStorage";
 const Routes = () => {
   const loggedIn = Utils.get("admin_token") === "" ? false : true;
   let acl;
-  let  
-    reconUpload,
-    reconOne,
-    reconTwo;
+ 
   if (loggedIn === true) {
     console.log({ loggedIn });
     const obj = Utils.get("acl");

@@ -1,12 +1,15 @@
 import { makeObservable, observable, action, computed } from "mobx";
 import { createContext } from "react";
 import backend from "../config";
+import moment from "moment";
 
 class ReconStore {
   error = false;
   exist = false;
   loading = false;
   sending = false;
+  reverting = false;
+  reverted = false;
   removed = false;
   reconcillations = [];
   pristine = [];
@@ -28,6 +31,8 @@ class ReconStore {
       completed: computed,
       overdue: computed,
       loading: observable,
+      reverting: observable,
+      reverted: observable,
       finales: observable,
       pristine: observable,
       reconcillations: observable,
@@ -37,6 +42,7 @@ class ReconStore {
       pristineRecord: action,
       finaleRecord: action,
       removeRecord: action,
+      revertRecord: action,
       resetProperty: action,
     });
   }
@@ -178,6 +184,28 @@ class ReconStore {
       console.log(error);
     }
   };
+
+  revertRecord = (data) => {
+    this.reverting = true;
+    try {
+      backend.post("reconcillations/overturn", data).then((res) => {
+        this.reverting = false;
+        if (res.status === 200) {
+          this.getAllData();
+          // this.
+          this.message = res.data.message;
+          this.reverted = true;
+        } else {
+          this.message = res.data.error;
+          this.error = true;
+          this.reverted = false;
+        }
+      });
+    } catch (error) {
+      this.reverting = false;
+      console.log(error);
+    }
+  };
   resetProperty = (key, value) => {
     this[key] = value;
   };
@@ -185,16 +213,28 @@ class ReconStore {
     return this.reconcillations.length;
   }
   get pendingPristines() {
-    return this.reconcillations.filter(d => d.approved_one === false).length;
-  } 
+    return this.reconcillations.filter((d) => d.approved_one === false).length;
+  }
   get pendingFinales() {
-    return this.reconcillations.filter(d => d.approved_two === false).length;
-  } 
+    return this.reconcillations.filter((d) => d.approved_one === true && d.approved_two === false).length;
+  }
   get completed() {
-    return this.reconcillations.filter(d => d.approved_two === true).length;
-  } 
+    return this.reconcillations.filter((d) => d.approved_one === true && d.approved_two === true).length;
+  }
   get overdue() {
-    return this.reconcillations.filter(d => d.approved_two === true).length;
+    var resultProductData = this.reconcillations.filter((a) => {
+      // var date = new Date(a.created_at);
+      var date = moment(a.created_at).format("YYYY-MM-DD");
+      var today = moment();
+      const actual = today.diff(date, "days");
+      // console.log({actual})
+      return (
+        (a.approved_one === false || a.approved_two === false) && actual >= 30
+      );
+    });
+    // console.log(JSON.stringify(resultProductData))
+
+    return resultProductData.length || 0;
   }
   // get reconcillations() {
   //   return Object.keys(this.brandList || {}).map((key) => ({

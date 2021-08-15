@@ -3,15 +3,7 @@
 import React, { useEffect, useContext } from "react";
 import ReconStore from "../stores/ReconStore";
 import { observer } from "mobx-react-lite";
-// import { Panel } from 'primereact/panel';
-// import { Checkbox } from 'primereact/checkbox';
-// import { Button } from 'primereact/button';
-// import { Dropdown } from 'primereact/dropdown';
-// import { InputText } from 'primereact/inputtext';
-// import { Chart } from 'primereact/chart';
-// import { ProgressBar } from 'primereact/progressbar';
-// import { DataTable } from 'primereact/datatable';
-// import { Column } from 'primereact/column';
+import { Skeleton } from 'primereact/skeleton';
 import ProductStores from "../stores/ProductStores";
 import AccountStore from "../stores/AccountStore";
 
@@ -24,9 +16,9 @@ const Dashboard = () => {
     pendingPristines,
     pendingFinales,
     completed,
-    //   overdue,
+      overdue,
   } = reconStore;
-  const { stats: totalProduct, getProducts } = prodStore;
+  const { stats: totalProduct, getProducts, loading: productLoading } = prodStore;
   const { stats: totalUser, getUsers } = userStore;
   useEffect(() => {
       getProducts();
@@ -50,7 +42,9 @@ const Dashboard = () => {
         <div className="card summary">
           <span className="title">Products</span>
           <span className="detail">Number of products</span>
-          <span className="count purchases">{totalProduct || 0}</span>
+          <span className="count purchases">
+            {productLoading ? <Skeleton width="100%" height="2rem" /> :totalProduct || 0}
+              </span>
         </div>
       </div>
       <div className="p-col-12 p-lg-4">
@@ -67,12 +61,12 @@ const Dashboard = () => {
             className="initials"
             style={{ backgroundColor: "#007be5", color: "#00448f" }}
           >
-            <span>TV</span>
+            <span>TO</span>
           </div>
           <div className="highlight-details ">
             <i className="pi pi-search"></i>
-            <span>Total Queries</span>
-            <span className="count">523</span>
+            <span>Total Overdue</span>
+            <span className="count">{overdue}</span>
           </div>
         </div>
       </div>
@@ -83,11 +77,11 @@ const Dashboard = () => {
             className="initials"
             style={{ backgroundColor: "#20d077", color: "#038d4a" }}
           >
-            <span>PR</span>
+            <span>OR</span>
           </div>
           <div className="highlight-details ">
             <i className="pi pi-filter"></i>
-            <span>Pending Reconcillation</span>
+            <span>Open Reconcillation</span>
             <span className="count">{pendingPristines || 0}</span>
           </div>
         </div>

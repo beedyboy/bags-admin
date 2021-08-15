@@ -35,7 +35,7 @@ const AccountList = ({
     return (
       <>
         <span className="p-column-title">{props.header}</span>
-        {data.lastname}  {data.firstname}
+        {data.lastname} {data.firstname}
       </>
     );
   };
@@ -86,14 +86,14 @@ const AccountList = ({
   );
 
   const setAcl = (e, row) => {
-    e.persist(); 
-    const d = toJS(row) 
+    e.persist();
+    const d = toJS(row);
     rowData(d);
     setModal(true);
   };
 
   const editData = (e, row) => {
-    e.persist(); 
+    e.persist();
     setMode("Edit");
     setTitle("Edit Staff");
     rowData(row);
@@ -114,6 +114,8 @@ const AccountList = ({
           <DataTable
             value={data}
             paginator
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            rowsPerPageOptions={[10, 25, 50]}
             className="p-datatable-customers"
             rows={10}
             dataKey="id"
@@ -136,19 +138,14 @@ const AccountList = ({
               sortable
               body={addressTemp}
             ></Column>
-            <Column
-              field="created_at"
-              header="Created At"
-              sortable
-              body={bodyTemplate}
-            ></Column>
+            <Column field="phone" header="Phone" sortable></Column>
             <Column
               field="status"
               header="Status"
               sortable
               body={statusBodyTemplate}
             ></Column>
-             <Column
+            <Column
               headerStyle={{ width: "8rem", textAlign: "center" }}
               bodyStyle={{
                 textAlign: "center",
