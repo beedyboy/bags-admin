@@ -7,3 +7,4 @@ export { default as ProductView } from "./Product";
 export { default as SubCategoryView } from "./SubCategory";  
 export { default as StageOneView } from "./reconcillations/StageOne";  
 export { default as StageTwoView } from "./reconcillations/StageTwo";  
+export { default as FinalStageView } from "./reconcillations/FinalStage";  

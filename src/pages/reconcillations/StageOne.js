@@ -233,13 +233,13 @@ const StageOne = () => {
                 sortable
               ></Column>
               <Column field="balance" header="Balance" sortable></Column>
+              <Column field="cancellation_number" header="Cancellation No" sortable></Column>
               <Column
                 field="approved_one"
                 header="Approved"
                 sortable
                 body={approvedTemplate}
-              ></Column>
-              {/* <Column field="activity" header="Activity" sortable body={activityBody}></Column> */}
+              ></Column> 
               <Column
                 headerStyle={{ width: "8rem", textAlign: "center" }}
                 bodyStyle={{

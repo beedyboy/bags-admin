@@ -74,6 +74,11 @@ const MainLayout = (props) => {
           icon: "pi pi-fw pi-check-square",
           to: "/stage-two",
         },
+        {
+          label: "Final Stage",
+          icon: "pi pi-fw pi-check-square",
+          to: "/final-stage/default",
+        },
       ],
     },
   ];

@@ -4,7 +4,7 @@ import Utils from "./shared/localStorage";
 const env = {
   local: "http://localhost:8080/",
   production: "https://api.wigtools.ng/",
-  test: "https://bags.youarecaptured.com/",
+  production: "https://bags.youarecaptured.com/",
 };
 
 const serverUrl = env.test;

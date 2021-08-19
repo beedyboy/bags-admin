@@ -9,6 +9,7 @@ import {
   ProductView,
   StageOneView,
   StageTwoView,
+  FinalStageView,
   SubCategoryView,
 } from "./pages";
 import { PrivateRoute, NormalRoute } from "./HOC";
@@ -64,6 +65,12 @@ const Routes = () => {
           exact
           layout={MainLayout}
           path="/stage-two" 
+        />
+        <PrivateRoute
+          component={FinalStageView}
+          exact
+          layout={MainLayout}
+          path="/final-stage/:slug" 
         />
         <PrivateRoute
           component={AccountView}

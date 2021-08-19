@@ -237,7 +237,8 @@ const StageTwo = () => {
                 sortable
               ></Column>
               <Column field="balance" header="Balance" sortable></Column>
-              <Column field="reference" header="Reference" sortable></Column>
+              <Column field="reference" header="Ref No" sortable></Column>
+              <Column field="cancellation_number" header="Cancellation No" sortable></Column>
               <Column
                 field="approved_one"
                 header="Approved"

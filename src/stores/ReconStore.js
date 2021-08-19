@@ -222,19 +222,18 @@ class ReconStore {
     return this.reconcillations.filter((d) => d.approved_one === true && d.approved_two === true).length;
   }
   get overdue() {
-    var resultProductData = this.reconcillations.filter((a) => {
-      // var date = new Date(a.created_at);
+    var resultProductData =  (field) => this.reconcillations.filter((a) => { 
       var date = moment(a.created_at).format("YYYY-MM-DD");
       var today = moment();
-      const actual = today.diff(date, "days");
-      // console.log({actual})
-      return (
-        (a.approved_one === false || a.approved_two === false) && actual >= 30
-      );
+      const actual = today.diff(date, "days"); 
+      // return (
+      //   (a.approved_one === false || a.approved_two === false) && actual >= 30
+      // );
+    return a[field] === false && actual >= 30;
     });
     // console.log(JSON.stringify(resultProductData))
-
-    return resultProductData.length || 0;
+// return resultProductData || [0,0];
+    return [resultProductData('approved_one').length || 0,resultProductData('approved_two').length || 0 ];
   }
   // get reconcillations() {
   //   return Object.keys(this.brandList || {}).map((key) => ({

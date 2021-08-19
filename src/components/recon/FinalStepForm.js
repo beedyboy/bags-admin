@@ -5,13 +5,13 @@ import { InputNumber } from "primereact/inputnumber";
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import dataHero from "data-hero";
-const rules = {
-  approved_one: {
+const schema = {
+  approved_two: {
     isTrue: true,
     message: "Field is required",
   },
 };
-const StepOneForm = ({
+const FinalStepForm = ({
   action,
   sending,
   saveApproval,
@@ -26,11 +26,12 @@ const StepOneForm = ({
       amount_used: Number(0),
       balance: Number(0),
       approved_one: false,
+      approved_two: false,
     },
     touched: {},
-    validator_error: {},
+    errors: {},
   });
-  const { touched, validator_error, values, isValid } = formState;
+  const { touched, errors, values, isValid } = formState;
   useEffect(() => {
     let shouldSetData = typeof initial_data !== "undefined" ? true : false;
     if (shouldSetData) {
@@ -41,6 +42,7 @@ const StepOneForm = ({
           ...state.values,
           id: data && data.id,
           approved_one: data && data.approved_one,
+          approved_two: data && data.approved_two,
           credit_amount: data && data.credit_amount,
           amount_used: data && data.amount_used,
           balance: data && data.balance,
@@ -54,45 +56,27 @@ const StepOneForm = ({
         values: {
           ...prev.values,
           value_date: "",
-          credit_amount: "",
-          amount_used: "",
-          balance: "",
+          credit_amount: Number(0),
+          amount_used: Number(0),
+          balance: Number(0),
           approved_one: false,
+          approved_two: false,
         },
       }));
     };
   }, [initial_data]);
   useEffect(() => {
-    const errors = dataHero.validate(rules, values);
+    const errors = dataHero.validate(schema, values);
     setFormState((formState) => ({
       ...formState,
-      isValid: errors.approved_one.error ? false : true,
-      validator_error: errors || {},
+      isValid: errors.approved_two.error ? false : true,
+      errors: errors || {},
     }));
   }, [values]);
 
-  const setValue = (value) => {
-    let balance = 0;
-    const credit = values.credit_amount;
-    if (value <= credit) {
-      balance = credit - value;
-      setFormState((formState) => ({
-        ...formState,
-        values: {
-          ...formState.values,
-          amount_used: value,
-          balance,
-        },
-        touched: {
-          ...formState.touched,
-          amount_used: true,
-        },
-      }));
-    }
-  };
-
   useEffect(() => {
     if (action === "approved") {
+      resetForm();
       toggle(false);
     }
     return () => {
@@ -106,27 +90,19 @@ const StepOneForm = ({
       ...formState,
       values: {
         ...formState.values,
-        approved_one: event.checked,
+        approved_two: event.checked,
       },
       touched: {
         ...formState.touched,
-        approved_one: true,
+        approved_two: true,
       },
     }));
   };
-  const hasError = (field) =>
-    touched[field] &&
-    touched[field] &&
-    validator_error[field] &&
-    validator_error[field].error;
+  const hasError = (field) => touched[field] && errors[field].error;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (values.approved_one === true) {
-      saveApproval(values, "first");
-    } else {
-      alert("Approved box is required");
-    }
+    saveApproval(values, "second");
   };
   const resetForm = () => {
     setFormState((prev) => ({
@@ -139,6 +115,7 @@ const StepOneForm = ({
         amount_used: Number(0),
         balance: Number(0),
         approved_one: false,
+        approved_two: false,
       },
       touched: {
         ...prev.touched,
@@ -146,8 +123,9 @@ const StepOneForm = ({
         balance: false,
         amount_used: false,
         approved_one: false,
+        approved_two: false,
       },
-      validator_error: {},
+      errors: {},
     }));
   };
   return (
@@ -162,7 +140,7 @@ const StepOneForm = ({
                 name="credit_amount"
                 type="text"
                 disabled
-                value={values.credit_amount}
+                value={values.credit_amount || ""}
               />
             </div>
 
@@ -174,25 +152,27 @@ const StepOneForm = ({
                 mode="currency"
                 currency="NGN"
                 locale="en-NG"
-                value={values.amount_used}
-                onValueChange={(e) => setValue(e.value)}
+                value={values.amount_used || ""}
+                disabled
               />
             </div>
 
             <div className="p-field-checkbox">
               <Checkbox
-                inputId="approved_one"
-                name="approved_one"
-                checked={values.approved_one || false}
+                inputId="approved_two"
+                name="approved_two"
+                checked={values.approved_two || false}
                 onChange={(event) => handleApproval(event)}
-                aria-describedby="approved_one-help"
+                aria-describedby="approved_two-help"
+                className={` ${
+                  hasError("approved_two") ? "p-invalid" : null
+                } " p-d-block"`}
               />
-              <label htmlFor="approved_one">Approve</label>
+              <label htmlFor="approved_two">Approve</label>
 
-              <small id="approved_one-help" className="p-error p-d-block">
-                {hasError("approved_one")
-                  ? validator_error.approved_one &&
-                    validator_error.approved_one.message
+              <small id="approved_two-help" className="p-error p-d-block">
+                {hasError("approved_two")
+                  ? errors.approved_two && errors.approved_two.message
                   : null}
               </small>
             </div>
@@ -212,6 +192,7 @@ const StepOneForm = ({
                 onClick={handleSubmit}
                 disabled={!isValid || sending}
                 loading={sending}
+                loadingOptions={{ position: "right" }}
               />
             </div>
           </div>
@@ -221,4 +202,4 @@ const StepOneForm = ({
   );
 };
 
-export default StepOneForm;
+export default FinalStepForm;

@@ -3,32 +3,38 @@
 import React, { useEffect, useContext } from "react";
 import ReconStore from "../stores/ReconStore";
 import { observer } from "mobx-react-lite";
-import { Skeleton } from 'primereact/skeleton';
+import { Skeleton } from "primereact/skeleton";
+import { Tooltip } from "primereact/tooltip";
 import ProductStores from "../stores/ProductStores";
 import AccountStore from "../stores/AccountStore";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const reconStore = useContext(ReconStore);
   const prodStore = useContext(ProductStores);
   const userStore = useContext(AccountStore);
-  const { 
+  const {
     getAllData,
     pendingPristines,
     pendingFinales,
     completed,
-      overdue,
+    overdue,
   } = reconStore;
-  const { stats: totalProduct, getProducts, loading: productLoading } = prodStore;
+  const {
+    stats: totalProduct,
+    getProducts,
+    loading: productLoading,
+  } = prodStore;
   const { stats: totalUser, getUsers } = userStore;
   useEffect(() => {
-      getProducts();
-      getUsers();
+    getProducts();
+    getUsers();
     getAllData();
   }, []);
-  // const formatCurrency = (value) => {
-  //     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-  // };
-
+  const formatCurrency = (value) => {
+      return value.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' });
+  };
+  const totalOverdue = overdue && overdue.reduce((a, b) => a + b); 
   return (
     <div className="p-grid p-fluid dashboard">
       <div className="p-col-12 p-lg-4">
@@ -43,15 +49,19 @@ const Dashboard = () => {
           <span className="title">Products</span>
           <span className="detail">Number of products</span>
           <span className="count purchases">
-            {productLoading ? <Skeleton width="100%" height="2rem" /> :totalProduct || 0}
-              </span>
+            {productLoading ? (
+              <Skeleton width="100%" height="2rem" />
+            ) : (
+              totalProduct || 0
+            )}
+          </span>
         </div>
       </div>
       <div className="p-col-12 p-lg-4">
         <div className="card summary">
           <span className="title">Revenue</span>
           <span className="detail">Income for today</span>
-          <span className="count revenue">$3,200</span>
+          <span className="count revenue">{formatCurrency(3200)}</span>
         </div>
       </div>
 
@@ -65,10 +75,26 @@ const Dashboard = () => {
           </div>
           <div className="highlight-details ">
             <i className="pi pi-search"></i>
-            <span>Total Overdue</span>
-            <span className="count">{overdue}</span>
+            <span>Total Overdue </span>
+            <span className="count tooltip-button p-ml-2">
+              {totalOverdue || 0}
+            </span>
           </div>
         </div>
+      </div>
+
+      <div className="p-d-flex p-ai-center">
+        <Tooltip target=".tooltip-button" autoHide={false}>
+          <div className="p-d-flex p-ai-center">
+            <span className="p-button-rounded p-button-success p-ml-2">
+             <Link to="/final-stage/open">  Stage One:{overdue[0] || 0}</Link>
+            </span>
+            <span className="p-button-rounded p-button-success p-ml-2">
+              {" "}
+            <Link to="/final-stage/final">  Stage Two: {overdue[1] || 0}</Link>
+            </span>
+          </div>
+        </Tooltip>
       </div>
 
       <div className="p-col-12 p-md-6 p-xl-3">
@@ -82,7 +108,10 @@ const Dashboard = () => {
           <div className="highlight-details ">
             <i className="pi pi-filter"></i>
             <span>Open Reconcillation</span>
-            <span className="count">{pendingPristines || 0}</span>
+            <span className="count">
+              {" "}
+              <Link to="/stage-one">{pendingPristines || 0}</Link>
+            </span>
           </div>
         </div>
       </div>
@@ -97,7 +126,9 @@ const Dashboard = () => {
           <div className="highlight-details ">
             <i className="pi pi-question-circle"></i>
             <span>Final Reconcillation</span>
-            <span className="count">{pendingFinales || 0}</span>
+            <span className="count">
+              <Link to="/stage-two">{pendingFinales || 0}</Link>
+            </span>
           </div>
         </div>
       </div>
@@ -112,7 +143,9 @@ const Dashboard = () => {
           <div className="highlight-details ">
             <i className="pi pi-check"></i>
             <span>Closed Reconcillation</span>
-            <span className="count">{completed || 0}</span>
+            <span className="count">
+              <Link to="/final-stage">{completed || 0}</Link>
+            </span>
           </div>
         </div>
       </div>
