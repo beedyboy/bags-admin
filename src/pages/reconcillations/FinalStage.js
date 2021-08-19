@@ -27,7 +27,7 @@ import { StageTwoView, StageOneView } from "..";
 
 const FinalStage = () => {
   let acl;
-  let reconTwo;
+  let reconTwo, reconModify;
 
   const obj = Utils.get("acl");
   if (obj && obj !== "") {
@@ -36,7 +36,7 @@ const FinalStage = () => {
 
   reconTwo = acl && acl.reconcillation && acl.reconcillation.approval_two;
   // reconReport = acl && acl.reconcillation && acl.reconcillation.report;
-  // reconModify = acl && acl.reconcillation && acl.reconcillation.modify;
+  reconModify = acl && acl.reconcillation && acl.reconcillation.modify;
 
   const params = useParams();
   const toast = useRef(null);
@@ -230,7 +230,7 @@ const FinalStage = () => {
       >
         <TabPanel header="All Record">
           {/* <div className="card"> */}
-            {reconTwo ? (
+            {reconModify ? (
               <>
                 {" "}
                 <Toolbar
