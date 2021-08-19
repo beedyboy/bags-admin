@@ -211,7 +211,7 @@ class ProductStore {
     this[key] = value;
   };  
   get stats() {
-    return this.allProduct.length;
+    return this.allProduct.length || 0;
   }
   get productMenu() {
     return Object.keys(this.product || {}).map((key) => ({

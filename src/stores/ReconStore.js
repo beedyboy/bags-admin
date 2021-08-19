@@ -210,16 +210,16 @@ class ReconStore {
     this[key] = value;
   };
   get stats() {
-    return this.reconcillations.length;
+    return this.reconcillations.length || 0;
   }
   get pendingPristines() {
-    return this.reconcillations.filter((d) => d.approved_one === false).length;
+    return this.reconcillations.filter((d) => d.approved_one === false).length || 0;
   }
   get pendingFinales() {
-    return this.reconcillations.filter((d) => d.approved_one === true && d.approved_two === false).length;
+    return this.reconcillations.filter((d) => d.approved_one === true && d.approved_two === false).length || 0;
   }
   get completed() {
-    return this.reconcillations.filter((d) => d.approved_one === true && d.approved_two === true).length;
+    return this.reconcillations.filter((d) => d.approved_one === true && d.approved_two === true).length || 0;
   }
   get overdue() {
     var resultProductData =  (field) => this.reconcillations.filter((a) => { 
