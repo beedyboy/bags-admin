@@ -247,7 +247,7 @@ class ReconStore {
         // return (
         //   (a.approved_one === false || a.approved_two === false) && actual >= 30
         // );
-        return a[field] === false && actual >= 30;
+        return (a[field] === false && actual >= 30) || [];
       });
     // console.log(JSON.stringify(resultProductData))
     // return resultProductData || [0,0];
