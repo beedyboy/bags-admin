@@ -210,7 +210,7 @@ class ReconStore {
     this[key] = value;
   };
   get stats() {
-    return this.reconcillations.length || 0;
+    return (this.reconcillations && this.reconcillations.length) || 0;
   }
   get pendingPristines() {
     return this.reconcillations.filter((d) => d.approved_one === false).length || 0;

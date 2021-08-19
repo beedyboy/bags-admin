@@ -312,7 +312,7 @@ class AccountStore {
       });
   };
   get stats() {
-    return this.users.length;
+    return (this.users && this.users.length) || 0;
   }
 
   removeStaff = (id) => {
