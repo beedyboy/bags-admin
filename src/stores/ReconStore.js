@@ -213,27 +213,48 @@ class ReconStore {
     return (this.reconcillations && this.reconcillations.length) || 0;
   }
   get pendingPristines() {
-    return this.reconcillations.filter((d) => d.approved_one === false).length || 0;
+    return (
+      (this.reconcillations &&
+        this.reconcillations.filter((d) => d.approved_one === false).length) ||
+      0
+    );
   }
   get pendingFinales() {
-    return this.reconcillations.filter((d) => d.approved_one === true && d.approved_two === false).length || 0;
+    return (
+      (this.reconcillations &&
+        this.reconcillations.filter(
+          (d) => d.approved_one === true && d.approved_two === false
+        ).length) ||
+      0
+    );
   }
   get completed() {
-    return this.reconcillations.filter((d) => d.approved_one === true && d.approved_two === true).length || 0;
+    return (
+      (this.reconcillations &&
+        this.reconcillations.filter(
+          (d) => d.approved_one === true && d.approved_two === true
+        ).length) ||
+      0
+    );
   }
   get overdue() {
-    var resultProductData =  (field) => this.reconcillations.filter((a) => { 
-      var date = moment(a.created_at).format("YYYY-MM-DD");
-      var today = moment();
-      const actual = today.diff(date, "days"); 
-      // return (
-      //   (a.approved_one === false || a.approved_two === false) && actual >= 30
-      // );
-    return a[field] === false && actual >= 30;
-    });
+    var resultProductData = (field) =>
+      this.reconcillations &&
+      this.reconcillations.filter((a) => {
+        var date = moment(a.created_at).format("YYYY-MM-DD");
+        var today = moment();
+        const actual = today.diff(date, "days");
+        // return (
+        //   (a.approved_one === false || a.approved_two === false) && actual >= 30
+        // );
+        return a[field] === false && actual >= 30;
+      });
     // console.log(JSON.stringify(resultProductData))
-// return resultProductData || [0,0];
-    return [resultProductData('approved_one').length || 0,resultProductData('approved_two').length || 0 ];
+    // return resultProductData || [0,0];
+    return [
+      resultProductData("approved_one").length || 0,
+      resultProductData("approved_two").length || 0,
+    ];
   }
   // get reconcillations() {
   //   return Object.keys(this.brandList || {}).map((key) => ({
