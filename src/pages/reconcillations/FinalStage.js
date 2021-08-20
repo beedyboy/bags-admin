@@ -61,6 +61,7 @@ const FinalStage = () => {
     revertRecord,
     reverting,
     reverted,
+    
   } = store;
   useEffect(() => {
     getAllData();

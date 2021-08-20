@@ -18,7 +18,7 @@ const Dashboard = () => {
     pendingPristines,
     pendingFinales,
     completed,
-    overdue,
+    overdue, 
   } = reconStore;
   const {
     stats: totalProduct,
@@ -34,7 +34,7 @@ const Dashboard = () => {
   const formatCurrency = (value) => {
       return value.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' });
   };
-  const totalOverdue = overdue && overdue.reduce((a, b) => a + b); 
+  const totalOverdue = overdue && overdue.reduce((a, b) => a + b);  
   return (
     <div className="p-grid p-fluid dashboard">
       <div className="p-col-12 p-lg-4">

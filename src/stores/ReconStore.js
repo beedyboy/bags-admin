@@ -28,6 +28,8 @@ class ReconStore {
       stats: computed,
       pendingPristines: computed,
       pendingFinales: computed,
+      overduePristines: computed,
+      overdueFinales: computed,
       completed: computed,
       overdue: computed,
       loading: observable,
@@ -238,23 +240,32 @@ class ReconStore {
     );
   }
   get overdue() {
-    var resultProductData = (field) =>
-      this.reconcillations &&
-      this.reconcillations.filter((a) => {
-        var date = moment(a.created_at).format("YYYY-MM-DD");
-        var today = moment();
-        const actual = today.diff(date, "days");
-        // return (
-        //   (a.approved_one === false || a.approved_two === false) && actual >= 30
-        // );
-        return (a[field] === false && actual >= 30) || [];
-      });
-    // console.log(JSON.stringify(resultProductData))
-    // return resultProductData || [0,0];
-    return [
-      resultProductData("approved_one").length || 0,
-      resultProductData("approved_two").length || 0,
-    ];
+    
+    return [this.overduePristines, this.overdueFinales]
+  }
+
+  get overduePristines() { 
+    var result = this.reconcillations &&
+        this.reconcillations.filter(
+          (d) => {
+            var date = moment(d.created_at).format("YYYY-MM-DD");
+            var today = moment();
+            const actual = today.diff(date, "days");
+            return d.approved_one === false  && actual >= 30
+        }) 
+        return result.length || 0
+  }
+
+  get overdueFinales() { 
+    var result = this.reconcillations &&
+        this.reconcillations.filter(
+          (d) => {
+            var date = moment(d.created_at).format("YYYY-MM-DD");
+            var today = moment();
+            const actual = today.diff(date, "days");
+            return d.approved_one === true && d.approved_two === false  && actual >= 30
+        }) 
+        return result.length || 0
   }
   // get reconcillations() {
   //   return Object.keys(this.brandList || {}).map((key) => ({
