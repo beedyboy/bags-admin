@@ -258,7 +258,7 @@ const StageTwo = () => {
                 field="reconcile_date_one"
                 header="Stage One Approval Date"
                 sortable
-              ></Column>{" "}
+              ></Column>
               <Column
                 headerStyle={{ width: "8rem", textAlign: "center" }}
                 bodyStyle={{
