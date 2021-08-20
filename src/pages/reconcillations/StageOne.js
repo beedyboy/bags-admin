@@ -220,6 +220,7 @@ const StageOne = () => {
               <Column
                 body={remarkBodyTemplate}
                 header="Remarks"
+                field="remarks"
                 sortable
               ></Column>
               <Column

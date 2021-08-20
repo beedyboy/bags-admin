@@ -14,17 +14,20 @@ import { Column } from "primereact/column";
 import { Dialog } from "primereact/dialog";
 import { confirmDialog } from "primereact/confirmdialog";
 import { Toolbar } from "primereact/toolbar";
+import { TabView, TabPanel } from "primereact/tabview";
 import { Tooltip } from "primereact/tooltip";
 import { Toast } from "primereact/toast";
 import { ProgressBar } from "primereact/progressbar";
 import { observer } from "mobx-react-lite";
 import NoAccess from "../../widgets/NoAccess";
-import StepTwoForm from "../../components/recon/StepTwoForm";
+import FinalStepForm from "../../components/recon/FinalStepForm";
 import Utils from "../../shared/localStorage";
+import { useParams } from "react-router-dom";
+import { StageTwoView, StageOneView } from "..";
 
-const StageTwo = () => {
+const FinalStage = () => {
   let acl;
-  let reconTwo;
+  let reconTwo, reconModify;
 
   const obj = Utils.get("acl");
   if (obj && obj !== "") {
@@ -33,8 +36,9 @@ const StageTwo = () => {
 
   reconTwo = acl && acl.reconcillation && acl.reconcillation.approval_two;
   // reconReport = acl && acl.reconcillation && acl.reconcillation.report;
-  // reconModify = acl && acl.reconcillation && acl.reconcillation.modify;
+  reconModify = acl && acl.reconcillation && acl.reconcillation.modify;
 
+  const params = useParams();
   const toast = useRef(null);
   const dt = useRef(null);
   const [upload, setUpload] = useState(false);
@@ -42,14 +46,14 @@ const StageTwo = () => {
   const [activeId, setActiveId] = useState(0);
   const [rowData, setRowData] = useState();
   const [globalFilter, setGlobalFilter] = useState("");
-
+  const [activeIndex, setActiveIndex] = useState(0);
   const store = useContext(ReconStore);
   const {
     loading,
-    finaleRecord,
+    getAllData,
     error,
     action,
-    finales,
+    reconcillations,
     message,
     resetProperty,
     sending,
@@ -57,10 +61,29 @@ const StageTwo = () => {
     revertRecord,
     reverting,
     reverted,
+    
   } = store;
   useEffect(() => {
-    finaleRecord();
-  }, []);
+    getAllData();
+    switch (params && params.slug) {
+      case "default":
+        setActiveIndex(0);
+        break;
+
+      case "open":
+        setActiveIndex(1);
+        break;
+
+      case "final":
+        setActiveIndex(2);
+        break;
+
+      default:
+        setActiveIndex(0);
+        break;
+    }
+  }, [params.slug]);
+
   const exportCSV = () => {
     dt.current.exportCSV();
   };
@@ -104,7 +127,7 @@ const StageTwo = () => {
         detail: message,
       });
       setActiveId(0);
-      finaleRecord();
+      // finaleRecord();
     }
     return () => {
       resetProperty("message", "");
@@ -114,7 +137,7 @@ const StageTwo = () => {
   }, [reverted]);
   const tableHeader = (
     <div className="p-d-flex p-jc-between">
-      Stage Two List
+      Reconcillation Record
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText
@@ -167,7 +190,7 @@ const StageTwo = () => {
     });
   };
   const leftToolbarTemplate = () => {
-    return <React.Fragment>Stage Two Management</React.Fragment>;
+    return <React.Fragment>Reconcillation Final Stage</React.Fragment>;
   };
 
   const rightToolbarTemplate = () => {
@@ -202,78 +225,92 @@ const StageTwo = () => {
   return (
     <Fragment>
       <Toast ref={toast} position="top-right" />
-      <div className="card">
-        {reconTwo ? (
-          <>
-            {" "}
-            <Toolbar
-              className="p-mb-4"
-              left={leftToolbarTemplate}
-              right={rightToolbarTemplate}
-            ></Toolbar>
-            <DataTable
-              ref={dt}
-              value={finales}
-              paginator
-              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-              rowsPerPageOptions={[10, 25, 50]}
-              className="p-datatable-customers"
-              rows={10}
-              columnResizeMode="expand"
-              resizableColumns
-              dataKey="id"
-              rowHover
-              globalFilter={globalFilter}
-              emptyMessage="No record found."
-              loading={loading}
-              header={tableHeader}
-            >
-              <Column headerStyle={{ width: "3em" }}></Column>
-              <Column field="value_date" header="Value Date" sortable></Column>
-              <Column field="remarks" header="Remarks" sortable></Column>
-              <Column
-                field="credit_amount"
-                header="Credit Amount"
-                sortable
-              ></Column>
-              <Column
-                field="amount_used"
-                header="Amount Used"
-                sortable
-              ></Column>
-              <Column field="balance" header="Balance" sortable></Column>
-              <Column field="reference" header="Ref No" sortable></Column>
-              <Column
-                field="cancellation_number"
-                header="Cancellation No"
-                sortable
-              ></Column>
-              <Column
-                field="approved_one"
-                header="Approved"
-                sortable
-                body={approvedTemplate}
-              ></Column>
-              <Column
-                field="reconcile_date_one"
-                header="Stage One Approval Date"
-                sortable
-              ></Column>{" "}
-              <Column
-                headerStyle={{ width: "8rem", textAlign: "center" }}
-                bodyStyle={{
-                  textAlign: "center",
-                  overflow: "visible",
-                  justifyContent: "center",
-                }}
-                body={actionTemplate}
-              ></Column>
-            </DataTable>
-          </>
-        ) : (
-          <NoAccess page="stage two" />
-        )}{" "}
-      </div>
+      <TabView
+        activeIndex={activeIndex}
+        onTabChange={(e) => setActiveIndex(e.index)}
+      >
+        <TabPanel header="All Record">
+          {/* <div className="card"> */}
+            {reconModify ? (
+              <>
+                {" "}
+                <Toolbar
+                  className="p-mb-4"
+                  left={leftToolbarTemplate}
+                  right={rightToolbarTemplate}
+                ></Toolbar>
+                <DataTable
+                  ref={dt}
+                  value={reconcillations}
+                  paginator
+                  paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                  rowsPerPageOptions={[10, 25, 50]}
+                  className="p-datatable-customers"
+                  rows={10}
+                  columnResizeMode="expand"
+                  resizableColumns
+                  dataKey="id"
+                  rowHover
+                  globalFilter={globalFilter}
+                  emptyMessage="No record found."
+                  loading={loading}
+                  header={tableHeader}
+                >
+                  <Column headerStyle={{ width: "3em" }}></Column>
+                  <Column
+                    field="value_date"
+                    header="Value Date"
+                    sortable
+                  ></Column>
+                  <Column field="remarks" header="Remarks" sortable></Column>
+                  <Column
+                    field="credit_amount"
+                    header="Credit Amount"
+                    sortable
+                  ></Column>
+                  <Column
+                    field="amount_used"
+                    header="Amount Used"
+                    sortable
+                  ></Column>
+                  <Column field="balance" header="Balance" sortable></Column>
+                  <Column field="reference" header="Ref No" sortable></Column>
+                  <Column
+                    field="cancellation_number"
+                    header="Cancellation No"
+                    sortable
+                  ></Column>
+                  <Column
+                    field="approved_one"
+                    header="Approved"
+                    sortable
+                    body={approvedTemplate}
+                  ></Column>
+                  {/* <Column field="activity" header="Activity" sortable body={activityBody}></Column> */}
+                  <Column
+                    headerStyle={{ width: "8rem", textAlign: "center" }}
+                    bodyStyle={{
+                      textAlign: "center",
+                      overflow: "visible",
+                      justifyContent: "center",
+                    }}
+                    body={actionTemplate}
+                  ></Column>
+                </DataTable>
+              </>
+            ) : (
+              <NoAccess page="final stage" />
+            )}{" "}
+          {/* </div> */}
+        </TabPanel>
+        <TabPanel header="Open Reconcillation">
+          <StageOneView />
+        </TabPanel>
+        <TabPanel header="Final Reconcillation">
+          {" "}
+          <StageTwoView />
+        </TabPanel>
+      </TabView>
       <Dialog
         visible={upload}
         onHide={(e) => setUpload(false)}
@@ -305,7 +342,7 @@ const StageTwo = () => {
         style={{ width: "50vw" }}
         header="Approve Record"
       >
-        <StepTwoForm
+        <FinalStepForm
           action={action}
           error={error}
           message={message}
@@ -320,4 +357,4 @@ const StageTwo = () => {
   );
 };
 
-export default observer(StageTwo);
+export default observer(FinalStage);

@@ -12,6 +12,7 @@ class ReconStore {
   reverted = false;
   removed = false;
   reconcillations = [];
+  finalReport = [];
   pristine = [];
   finales = [];
   brand = [];
@@ -25,6 +26,7 @@ class ReconStore {
       error: observable,
       action: observable,
       removed: observable,
+      finalReport: observable,
       stats: computed,
       pendingPristines: computed,
       pendingFinales: computed,
@@ -40,6 +42,7 @@ class ReconStore {
       reconcillations: observable,
       getAllData: action,
       uploadStatement: action,
+      getFinalReport: action,
       saveApproval: action,
       pristineRecord: action,
       finaleRecord: action,
@@ -86,6 +89,24 @@ class ReconStore {
         }
       });
     } catch (err) {
+      this.error = err;
+    }
+  };
+
+  getFinalReport = (data) => { 
+    this.loading = true;
+    this.sending = true;
+    try {
+      backend.post("reconcillations/final/report", data).then((res) => {
+        this.loading = false;
+        this.sending = false;
+        if (res.status === 200) {
+          this.finalReport = res.data;
+        }
+      });
+    } catch (err) {
+      this.loading = false;
+      this.sending = false;
       this.error = err;
     }
   };
