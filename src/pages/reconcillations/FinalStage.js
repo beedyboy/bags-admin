@@ -38,7 +38,7 @@ const FinalStage = () => {
   const toast = useRef(null);
   const dt = useRef(null);
   const [upload, setUpload] = useState(false);
-  const [activeId, setActiveId] = useState(0); 
+  const [activeId, setActiveId] = useState(0);
   const [globalFilter, setGlobalFilter] = useState("");
   const [date2, setDate2] = useState(null);
   const store = useContext(ReconStore);
@@ -169,15 +169,20 @@ const FinalStage = () => {
           readOnlyInput
         />
         <Button
+          type="button"
           icon="pi pi-search"
-          className="p-button-rounded p-button-success p-button-text"
+          className="p-button-rounded p-ml-3"
           onClick={handleSubmit}
-          disabled={(date2 && date2.length >= 2) || sending}
+          disabled={
+            date2 === null ||
+            (date2[0] === null && date2[1] === null) ||
+            sending
+          }
         />
       </React.Fragment>
     );
   };
-
+   
   const rightToolbarTemplate = () => {
     return (
       <React.Fragment>

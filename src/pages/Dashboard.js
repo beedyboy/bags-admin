@@ -1,15 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import ReconStore from "../stores/ReconStore";
 import { observer } from "mobx-react-lite";
 import { Skeleton } from "primereact/skeleton";
-import { Tooltip } from "primereact/tooltip";
+import { Tooltip } from "primereact/tooltip"; 
+import { Button } from "primereact/button";
+import { Column } from "primereact/column";
+import { DataTable } from "primereact/datatable";
 import ProductStores from "../stores/ProductStores";
 import AccountStore from "../stores/AccountStore";
 import { Link } from "react-router-dom";
 
 const Dashboard = () => {
+  const [stat, setStat] = useState({
+    open: false,
+    closed: false,
+  });
   const reconStore = useContext(ReconStore);
   const prodStore = useContext(ProductStores);
   const userStore = useContext(AccountStore);
@@ -18,7 +25,7 @@ const Dashboard = () => {
     pendingPristines,
     pendingFinales,
     completed,
-    overdue, 
+    overdue,
   } = reconStore;
   const {
     stats: totalProduct,
@@ -26,15 +33,25 @@ const Dashboard = () => {
     loading: productLoading,
   } = prodStore;
   const { stats: totalUser, getUsers } = userStore;
+ 
   useEffect(() => {
     getProducts();
     getUsers();
     getAllData();
   }, []);
   const formatCurrency = (value) => {
-      return value.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' });
+    return value.toLocaleString("en-NG", {
+      style: "currency",
+      currency: "NGN",
+    });
   };
-  const totalOverdue = overdue && overdue.reduce((a, b) => a + b);  
+  const totalOverdue = overdue && overdue.reduce((a, b) => a + b);
+  const toggleStat = (e, field) => {
+  setStat((formState) => ({
+    ...formState,
+    [field]: !formState[field]
+  }))
+  }
   return (
     <div className="p-grid p-fluid dashboard">
       <div className="p-col-12 p-lg-4">
@@ -87,11 +104,11 @@ const Dashboard = () => {
         <Tooltip target=".tooltip-button" autoHide={false}>
           <div className="p-d-flex p-ai-center">
             <span className="p-button-rounded p-button-success p-ml-2">
-             <Link to="/final-stage/open">  Stage One:{overdue[0] || 0}</Link>
+              <Link to="/stage-one"> Stage One:{overdue[0] || 0}</Link>
             </span>
             <span className="p-button-rounded p-button-success p-ml-2">
               {" "}
-            <Link to="/final-stage/final">  Stage Two: {overdue[1] || 0}</Link>
+              <Link to="/stage-two"> Stage Two: {overdue[1] || 0}</Link>
             </span>
           </div>
         </Tooltip>
@@ -124,8 +141,8 @@ const Dashboard = () => {
             <span>FR</span>
           </div>
           <div className="highlight-details ">
-            <i className="pi pi-question-circle"></i>
-            <span>Final Reconcillation</span>
+            {/* <i className="pi pi-question-circle"></i> */}
+            <span>Stage Two Reconcillation</span>
             <span className="count">
               <Link to="/stage-two">{pendingFinales || 0}</Link>
             </span>
@@ -144,11 +161,56 @@ const Dashboard = () => {
             <i className="pi pi-check"></i>
             <span>Closed Reconcillation</span>
             <span className="count">
-              <Link to="/final-stage">{completed || 0}</Link>
+              {/* <Link to="/final-stage">{completed || 0}</Link> */}
+              <Button
+                type="button"
+                icon="pi pi-search"
+                label={completed.length || 0}
+                onClick={(e) => toggleStat(e, "closed")}
+                aria-haspopup
+                aria-controls="overlay_panel"
+                className="select-product-button"
+              />
             </span>
           </div>
         </div>
       </div>
+{stat.closed?
+<>
+      <div className="p-col-12 p-lg-12">
+        <div className="card">
+          <h1 style={{ fontSize: "16px" }}>Closed Reconcillation Data</h1>
+          <DataTable value={completed} paginator rows={5}>
+            <Column headerStyle={{ width: "3em" }}></Column>
+            <Column field="value_date" header="Value Date" sortable></Column>
+            <Column field="remarks" header="Remarks" sortable></Column>
+            <Column
+              field="credit_amount"
+              header="Credit Amount"
+              sortable
+            ></Column>
+            <Column field="amount_used" header="Amount Used" sortable></Column>
+            <Column field="balance" header="Balance" sortable></Column>
+            <Column field="reference" header="Ref No" sortable></Column>
+            <Column
+              field="cancellation_number"
+              header="Cancellation No"
+              sortable
+            ></Column>
+            <Column
+              field="reconcile_date_one"
+              header="Stage One Approval Date"
+              sortable
+            ></Column>
+            <Column
+              field="reconcile_date_one"
+              header="Stage Two Approval Date"
+              sortable
+            ></Column>
+          </DataTable>
+        </div>
+      </div>
+     </> : null }
       {/* 
             <div className="p-col-12 p-md-6 p-lg-4">
                 <Panel header="Tasks" style={{ height: '100%' }}>
@@ -244,23 +306,7 @@ const Dashboard = () => {
                 </Panel>
             </div>
 
-            <div className="p-col-12 p-lg-6">
-                <div className="card">
-                    <h1 style={{ fontSize: '16px' }}>Recent Sales</h1>
-                    <DataTable value={products} className="p-datatable-customers" rows={5} style={{ marginBottom: '20px' }} paginator>
-                        <Column header="Logo" body={(data) => <img src={`assets/demo/images/product/${data.image}`} alt={data.image} width="50" />}></Column>
-                        <Column field="name" header="Name" sortable></Column>
-                        <Column field="category" header="Category" sortable></Column>
-                        <Column field="price" header="Price" sortable body={(data) => formatCurrency(data.price)}></Column>
-                        <Column header="View" body={() => (
-                            <>
-                                <Button icon="pi pi-search" type="button" className="p-button-success p-mr-2 p-mb-1"></Button>
-                                <Button icon="pi pi-times" type="button" className="p-button-danger p-mb-1"></Button>
-                            </>
-                        )}></Column>
-                    </DataTable>
-                </div>
-            </div>
+           
             <div className="p-col-12 p-lg-6">
                 <div className="card">
                     <Chart type="line" data={lineData} />

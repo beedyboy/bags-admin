@@ -256,8 +256,8 @@ class ReconStore {
       (this.reconcillations &&
         this.reconcillations.filter(
           (d) => d.approved_one === true && d.approved_two === true
-        ).length) ||
-      0
+        )) ||
+     []
     );
   }
   get overdue() {
