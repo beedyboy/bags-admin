@@ -112,9 +112,11 @@ const StageTwo = () => {
       setActiveId(0);
     };
   }, [reverted]);
+  const totalAmount = finales?.reduce((a, b) => a + b.credit_amount, 0) || 0;
   const tableHeader = (
     <div className="p-d-flex p-jc-between">
       Stage Two List
+      <span>Total Amount: ${totalAmount}</span>
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText

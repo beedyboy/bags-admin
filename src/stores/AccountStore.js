@@ -1,7 +1,9 @@
+/* eslint-disable no-unreachable */
 import { makeObservable, observable, action, computed } from "mobx";
 import { createContext } from "react";
 import backend from "../config";
 import Utils from "../shared/localStorage";
+import moment from "moment";
 
 class AccountStore {
   user = [];
@@ -14,6 +16,7 @@ class AccountStore {
   sending = false;
   checking = false;
   message = "";
+  home = "";
   errMessage = "";
   myProfile = [];
   profile = [];
@@ -22,12 +25,18 @@ class AccountStore {
   passwordChanged = false;
   isAuthenticated = false;
   action = null;
+  option = "All";
+  startDate = "";
+  endDate = "";
 
   constructor() {
     makeObservable(this, {
       message: observable,
       errMessage: observable,
       action: observable,
+      option: observable,
+      startDate: observable,
+      endDate: observable,
       user: observable,
       myProfile: observable,
       profile: observable,
@@ -53,6 +62,7 @@ class AccountStore {
       resetProperty: action,
       confirmEmail: action,
       stats: computed,
+      filterProperty: action,
     });
   }
 
@@ -86,7 +96,7 @@ class AccountStore {
     try {
       this.checking = true;
       this.exist = false;
-      backend.post(`accounts/confirm`, {email}).then((res) => {
+      backend.post(`accounts/confirm`, { email }).then((res) => {
         this.checking = false;
         if (res.status === 200) {
           this.message = res.data.message;
@@ -110,17 +120,19 @@ class AccountStore {
     this.sending = true;
     this.error = false;
     this.isAuthenticated = false;
+    this.message = "";
+    this.home = "";
     try {
       backend
         .post("accounts/auth", data)
         .then((res) => {
           this.sending = false;
-          if (res.status === 201) {
-            // console.log(res.data.acl)
+          if (res.status === 201) { 
             Utils.save("name", res.data.lastname + " " + res.data.firstname);
             Utils.save("admin_token", res.data.token);
             Utils.save("acl", JSON.stringify(res.data.acl));
             this.message = res.data.message;
+            this.home = res.data.home ?? 'dashboard';
             this.isAuthenticated = true;
           } else {
             this.errMessage = res.data.error;
@@ -130,7 +142,7 @@ class AccountStore {
         })
         .catch((err) => {
           this.sending = false;
-          if (err && err.response && err.response.status === 401) {
+          if (err?.response?.status === 401) {
             console.log({ err });
             console.log("status", err.response.status);
             this.errMessage = err.response.data.error;
@@ -250,7 +262,7 @@ class AccountStore {
         .catch((err) => {
           this.profileLoading = false;
           this.error = true;
-          if (err && err.response && err.response.status === 401) {
+          if (err?.response?.status === 401) {
             this.errMessage = err.response.data.error;
             this.action = "logout";
           } else {
@@ -274,7 +286,7 @@ class AccountStore {
         .catch((err) => {
           this.profileLoading = false;
           this.error = true;
-          if (err && err.response && err.response.status === 401) {
+          if (err?.response?.status === 401) {
             this.errMessage = err.response.data.error;
             this.action = "logout";
           } else {
@@ -303,7 +315,7 @@ class AccountStore {
       .catch((err) => {
         this.profileLoading = false;
         this.error = true;
-        if (err && err.response && err.response.status === 422) {
+        if (err?.response?.status === 422) {
           this.message = err.response.data.error;
           this.action = "profileUpdateError";
         } else {
@@ -311,8 +323,42 @@ class AccountStore {
         }
       });
   };
+
+  filterProperty = (option, data) => { 
+    this.option = option;
+    switch (option) {
+      case "All":
+        this.startDate = "";
+        this.endDate = "";
+        break;
+      case "Filter":
+        this.startDate = moment(data[0]).format("YYYY-MM-DD");
+        this.endDate = moment(data[1]).format("YYYY-MM-DD");
+        break;
+
+      default:
+        break;
+    }
+  };
   get stats() {
-    return (this.users && this.users.length) || 0;
+    switch (this.option) {
+      case "All":
+        return (this.users && this.users.length) || 0;
+        break;
+      case "Filter":
+        var result =
+          this.users &&
+          this.users.filter((d) => {
+            var date = moment(d.created_at).format("YYYY-MM-DD");
+            return date >= this.startDate && date <= this.endDate;
+          });
+        return result.length || 0;
+        break;
+
+      default:
+        break;
+    }
+    return 0;
   }
 
   removeStaff = (id) => {

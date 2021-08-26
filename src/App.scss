@@ -785,3 +785,16 @@ pre[class*="language-"] {
         }
     }
 }
+.bg-indigo-200 {
+    opacity: 1; 
+    background-color: rgba(199,210,254,1);
+    .text-3xl {
+        font-size: 1.88rem;
+        line-height: 1.33;
+        letter-spacing: -.01em;
+        }
+       .text-gray-800 {
+        --tw-text-opacity: 30;
+        color: rgba(30,41,59,var(--tw-text-opacity));
+        }
+    }

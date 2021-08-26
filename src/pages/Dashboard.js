@@ -1,22 +1,29 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, Fragment, useContext, useState } from "react";
 import ReconStore from "../stores/ReconStore";
 import { observer } from "mobx-react-lite";
 import { Skeleton } from "primereact/skeleton";
 import { Tooltip } from "primereact/tooltip"; 
-import { Button } from "primereact/button";
+import { Calendar } from "primereact/calendar";
+import { Button } from "primereact/button"; 
+import { SelectButton } from 'primereact/selectbutton';
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import ProductStores from "../stores/ProductStores";
 import AccountStore from "../stores/AccountStore";
 import { Link } from "react-router-dom";
-
+import Assistant from "../helpers/Assistant";
+// import moment from "moment";
+// const dateFormat = "DD-MM-YYYY";
 const Dashboard = () => {
   const [stat, setStat] = useState({
     open: false,
     closed: false,
   });
+  const options = ['All', 'Filter'];
+  const [optVal, setOptVal] = useState('All');
+  const [dashDate, setDashDate] = useState(null);
   const reconStore = useContext(ReconStore);
   const prodStore = useContext(ProductStores);
   const userStore = useContext(AccountStore);
@@ -26,6 +33,7 @@ const Dashboard = () => {
     pendingFinales,
     completed,
     overdue,
+    filterProperty
   } = reconStore;
   const {
     stats: totalProduct,
@@ -39,12 +47,15 @@ const Dashboard = () => {
     getUsers();
     getAllData();
   }, []);
-  const formatCurrency = (value) => {
-    return value.toLocaleString("en-NG", {
-      style: "currency",
-      currency: "NGN",
-    });
-  };
+  const handleOptioon = (d) => { 
+    setOptVal(d);
+    if(d === "All") { 
+      filterProperty("All", [])
+    }  
+  }
+  const filterOption = () => {
+    filterProperty(optVal, dashDate)
+  }
   const totalOverdue = overdue && overdue.reduce((a, b) => a + b);
   const toggleStat = (e, field) => {
   setStat((formState) => ({
@@ -53,7 +64,40 @@ const Dashboard = () => {
   }))
   }
   return (
-    <div className="p-grid p-fluid dashboard">
+<Fragment>
+ 
+    <div className="p-d-flex bg-indigo-200 p-flex-column p-p-5 p-mb-3">
+    <div className="text-3xl text-gray-800 p-text-bold p-mb-2">Good Afternoon, Bags 👋</div>
+    <div className="font-medium text-500 mb-3">Here is what’s happening in your store:</div> 
+    </div>
+    <div className="p-d-flex p-jc-between p-mb-4">
+<div className="p-d-flex"> 
+      <span className="p-p-2 p-text-bold">Dashboard Analysis! </span>
+<SelectButton value={optVal} options={options} onChange={(e) => handleOptioon(e.value)} />
+
+</div>
+{optVal === "Filter"?
+<div>
+<Calendar
+          id="range"
+          value={dashDate}
+          onChange={(e) => setDashDate(e.value)}
+          selectionMode="range"
+          showIcon
+          readOnlyInput
+          // dateFormat ={dateFormat}
+        />
+        <Button
+          type="button"
+          icon="pi pi-search"
+          className="p-button-rounded p-ml-3"
+          onClick={filterOption} 
+        />
+</div>
+: null
+}
+    </div>
+    <div className="p-grid p-fluid dashboard"> 
       <div className="p-col-12 p-lg-4">
         <div className="card summary">
           <span className="title">Users</span>
@@ -78,7 +122,7 @@ const Dashboard = () => {
         <div className="card summary">
           <span className="title">Revenue</span>
           <span className="detail">Income for today</span>
-          <span className="count revenue">{formatCurrency(3200)}</span>
+          <span className="count revenue">{Assistant.formatCurrency(3200)}</span>
         </div>
       </div>
 
@@ -376,6 +420,7 @@ const Dashboard = () => {
             </div>
         */}
     </div>
+    </Fragment>
   );
 };
 export default observer(Dashboard);

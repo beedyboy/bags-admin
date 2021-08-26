@@ -1,5 +1,4 @@
  
-import crypto from "crypto";
 const moment = require("moment");
 
 const Assistant = {
@@ -29,8 +28,11 @@ const Assistant = {
     return today.getFullYear() + "/" + mm + "/" + dd;
   },
 
-  genToken: () => {
-    return crypto.randomBytes(32).toString("hex");
+  formatCurrency: (value) => {
+    return value.toLocaleString("en-NG", {
+      style: "currency",
+      currency: "NGN",
+    });
   },
    
 };

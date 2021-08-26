@@ -1,3 +1,4 @@
+/* eslint-disable no-unreachable */
 import { makeObservable, observable, action, computed } from "mobx";
 import { createContext } from "react";
 import backend from "../config";
@@ -18,12 +19,18 @@ class ReconStore {
   brand = [];
   message = "";
   action = null;
+  option = "All";
+  startDate = "";
+  endDate = "";
 
   constructor() {
     makeObservable(this, {
       message: observable,
       sending: observable,
       error: observable,
+      option: observable,
+      startDate: observable,
+      endDate: observable,
       action: observable,
       removed: observable,
       finalReport: observable,
@@ -49,6 +56,7 @@ class ReconStore {
       removeRecord: action,
       revertRecord: action,
       resetProperty: action,
+      filterProperty: action,
     });
   }
   getAllData = () => {
@@ -93,7 +101,7 @@ class ReconStore {
     }
   };
 
-  getFinalReport = (data) => { 
+  getFinalReport = (data) => {
     this.loading = true;
     this.sending = true;
     try {
@@ -232,61 +240,143 @@ class ReconStore {
   resetProperty = (key, value) => {
     this[key] = value;
   };
+  filterProperty = (option, data) => { 
+    this.option = option;
+    switch (option) {
+      case "All":
+        this.startDate = "";
+        this.endDate = "";
+        break;
+      case "Filter":
+        this.startDate = moment(data[0]).format("YYYY-MM-DD");
+        this.endDate = moment(data[1]).format("YYYY-MM-DD");
+        break;
+
+      default:
+        break;
+    }
+  };
   get stats() {
     return (this.reconcillations && this.reconcillations.length) || 0;
   }
   get pendingPristines() {
-    return (
-      (this.reconcillations &&
-        this.reconcillations.filter((d) => d.approved_one === false).length) ||
-      0
-    );
+    switch (this.option) {
+      case "All":
+        return (
+          (this.reconcillations &&
+            this.reconcillations.filter((d) => d.approved_one === false)
+              .length) ||
+          0
+        );
+        break;
+      case "Filter":
+        var result =
+          this.reconcillations &&
+          this.reconcillations.filter((d) => {
+            var date = moment(d.created_at).format("YYYY-MM-DD");
+            return (
+              d.approved_one === false &&
+              date >= this.startDate &&
+              date <= this.endDate
+            );
+          });
+        return result.length || 0;
+      // break;startDate
+
+      default:
+        break;
+    }
+    return 0;
   }
   get pendingFinales() {
-    return (
-      (this.reconcillations &&
-        this.reconcillations.filter(
-          (d) => d.approved_one === true && d.approved_two === false
-        ).length) ||
-      0
-    );
+
+    switch (this.option) {
+      case "All":
+        return (
+          (this.reconcillations &&
+            this.reconcillations.filter((d) => d.approved_one === true && d.approved_two === false)
+              .length) ||
+          0
+        );
+        break;
+      case "Filter":
+        var result =
+          this.reconcillations &&
+          this.reconcillations.filter((d) => {
+            var date = moment(d.created_at).format("YYYY-MM-DD");
+            return (
+              d.approved_one === true && d.approved_two === false &&
+              date >= this.startDate &&
+              date <= this.endDate
+            );
+          });
+        return result.length || 0;
+      break; 
+
+      default:
+        break;
+    }
+    return 0; 
   }
   get completed() {
-    return (
-      (this.reconcillations &&
-        this.reconcillations.filter(
-          (d) => d.approved_one === true && d.approved_two === true
-        )) ||
-     []
-    );
+    switch (this.option) {
+      case "All":
+        return (
+          (this.reconcillations &&
+            this.reconcillations.filter(
+              (d) => d.approved_one === true && d.approved_two === true
+            )) ||
+          []
+        );
+        break;
+      case "Filter":
+        var result =
+          this.reconcillations &&
+          this.reconcillations.filter((d) => {
+            var date = moment(d.created_at).format("YYYY-MM-DD");
+            return (
+              d.approved_one === true && d.approved_two === true &&
+             ( date >= this.startDate &&
+              date <= this.endDate)
+            );
+          }); 
+        return result  || [];
+      break; 
+
+      default:
+        break;
+    }
+    return [];
+    
   }
   get overdue() {
-    
-    return [this.overduePristines, this.overdueFinales]
+    return [this.overduePristines, this.overdueFinales];
   }
 
-  get overduePristines() { 
-    var result = this.reconcillations &&
-        this.reconcillations.filter(
-          (d) => {
-            var date = moment(d.created_at).format("YYYY-MM-DD");
-            var today = moment();
-            const actual = today.diff(date, "days");
-            return d.approved_one === false  && actual >= 30
-        }) 
-        return result.length || 0
+  get overduePristines() {
+    var result =
+      this.reconcillations &&
+      this.reconcillations.filter((d) => {
+        var date = moment(d.created_at).format("YYYY-MM-DD");
+        var today = moment();
+        const actual = today.diff(date, "days");
+        return d.approved_one === false && actual >= 30;
+      });
+    return result.length || 0;
   }
 
-  get overdueFinales() { 
-    var result = this.reconcillations &&
-        this.reconcillations.filter(
-          (d) => {
-            var date = moment(d.created_at).format("YYYY-MM-DD");
-            var today = moment();
-            const actual = today.diff(date, "days");
-            return d.approved_one === true && d.approved_two === false  && actual >= 30
-        }) 
-        return result.length || 0
+  get overdueFinales() {
+    var result =
+      this.reconcillations &&
+      this.reconcillations.filter((d) => {
+        var date = moment(d.created_at).format("YYYY-MM-DD");
+        var today = moment();
+        const actual = today.diff(date, "days");
+        return (
+          d.approved_one === true && d.approved_two === false && actual >= 30
+        );
+      });
+    return result.length || 0;
   }
   // get reconcillations() {
   //   return Object.keys(this.brandList || {}).map((key) => ({

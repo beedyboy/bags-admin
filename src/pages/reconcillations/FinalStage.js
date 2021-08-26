@@ -22,6 +22,7 @@ import { observer } from "mobx-react-lite";
 import NoAccess from "../../widgets/NoAccess";
 import Utils from "../../shared/localStorage";
 import moment from "moment";
+import Assistant from "../../helpers/Assistant";
 
 const FinalStage = () => {
   let acl;
@@ -113,9 +114,16 @@ const FinalStage = () => {
       setActiveId(0);
     };
   }, [reverted]);
+
+  const totalRecon = finalReport?.reduce((a, b) => a + b.amount_used, 0) || 0;
+  const totalValue = finalReport?.reduce((a, b) => a + b.credit_amount, 0) || 0;
   const tableHeader = (
     <div className="p-d-flex p-jc-between">
       Reconcillation Record
+      <span  className="p-d-flex p-flex-column p-jc-between">
+        <span>Total Value: {Assistant.formatCurrency(totalValue)}</span>
+        <span>Total Reconcile: {Assistant.formatCurrency(totalRecon)}</span>
+        </span>
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText

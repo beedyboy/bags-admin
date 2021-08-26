@@ -38,6 +38,7 @@ const Login = () => {
     message,
     error,
     errMessage,
+    home,
     sending,
   } = authStore;
   const [formState, setFormState] = useState({
@@ -101,7 +102,7 @@ const Login = () => {
         detail: message,
         severity: "success",
       });
-        history.push("/dashboard");
+      history.push(`/${home}`);
     }
     return () => {
       resetProperty("isAuthenticated", false);
@@ -132,10 +133,7 @@ const Login = () => {
             style={{ height: "100%" }}
           >
             <div className="p-mb-2">
-              <img
-                src="/assets/layout/images/logo.png"
-                alt="logo" 
-              />
+              <img src="/assets/layout/images/logo.png" alt="logo" />
             </div>
             <div className="p-mb-2 p-mt-3"> Bags, Footwears & More</div>
           </div>
@@ -143,64 +141,64 @@ const Login = () => {
 
         {/* <div className="p-col-12 p-md-8 p-col-justify-around p-col-align-center"> */}
         <div className="p-col-12 p-md-8">
-        <div
+          <div
             className="p-d-flex p-flex-column p-jc-center p-ai-center"
             style={{ height: "100%", width: "100%" }}
           >
-          <div className="p-mb-4">Login </div>
-          <div className="card p-fluid">
-            <div className="p-field">
-              <label htmlFor="email">Email</label>
-              <InputText
-                id="email"
-                name="email"
-                type="email"
-                value={values.email || ""}
-                onChange={handleChange}
-                aria-describedby="email-help"
-                className={` ${
-                  hasError("email") ? "p-invalid" : null
-                } " p-d-block"`}
-              />
-              <small id="email-help" className="p-error p-d-block">
-                {hasError("email")
-                  ? errors.email && errors.email.message
-                  : null}
-              </small>
-            </div>
-
-            <div className="p-field">
-              <label htmlFor="password">Password</label>
-              <Password
-                onChange={(e) => handlePasswordChange(e)}
-                toggleMask
-                value={values.password || ""}
-                aria-describedby="password-help"
-                className={` ${
-                  hasError("password") ? "p-invalid" : null
-                } " p-d-block"`}
-              />
-              <small id="password-help" className="p-error p-d-block">
-                {hasError("password")
-                  ? errors.password && errors.password.message
-                  : null}
-              </small>
-            </div>
-            <div className="p-col">
-              <div className="p-d-flex p-jc-end">
-                <Button
-                  label="Login"
-                  icon="pi pi-sign-in"
-                  className="p-button-secondary p-mr-2 p-mb-2"
-                  onClick={handleSignIn}
-                  disabled={!isValid || sending}
-                  loading={sending}
-                  loadingOptions={{ position: "right" }}
+            <div className="p-mb-4">Login </div>
+            <div className="card p-fluid">
+              <div className="p-field">
+                <label htmlFor="email">Email</label>
+                <InputText
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={values.email || ""}
+                  onChange={handleChange}
+                  aria-describedby="email-help"
+                  className={` ${
+                    hasError("email") ? "p-invalid" : null
+                  } " p-d-block"`}
                 />
+                <small id="email-help" className="p-error p-d-block">
+                  {hasError("email")
+                    ? errors.email && errors.email.message
+                    : null}
+                </small>
+              </div>
+
+              <div className="p-field">
+                <label htmlFor="password">Password</label>
+                <Password
+                  onChange={(e) => handlePasswordChange(e)}
+                  toggleMask
+                  value={values.password || ""}
+                  aria-describedby="password-help"
+                  className={` ${
+                    hasError("password") ? "p-invalid" : null
+                  } " p-d-block"`}
+                />
+                <small id="password-help" className="p-error p-d-block">
+                  {hasError("password")
+                    ? errors.password && errors.password.message
+                    : null}
+                </small>
+              </div>
+              <div className="p-col">
+                <div className="p-d-flex p-jc-end">
+                  <Button
+                    label="Login"
+                    icon="pi pi-sign-in"
+                    className="p-button-secondary p-mr-2 p-mb-2"
+                    onClick={handleSignIn}
+                    disabled={!isValid || sending}
+                    loading={sending}
+                    loadingOptions={{ position: "right" }}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </Fragment>

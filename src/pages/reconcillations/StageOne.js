@@ -108,9 +108,10 @@ const StageOne = () => {
       setUpload(false);
     };
   }, [error]);
-  const tableHeader = (
+ const tableHeader = (
     <div className="p-d-flex p-jc-between">
       Stage One List
+ 
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText

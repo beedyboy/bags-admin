@@ -1,56 +1,63 @@
+/* eslint-disable no-unreachable */
 import { makeObservable, observable, action, computed } from "mobx";
 import { createContext } from "react";
 import backend from "../config";
+import moment from "moment";
 
 class ProductStore {
   error = false;
   loading = false;
   sending = false;
-  removed = false; 
-  removingItem = false; 
+  removed = false;
+  removingItem = false;
   message = "";
   action = null;
-  errMessage = ""; 
-
+  errMessage = "";
+  option = "All";
+  startDate = "";
+  endDate = "";
   product = [];
   allProduct = [];
-  productsBySlug = [];  
+  productsBySlug = [];
   productsByCategory = [];
   productsBySubCategory = [];
   similarProducts = [];
-
 
   constructor() {
     makeObservable(this, {
       action: observable,
       error: observable,
-      loading: observable, 
+      loading: observable,
       similarProducts: observable,
       message: observable,
       allProduct: observable,
+      option: observable,
+      startDate: observable,
+      endDate: observable,
       removingItem: observable,
       product: observable,
       productsBySlug: observable,
-      errMessage: observable, 
-      productsByCategory: observable, 
+      errMessage: observable,
+      productsByCategory: observable,
       getProducts: action,
       addProduct: action,
       updateProduct: action,
-      getSimilarProductItem: action, 
-      getProductsByCategory: action, 
+      getSimilarProductItem: action,
+      getProductsByCategory: action,
       productsBySubCategory: observable,
-      getProductsBySlug: action, 
+      getProductsBySlug: action,
       removeProduct: action,
       resetProperty: action,
-      productSlugMenu: computed, 
-      getProductsBySubCategory: action, 
-      sending: observable, 
-      removed: observable, 
-      stats: computed,  
+      productSlugMenu: computed,
+      getProductsBySubCategory: action,
+      sending: observable,
+      removed: observable,
+      stats: computed,
+      filterProperty: action,
     });
   }
 
-  getProductById = (id) => { 
+  getProductById = (id) => {
     this.loading = true;
     try {
       backend.get(`/products/${id}`).then((res) => {
@@ -84,7 +91,6 @@ class ProductStore {
     });
   };
 
-
   getProductsByCategory = (category_menu) => {
     this.loading = true;
     backend.get(`/products?category_menu=${category_menu}`).then((res) => {
@@ -108,11 +114,10 @@ class ProductStore {
       } catch (err) {}
     });
   };
-  
+
   getSimilarProductItem = () => {
     this.similarProducts = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
-  }; 
-   
+  };
 
   addProduct = (data) => {
     try {
@@ -122,7 +127,7 @@ class ProductStore {
         .then((res) => {
           this.sending = false;
           if (res.status === 201) {
-            this.getProducts(); 
+            this.getProducts();
             this.message = res.data.message;
             this.action = "productAdded";
           } else {
@@ -159,7 +164,7 @@ class ProductStore {
         .then((res) => {
           this.sending = false;
           if (res.status === 200) {
-            this.getProducts(); 
+            this.getProducts();
             this.message = res.data.message;
             this.action = "productAdded";
           } else {
@@ -188,7 +193,6 @@ class ProductStore {
     }
   };
 
-
   removeProduct = (id) => {
     this.removed = false;
     try {
@@ -209,9 +213,43 @@ class ProductStore {
   };
   resetProperty = (key, value) => {
     this[key] = value;
-  };  
+  };
+
+  filterProperty = (option, data) => { 
+    this.option = option;
+    switch (option) {
+      case "All":
+        this.startDate = "";
+        this.endDate = "";
+        break;
+      case "Filter":
+        this.startDate = moment(data[0]).format("YYYY-MM-DD");
+        this.endDate = moment(data[1]).format("YYYY-MM-DD");
+        break;
+
+      default:
+        break;
+    }
+  };
   get stats() {
-    return (this.allProduct && this.allProduct.length) || 0;
+    switch (this.option) {
+      case "All":
+        return (this.allProduct && this.allProduct.length) || 0;
+        break;
+      case "Filter":
+        var result =
+          this.allProduct &&
+          this.allProduct.filter((d) => {
+            var date = moment(d.created_at).format("YYYY-MM-DD");
+            return date >= this.startDate && date <= this.endDate;
+          });
+        return result.length || 0;
+        break;
+
+      default:
+        break;
+    }
+    return 0;
   }
   get productMenu() {
     return Object.keys(this.product || {}).map((key) => ({
@@ -222,13 +260,12 @@ class ProductStore {
     return Object.keys(this.productsByCategory || {}).map((key) => ({
       ...this.productsByCategory[key],
     }));
-  } 
+  }
   get productSlugMenu() {
     return Object.keys(this.productsBySlug || {}).map((key) => ({
       ...this.productsBySlug[key],
     }));
-  } 
+  }
 }
- 
- 
+
 export default createContext(new ProductStore());
