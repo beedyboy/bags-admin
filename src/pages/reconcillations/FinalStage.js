@@ -10,7 +10,9 @@ import ReconStore from "../../stores/ReconStore";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
+import { Row } from 'primereact/row';
 import { Column } from "primereact/column";
+import { ColumnGroup } from 'primereact/columngroup';
 import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
 import { confirmDialog } from "primereact/confirmdialog";
@@ -120,10 +122,7 @@ const FinalStage = () => {
   const tableHeader = (
     <div className="p-d-flex p-jc-between">
       Reconcillation Record
-      <span  className="p-d-flex p-flex-column p-jc-between">
-        <span>Total Value: {Assistant.formatCurrency(totalValue)}</span>
-        <span>Total Reconcile: {Assistant.formatCurrency(totalRecon)}</span>
-        </span>
+      
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText
@@ -140,12 +139,7 @@ const FinalStage = () => {
       {reverting && activeId === data.id ? (
         <ProgressBar mode="indeterminate" />
       ) : (
-        <>
-          {/* <Button
-            icon="pi pi-pencil"
-            className="p-button-rounded p-button-success p-mr-2"
-            onClick={(e) => editData(e, data)}
-          /> */}
+        <> 
           <Button
             icon="pi pi-trash"
             className="p-button-rounded p-button-warning"
@@ -155,6 +149,66 @@ const FinalStage = () => {
       )}
     </span>
   );
+  let footerGroup = <ColumnGroup>
+  <Row>
+      <Column footer="Totals:" colSpan={2} footerStyle={{textAlign: 'right'}}/>
+      <Column footer={Assistant.formatCurrency(totalValue)} />
+      <Column footer={Assistant.formatCurrency(totalRecon)} /> 
+  </Row>
+  </ColumnGroup>;
+     
+     let headerGroup = <ColumnGroup>
+      <Row> 
+          <Column header="Total Value" colSpan={2} />
+          <Column header={Assistant.formatCurrency(totalValue)} colSpan={4} />
+      </Row>
+      <Row>
+          <Column header="Credit Amount" colSpan={2} />
+     <Column header={Assistant.formatCurrency(totalRecon)} colSpan={4} />
+    
+      </Row>
+      <Row>
+       <Column field="value_date" header="Value Date" sortable></Column>
+               <Column field="remarks" header="Remarks" sortable></Column>
+              <Column
+                field="credit_amount"
+                header="Credit Amount"
+                sortable
+              ></Column>
+              <Column
+                field="amount_used"
+                header="Amount Used"
+                sortable
+              ></Column>
+              <Column field="balance" header="Balance" sortable></Column>
+              <Column field="reference" header="Ref No" sortable></Column>
+              <Column
+                field="cancellation_number"
+                header="Cancellation No"
+                sortable
+              ></Column>
+              <Column
+                field="reconcile_date_one"
+                header="Stage One Approval Date"
+                sortable
+              ></Column>
+              <Column
+                field="reconcile_date_one"
+                header="Stage Two Approval Date"
+                sortable
+              ></Column>
+              <Column
+                headerStyle={{ width: "8rem", textAlign: "center" }}
+                bodyStyle={{
+                  textAlign: "center",
+                  overflow: "visible",
+                  justifyContent: "center",
+                }}
+                body={actionTemplate}
+              ></Column>
+      </Row>
+  </ColumnGroup>;
+
   const confirm = (e, row) => {
     e.persist();
     confirmDialog({
@@ -247,10 +301,11 @@ const FinalStage = () => {
               emptyMessage="No record found."
               loading={loading}
               header={tableHeader}
+              headerColumnGroup={headerGroup}
+              footerColumnGroup={footerGroup}
             >
-              <Column headerStyle={{ width: "3em" }}></Column>
               <Column field="value_date" header="Value Date" sortable></Column>
-              <Column field="remarks" header="Remarks" sortable></Column>
+               <Column field="remarks" header="Remarks" sortable></Column>
               <Column
                 field="credit_amount"
                 header="Credit Amount"

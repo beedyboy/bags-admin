@@ -10,20 +10,21 @@ import ReconStore from "../../stores/ReconStore";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
+import { Row } from 'primereact/row';
 import { Column } from "primereact/column";
+import { ColumnGroup } from 'primereact/columngroup';
 import { Dialog } from "primereact/dialog";
+import { Calendar } from "primereact/calendar";
 import { confirmDialog } from "primereact/confirmdialog";
 import { Toolbar } from "primereact/toolbar";
-import { TabView, TabPanel } from "primereact/tabview";
 import { Tooltip } from "primereact/tooltip";
 import { Toast } from "primereact/toast";
 import { ProgressBar } from "primereact/progressbar";
 import { observer } from "mobx-react-lite";
 import NoAccess from "../../widgets/NoAccess";
-import FinalStepForm from "../../components/recon/FinalStepForm";
 import Utils from "../../shared/localStorage";
-import { useParams } from "react-router-dom";
-import { StageTwoView, StageOneView } from "..";
+import moment from "moment";
+import Assistant from "../../helpers/Assistant";
 
 const FinalStage = () => {
   let acl;
@@ -34,56 +35,39 @@ const FinalStage = () => {
     acl = JSON.parse(obj);
   }
 
-  reconTwo = acl && acl.reconcillation && acl.reconcillation.approval_two;
   // reconReport = acl && acl.reconcillation && acl.reconcillation.report;
   reconModify = acl && acl.reconcillation && acl.reconcillation.modify;
 
-  const params = useParams();
   const toast = useRef(null);
   const dt = useRef(null);
   const [upload, setUpload] = useState(false);
-  const [approval, setApproval] = useState(false);
   const [activeId, setActiveId] = useState(0);
-  const [rowData, setRowData] = useState();
   const [globalFilter, setGlobalFilter] = useState("");
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [date2, setDate2] = useState(null);
   const store = useContext(ReconStore);
   const {
     loading,
-    getAllData,
+    getFinalReport,
     error,
     action,
-    reconcillations,
+    finalReport,
     message,
     resetProperty,
     sending,
-    saveApproval,
     revertRecord,
     reverting,
     reverted,
-    
   } = store;
-  useEffect(() => {
-    getAllData();
-    switch (params && params.slug) {
-      case "default":
-        setActiveIndex(0);
-        break;
 
-      case "open":
-        setActiveIndex(1);
-        break;
-
-      case "final":
-        setActiveIndex(2);
-        break;
-
-      default:
-        setActiveIndex(0);
-        break;
-    }
-  }, [params.slug]);
-
+  const dateFormat = "DD-MM-YYYY";
+  const handleSubmit = (e) => {
+    // e.preventDefault();
+    const data = {
+      start_date: moment(date2[0]).format(dateFormat),
+      end_date: moment(date2[1]).format(dateFormat),
+    };
+    getFinalReport(data);
+  };
   const exportCSV = () => {
     dt.current.exportCSV();
   };
@@ -95,12 +79,10 @@ const FinalStage = () => {
         summary: "Success Message",
         detail: message,
       });
-      setApproval(false);
     }
     return () => {
       resetProperty("message", "");
       resetProperty("action", "");
-      setApproval(false);
     };
   }, [action]);
   useEffect(() => {
@@ -115,7 +97,6 @@ const FinalStage = () => {
       resetProperty("error", false);
       resetProperty("message", "");
       resetProperty("action", "");
-      setApproval(false);
     };
   }, [error]);
 
@@ -127,7 +108,7 @@ const FinalStage = () => {
         detail: message,
       });
       setActiveId(0);
-      // finaleRecord();
+      handleSubmit();
     }
     return () => {
       resetProperty("message", "");
@@ -135,9 +116,16 @@ const FinalStage = () => {
       setActiveId(0);
     };
   }, [reverted]);
+
+  const totalRecon = finalReport?.reduce((a, b) => a + b.amount_used, 0) || 0;
+  const totalValue = finalReport?.reduce((a, b) => a + b.credit_amount, 0) || 0;
   const tableHeader = (
     <div className="p-d-flex p-jc-between">
       Reconcillation Record
+      <span  className="p-d-flex p-flex-column p-jc-between">
+        <span>Total Value: {Assistant.formatCurrency(totalValue)}</span>
+        <span>Total Reconcile: {Assistant.formatCurrency(totalRecon)}</span>
+        </span>
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText
@@ -149,15 +137,29 @@ const FinalStage = () => {
     </div>
   );
 
-  const approvedTemplate = (data) => {
-    return (
-      <>
-        <span className={`product-badge status-${data.approved_one}`}>
-          {data.approved_one ? "Yes" : "No"}
-        </span>
-      </>
-    );
-  };
+  let footerGroup = <ColumnGroup>
+  <Row>
+      <Column footer="Totals:" colSpan={3} footerStyle={{textAlign: 'right'}}/>
+      <Column footer={Assistant.formatCurrency(totalValue)} />
+      <Column footer={Assistant.formatCurrency(totalRecon)} /> 
+  </Row>
+  </ColumnGroup>;
+      let headerGroup = <ColumnGroup>
+      <Row>
+          <Column header="Value Date" rowSpan={3} />
+          <Column header="Remzarks" colSpan={4} />
+      </Row>
+      <Row>
+          <Column header="Sales" colSpan={2} />
+          <Column header="Profits" colSpan={2} />
+      </Row>
+      <Row>
+          <Column header="Last Year" sortable field="lastYearSale"/>
+          <Column header="This Year" sortable field="thisYearSale"/>
+          <Column header="Last Year" sortable field="lastYearProfit"/>
+          <Column header="This Year" sortable field="thisYearProfit"/>
+      </Row>
+  </ColumnGroup>;
 
   const actionTemplate = (data) => (
     <span className="p-buttonset" id={data.id}>
@@ -165,11 +167,11 @@ const FinalStage = () => {
         <ProgressBar mode="indeterminate" />
       ) : (
         <>
-          <Button
+          {/* <Button
             icon="pi pi-pencil"
             className="p-button-rounded p-button-success p-mr-2"
             onClick={(e) => editData(e, data)}
-          />
+          /> */}
           <Button
             icon="pi pi-trash"
             className="p-button-rounded p-button-warning"
@@ -190,9 +192,31 @@ const FinalStage = () => {
     });
   };
   const leftToolbarTemplate = () => {
-    return <React.Fragment>Reconcillation Final Stage</React.Fragment>;
+    return (
+      <React.Fragment>
+        <Calendar
+          id="range"
+          value={date2}
+          onChange={(e) => setDate2(e.value)}
+          selectionMode="range"
+          showIcon
+          readOnlyInput
+        />
+        <Button
+          type="button"
+          icon="pi pi-search"
+          className="p-button-rounded p-ml-3"
+          onClick={handleSubmit}
+          disabled={
+            date2 === null ||
+            (date2[0] === null && date2[1] === null) ||
+            sending
+          }
+        />
+      </React.Fragment>
+    );
   };
-
+   
   const rightToolbarTemplate = () => {
     return (
       <React.Fragment>
@@ -206,11 +230,10 @@ const FinalStage = () => {
     );
   };
 
-  const editData = (e, row) => {
-    e.persist();
-    setRowData(row);
-    setApproval(true);
-  };
+  // const editData = (e, row) => {
+  //   e.persist();
+  //   setRowData(row);
+  // };
   const revertData = (row) => {
     const values = {
       id: row.id,
@@ -225,92 +248,79 @@ const FinalStage = () => {
   return (
     <Fragment>
       <Toast ref={toast} position="top-right" />
-      <TabView
-        activeIndex={activeIndex}
-        onTabChange={(e) => setActiveIndex(e.index)}
-      >
-        <TabPanel header="All Record">
-          {/* <div className="card"> */}
-            {reconModify ? (
-              <>
-                {" "}
-                <Toolbar
-                  className="p-mb-4"
-                  left={leftToolbarTemplate}
-                  right={rightToolbarTemplate}
-                ></Toolbar>
-                <DataTable
-                  ref={dt}
-                  value={reconcillations}
-                  paginator
-                  paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                  rowsPerPageOptions={[10, 25, 50]}
-                  className="p-datatable-customers"
-                  rows={10}
-                  columnResizeMode="expand"
-                  resizableColumns
-                  dataKey="id"
-                  rowHover
-                  globalFilter={globalFilter}
-                  emptyMessage="No record found."
-                  loading={loading}
-                  header={tableHeader}
-                >
-                  <Column headerStyle={{ width: "3em" }}></Column>
-                  <Column
-                    field="value_date"
-                    header="Value Date"
-                    sortable
-                  ></Column>
-                  <Column field="remarks" header="Remarks" sortable></Column>
-                  <Column
-                    field="credit_amount"
-                    header="Credit Amount"
-                    sortable
-                  ></Column>
-                  <Column
-                    field="amount_used"
-                    header="Amount Used"
-                    sortable
-                  ></Column>
-                  <Column field="balance" header="Balance" sortable></Column>
-                  <Column field="reference" header="Ref No" sortable></Column>
-                  <Column
-                    field="cancellation_number"
-                    header="Cancellation No"
-                    sortable
-                  ></Column>
-                  <Column
-                    field="approved_one"
-                    header="Approved"
-                    sortable
-                    body={approvedTemplate}
-                  ></Column>
-                  {/* <Column field="activity" header="Activity" sortable body={activityBody}></Column> */}
-                  <Column
-                    headerStyle={{ width: "8rem", textAlign: "center" }}
-                    bodyStyle={{
-                      textAlign: "center",
-                      overflow: "visible",
-                      justifyContent: "center",
-                    }}
-                    body={actionTemplate}
-                  ></Column>
-                </DataTable>
-              </>
-            ) : (
-              <NoAccess page="final stage" />
-            )}{" "}
-          {/* </div> */}
-        </TabPanel>
-        <TabPanel header="Open Reconcillation">
-          <StageOneView />
-        </TabPanel>
-        <TabPanel header="Final Reconcillation">
-          {" "}
-          <StageTwoView />
-        </TabPanel>
-      </TabView>
+      <div className="card">
+        {reconModify ? (
+          <>
+            {" "}
+            <Toolbar
+              className="p-mb-4"
+              left={leftToolbarTemplate}
+              right={rightToolbarTemplate}
+            ></Toolbar>
+            <DataTable
+              ref={dt}
+              value={finalReport}
+              paginator
+              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+              rowsPerPageOptions={[10, 25, 50]}
+              className="p-datatable-customers"
+              rows={10}
+              columnResizeMode="expand"
+              resizableColumns
+              dataKey="id"
+              rowHover
+              globalFilter={globalFilter}
+              emptyMessage="No record found."
+              loading={loading}
+              header={tableHeader}
+              footerColumnGroup={footerGroup}
+            >
+              <Column headerStyle={{ width: "3em" }}></Column>
+              <Column field="value_date" header="Value Date" sortable></Column>
+               <Column field="remarks" header="Remarks" sortable></Column>
+              <Column
+                field="credit_amount"
+                header="Credit Amount"
+                sortable
+              ></Column>
+              <Column
+                field="amount_used"
+                header="Amount Used"
+                sortable
+              ></Column>
+              <Column field="balance" header="Balance" sortable></Column>
+              <Column field="reference" header="Ref No" sortable></Column>
+              <Column
+                field="cancellation_number"
+                header="Cancellation No"
+                sortable
+              ></Column>
+              <Column
+                field="reconcile_date_one"
+                header="Stage One Approval Date"
+                sortable
+              ></Column>
+              <Column
+                field="reconcile_date_one"
+                header="Stage Two Approval Date"
+                sortable
+              ></Column>
+              <Column
+                headerStyle={{ width: "8rem", textAlign: "center" }}
+                bodyStyle={{
+                  textAlign: "center",
+                  overflow: "visible",
+                  justifyContent: "center",
+                }}
+                body={actionTemplate}
+              ></Column>
+            </DataTable>
+          </>
+        ) : (
+          <NoAccess page="final stage" />
+        )}{" "}
+      </div>
+
       <Dialog
         visible={upload}
         onHide={(e) => setUpload(false)}
@@ -332,25 +342,6 @@ const FinalStage = () => {
           target=".custom-cancel-btn"
           content="Clear"
           position="bottom"
-        />
-      </Dialog>
-
-      <Dialog
-        visible={approval}
-        onHide={(e) => setApproval(false)}
-        breakpoints={{ "960px": "75vw", "640px": "100vw" }}
-        style={{ width: "50vw" }}
-        header="Approve Record"
-      >
-        <FinalStepForm
-          action={action}
-          error={error}
-          message={message}
-          sending={sending}
-          saveApproval={saveApproval}
-          toggle={setApproval}
-          initial_data={rowData}
-          reset={resetProperty}
         />
       </Dialog>
     </Fragment>

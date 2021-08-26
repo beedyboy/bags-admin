@@ -10,7 +10,9 @@ import ReconStore from "../../stores/ReconStore";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
+import { Row } from 'primereact/row';
 import { Column } from "primereact/column";
+import { ColumnGroup } from 'primereact/columngroup';
 import { Dialog } from "primereact/dialog";
 import { confirmDialog } from "primereact/confirmdialog";
 import { Toolbar } from "primereact/toolbar";
@@ -21,6 +23,7 @@ import { observer } from "mobx-react-lite";
 import NoAccess from "../../widgets/NoAccess";
 import StepTwoForm from "../../components/recon/StepTwoForm";
 import Utils from "../../shared/localStorage";
+import Assistant from "../../helpers/Assistant";
 
 const StageTwo = () => {
   let acl;
@@ -112,11 +115,10 @@ const StageTwo = () => {
       setActiveId(0);
     };
   }, [reverted]);
-  const totalAmount = finales?.reduce((a, b) => a + b.credit_amount, 0) || 0;
+  const totalValue = finales?.reduce((a, b) => a + b.credit_amount, 0) || 0;
   const tableHeader = (
     <div className="p-d-flex p-jc-between">
-      Stage Two List
-      <span>Total Amount: ${totalAmount}</span>
+      Stage Two List 
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText
@@ -158,6 +160,60 @@ const StageTwo = () => {
       )}
     </span>
   );
+
+  let headerGroup = <ColumnGroup>
+  <Row> 
+      <Column header="Total Value" colSpan={2} />
+      <Column header={Assistant.formatCurrency(totalValue)} colSpan={4} />
+  </Row>
+  <Row>
+      <Column header="Total Pending" colSpan={2} />
+ <Column header={finales.length} colSpan={4} />
+
+  </Row>
+  <Row> 
+              <Column field="value_date" header="Value Date" sortable></Column>
+              <Column field="remarks" header="Remarks" sortable></Column>
+              <Column
+                field="credit_amount"
+                header="Credit Amount"
+                sortable
+              ></Column>
+              <Column
+                field="amount_used"
+                header="Amount Used"
+                sortable
+              ></Column>
+              <Column field="balance" header="Balance" sortable></Column>
+              <Column field="reference" header="Ref No" sortable></Column>
+              <Column
+                field="cancellation_number"
+                header="Cancellation No"
+                sortable
+              ></Column>
+              <Column
+                field="approved_one"
+                header="Approved"
+                sortable
+                body={approvedTemplate}
+              ></Column>
+              <Column
+                field="reconcile_date_one"
+                header="Stage One Approval Date"
+                sortable
+              ></Column>
+              <Column
+                headerStyle={{ width: "8rem", textAlign: "center" }}
+                bodyStyle={{
+                  textAlign: "center",
+                  overflow: "visible",
+                  justifyContent: "center",
+                }}
+                body={actionTemplate}
+              ></Column>
+  </Row>
+</ColumnGroup>;
+
   const confirm = (e, row) => {
     e.persist();
     confirmDialog({
@@ -229,8 +285,8 @@ const StageTwo = () => {
               emptyMessage="No record found."
               loading={loading}
               header={tableHeader}
-            >
-              <Column headerStyle={{ width: "3em" }}></Column>
+              headerColumnGroup={headerGroup}
+            > 
               <Column field="value_date" header="Value Date" sortable></Column>
               <Column field="remarks" header="Remarks" sortable></Column>
               <Column
