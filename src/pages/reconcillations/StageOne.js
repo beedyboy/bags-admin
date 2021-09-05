@@ -10,7 +10,9 @@ import ReconStore from "../../stores/ReconStore";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
+import { Row } from "primereact/row";
 import { Column } from "primereact/column";
+import { ColumnGroup } from "primereact/columngroup";
 import { Dialog } from "primereact/dialog";
 import { Toolbar } from "primereact/toolbar";
 import { Tooltip } from "primereact/tooltip";
@@ -21,6 +23,7 @@ import StepOneForm from "../../components/recon/StepOneForm";
 import NoAccess from "../../widgets/NoAccess";
 import Utils from "../../shared/localStorage";
 import { ProgressSpinner } from "primereact/progressspinner";
+import Assistant from "../../helpers/Assistant";
 
 const StageOne = () => {
   let acl;
@@ -108,10 +111,11 @@ const StageOne = () => {
       setUpload(false);
     };
   }, [error]);
- const tableHeader = (
+
+  const totalValue = pristine?.reduce((a, b) => a + parseFloat(b.credit_amount), 0) || 0;
+  const tableHeader = (
     <div className="p-d-flex p-jc-between">
       Stage One List
- 
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText
@@ -170,7 +174,7 @@ const StageOne = () => {
   const remarkBodyTemplate = (row) => {
     return (
       <React.Fragment>
-        <div className="p-text-wrap"  style={{width: '10rem'}}>
+        <div className="p-text-wrap" style={{ width: "10rem" }}>
           {row.remarks}
         </div>
         {/* {row.remarks && row.remarks.length > 33
@@ -179,6 +183,47 @@ const StageOne = () => {
       </React.Fragment>
     );
   };
+
+  let headerGroup = (
+    <ColumnGroup>
+      <Row>
+        <Column header="Total Value" colSpan={2} />
+        <Column header={Assistant.formatCurrency(totalValue)} colSpan={4} />
+      </Row>
+      <Row>
+        <Column header="Total Pending" colSpan={2} />
+        <Column header={pristine.length} colSpan={4} />
+      </Row>
+      <Row>
+        <Column field="value_date" header="Value Date" sortable></Column>
+        <Column field="remarks" header="Remarks" sortable></Column>
+        <Column field="credit_amount" header="Credit Amount" sortable></Column>
+        <Column field="amount_used" header="Amount Used" sortable></Column>
+        <Column field="balance" header="Balance" sortable></Column>
+        <Column field="reference" header="Ref No" sortable></Column>
+        <Column
+          field="cancellation_number"
+          header="Cancellation No"
+          sortable
+        ></Column>
+        <Column
+          field="approved_one"
+          header="Approved"
+          sortable
+          body={approvedTemplate}
+        ></Column>
+        <Column
+          headerStyle={{ width: "8rem", textAlign: "center" }}
+          bodyStyle={{
+            textAlign: "center",
+            overflow: "visible",
+            justifyContent: "center",
+          }}
+          body={actionTemplate}
+        ></Column>
+      </Row>
+    </ColumnGroup>
+  );
 
   const editData = (e, row) => {
     e.persist();
@@ -203,7 +248,7 @@ const StageOne = () => {
               paginator
               currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-               rowsPerPageOptions={[10,25,50]} 
+              rowsPerPageOptions={[10, 25, 50]}
               className="p-datatable-customers p-datatable-responsive"
               rows={10}
               dataKey="id"
@@ -215,8 +260,9 @@ const StageOne = () => {
               emptyMessage="No record found."
               loading={loading}
               header={tableHeader}
+              headerColumnGroup={headerGroup}
             >
-              <Column headerStyle={{ width: "3em" }}></Column>
+              {/* <Column headerStyle={{ width: "3em" }}></Column> */}
               <Column field="value_date" header="Value Date" sortable></Column>
               <Column
                 body={remarkBodyTemplate}
@@ -235,13 +281,17 @@ const StageOne = () => {
                 sortable
               ></Column>
               <Column field="balance" header="Balance" sortable></Column>
-              <Column field="cancellation_number" header="Cancellation No" sortable></Column>
+              <Column
+                field="cancellation_number"
+                header="Cancellation No"
+                sortable
+              ></Column>
               <Column
                 field="approved_one"
                 header="Approved"
                 sortable
                 body={approvedTemplate}
-              ></Column> 
+              ></Column>
               <Column
                 headerStyle={{ width: "8rem", textAlign: "center" }}
                 bodyStyle={{

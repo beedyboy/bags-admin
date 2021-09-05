@@ -38,14 +38,27 @@
     }
 
     .highlight-box {
-        height: 100px;
+        height: 130px;
         display: flex;
         @include clearfix();
 
+        .fr {
+           color: #ef6262;
+        }
+
+        .cr {
+           color: #f9c851;
+        }
+        .or {
+           color: #20d077;
+        }
         .initials {
             height: 100%;
-            width: 50%;
+            width: 40%;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
             padding: 1em;
 
             > span {
@@ -56,8 +69,15 @@
         .highlight-details {
             height: 100%;
             background-color: #ffffff;
-            width: 50%;
+            width: 60%;
             padding: 1em;
+
+            .amount {
+                // color: $textSecondaryColor;
+                font-size: 14px;
+                margin-top: 2px;
+                display: block;
+            }
 
             i {
                 font-size: 18px;

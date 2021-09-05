@@ -240,7 +240,7 @@ class ReconStore {
   resetProperty = (key, value) => {
     this[key] = value;
   };
-  filterProperty = (option, data) => { 
+  filterProperty = (option, data) => {
     this.option = option;
     switch (option) {
       case "All":
@@ -264,9 +264,8 @@ class ReconStore {
       case "All":
         return (
           (this.reconcillations &&
-            this.reconcillations.filter((d) => d.approved_one === false)
-              .length) ||
-          0
+            this.reconcillations.filter((d) => d.approved_one === false)) ||
+          []
         );
         break;
       case "Filter":
@@ -280,7 +279,7 @@ class ReconStore {
               date <= this.endDate
             );
           });
-        return result.length || 0;
+        return result || [];
       // break;startDate
 
       default:
@@ -289,14 +288,14 @@ class ReconStore {
     return 0;
   }
   get pendingFinales() {
-
     switch (this.option) {
       case "All":
         return (
           (this.reconcillations &&
-            this.reconcillations.filter((d) => d.approved_one === true && d.approved_two === false)
-              .length) ||
-          0
+            this.reconcillations.filter(
+              (d) => d.approved_one === true && d.approved_two === false
+            )) ||
+          []
         );
         break;
       case "Filter":
@@ -305,18 +304,19 @@ class ReconStore {
           this.reconcillations.filter((d) => {
             var date = moment(d.created_at).format("YYYY-MM-DD");
             return (
-              d.approved_one === true && d.approved_two === false &&
+              d.approved_one === true &&
+              d.approved_two === false &&
               date >= this.startDate &&
               date <= this.endDate
             );
           });
-        return result.length || 0;
-      break; 
+        return result || [];
+        break;
 
       default:
         break;
     }
-    return 0; 
+    return 0;
   }
   get completed() {
     switch (this.option) {
@@ -335,19 +335,19 @@ class ReconStore {
           this.reconcillations.filter((d) => {
             var date = moment(d.created_at).format("YYYY-MM-DD");
             return (
-              d.approved_one === true && d.approved_two === true &&
-             ( date >= this.startDate &&
-              date <= this.endDate)
+              d.approved_one === true &&
+              d.approved_two === true &&
+              date >= this.startDate &&
+              date <= this.endDate
             );
-          }); 
-        return result  || [];
-      break; 
+          });
+        return result || [];
+        break;
 
       default:
         break;
     }
     return [];
-    
   }
   get overdue() {
     return [this.overduePristines, this.overdueFinales];
