@@ -3,11 +3,11 @@ import Utils from "./shared/localStorage";
 
 const env = {
   local: "http://localhost:8080/",
-  production: "https://api.wigtools.ng/",
+  production: "http://server.mybagswarehouse.com/",
   test: "https://bags.youarecaptured.com/",
 };
 
-const serverUrl = env.test;
+const serverUrl = env.production;
 
 const db = axios.create({
   baseURL: serverUrl,

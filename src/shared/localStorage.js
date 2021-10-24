@@ -1,4 +1,4 @@
-// persist data t local storage
+// persist data to local storage
 const Utils = {
     save:(key, value) => {
         localStorage.setItem(key, value);
