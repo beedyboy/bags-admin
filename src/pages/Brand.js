@@ -114,7 +114,7 @@ const Brand = (props) => {
               <div className="p-d-flex p-jc-between">
                 <div>Brands</div>
                 {canAdd ? (
-                  <Button label="Create New" onClick={(e) => createNew} />
+                  <Button label="Create New" onClick={createNew} />
                 ) : null}{" "}
               </div>
             </div>

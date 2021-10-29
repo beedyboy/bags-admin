@@ -41,7 +41,7 @@ const ACLForm = ({
   ];
 
   useEffect(() => {
-    const data = initial_data?.roles;
+    const data = initial_data?.roles; 
     const id = initial_data?.id;
     setId(id);
     if (data) {
@@ -157,7 +157,8 @@ const ACLForm = ({
       },
     }));
   };
-  // console.log({homePage})
+  // console.log(priviledges.staff);
+  // console.log({priviledges});
   return (
     <Fragment>
       <div className="p-grid">

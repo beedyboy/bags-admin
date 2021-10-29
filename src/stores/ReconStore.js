@@ -8,6 +8,7 @@ class ReconStore {
   error = false;
   exist = false;
   loading = false;
+  uploading = false;
   sending = false;
   reverting = false;
   reverted = false;
@@ -26,6 +27,7 @@ class ReconStore {
   constructor() {
     makeObservable(this, {
       message: observable,
+      uploading: observable,
       sending: observable,
       error: observable,
       option: observable,
@@ -122,10 +124,12 @@ class ReconStore {
   uploadStatement = (data) => {
     try {
       this.sending = true;
+      this.uploading = true;
       backend
         .post("reconcillations", data)
         .then((res) => {
           this.sending = false;
+          this.uploading = false;
           if (res.status === 201) {
             this.getAllData();
             this.pristineRecord();
@@ -139,6 +143,7 @@ class ReconStore {
         })
         .catch((err) => {
           this.sending = false;
+          this.uploading = false;
           if (err.response && err.response.status === 404) {
             console.log("error in axios catch");
             this.message = err.response.data.message;
@@ -149,6 +154,7 @@ class ReconStore {
         });
     } catch (err) {
       this.sending = false;
+      this.uploading = false;
       if (err.response.status === 500) {
         this.message =
           "Error uploading. Please check your network and retry!!!";

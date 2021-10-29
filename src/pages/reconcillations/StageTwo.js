@@ -13,6 +13,7 @@ import { DataTable } from "primereact/datatable";
 import { Row } from "primereact/row";
 import { Column } from "primereact/column";
 import { ColumnGroup } from "primereact/columngroup";
+import { MultiSelect } from "primereact/multiselect";
 import { Dialog } from "primereact/dialog";
 import { confirmDialog } from "primereact/confirmdialog";
 import { Toolbar } from "primereact/toolbar";
@@ -37,9 +38,40 @@ const StageTwo = () => {
   reconTwo = acl && acl.reconcillation && acl.reconcillation.approval_two;
   // reconReport = acl && acl.reconcillation && acl.reconcillation.report;
   // reconModify = acl && acl.reconcillation && acl.reconcillation.modify;
+  const approvedTemplate = (data) => {
+    return (
+      <>
+        <span className={`table-badge status-${data.approved_one}`}>
+          {data.approved_one ? "Yes" : "No"}
+        </span>
+      </>
+    );
+  };
 
+  const columns = [
+    { field: "value_date", header: "Value Date" },
+    { field: "remarks", header: "Remarks" },
+    { field: "credit_amount", header: "Credit Amount" },
+    { field: "amount_used", header: "Amount Used" },
+    { field: "balance", header: "Balance" },
+    { field: "reference", header: "Ref No" },
+    {
+      field: "cancellation_number",
+      header: "Canc No",
+    },
+    {
+      field: "approved_one",
+      header: "Approved",
+      template: approvedTemplate,
+    },
+    {
+      field: "reconcile_date_one",
+      header: "Stage One Approval Date",
+    },
+  ];
   const toast = useRef(null);
   const dt = useRef(null);
+  const [selectedColumns, setSelectedColumn] = useState(columns);
   const [upload, setUpload] = useState(false);
   const [approval, setApproval] = useState(false);
   const [activeId, setActiveId] = useState(0);
@@ -115,12 +147,41 @@ const StageTwo = () => {
       setActiveId(0);
     };
   }, [reverted]);
+
+  const onColumnToggle = (event) => {
+    let selectedColumns = event.value;
+    let orderedSelectedColumns = columns.filter((col) =>
+      selectedColumns.some((sCol) => sCol.field === col.field)
+    );
+    setSelectedColumn(orderedSelectedColumns);
+  };
+  const columnComponents = selectedColumns.map((col) => {
+    return (
+      <Column
+        key={col.field}
+        field={col.field}
+        header={col.header}
+        body={col.template ?? false}
+        sortable
+      />
+    );
+  });
+
   const totalValue = finales?.reduce((a, b) => a + b.credit_amount, 0) || 0;
   const tableHeader = (
     <div className="p-d-flex p-jc-between">
       Stage Two List
-      <span className="p-input-icon-left">
-        <i className="pi pi-search" />
+        <div style={{ textAlign: "left" }}>
+          <MultiSelect
+            value={selectedColumns}
+            options={columns}
+            optionLabel="header"
+            onChange={onColumnToggle}
+            style={{ width: "20em" }}
+          />
+        </div>
+        <span className="p-input-icon-left">
+      <i className="pi pi-search" />
         <InputText
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
@@ -129,16 +190,6 @@ const StageTwo = () => {
       </span>
     </div>
   );
-
-  const approvedTemplate = (data) => {
-    return (
-      <>
-        <span className={`product-badge status-${data.approved_one}`}>
-          {data.approved_one ? "Yes" : "No"}
-        </span>
-      </>
-    );
-  };
 
   const actionTemplate = (data) => (
     <span className="p-buttonset" id={data.id}>
@@ -169,41 +220,9 @@ const StageTwo = () => {
       </Row>
       <Row>
         <Column header="Total Pending" colSpan={2} />
-        <Column header={finales.length} colSpan={4} />
-      </Row>
-      <Row>
-        <Column field="value_date" header="Value Date" sortable></Column>
-        <Column field="remarks" header="Remarks" sortable></Column>
-        <Column field="credit_amount" header="Credit Amount" sortable></Column>
-        <Column field="amount_used" header="Amount Used" sortable></Column>
-        <Column field="balance" header="Balance" sortable></Column>
-        <Column field="reference" header="Ref No" sortable></Column>
-        <Column
-          field="cancellation_number"
-          header="Cancellation No"
-          sortable
-        ></Column>
-        <Column
-          field="approved_one"
-          header="Approved"
-          sortable
-          body={approvedTemplate}
-        ></Column>
-        <Column
-          field="reconcile_date_one"
-          header="Stage One Approval Date"
-          sortable
-        ></Column>
-        <Column
-          headerStyle={{ width: "8rem", textAlign: "center" }}
-          bodyStyle={{
-            textAlign: "center",
-            overflow: "visible",
-            justifyContent: "center",
-          }}
-          body={actionTemplate}
-        ></Column>
-      </Row>
+        <Column header={`${finales.length} item(s)`} colSpan={4} />
+      </Row> 
+        <Row>{columnComponents}</Row> 
     </ColumnGroup>
   );
 
@@ -280,7 +299,18 @@ const StageTwo = () => {
               header={tableHeader}
               headerColumnGroup={headerGroup}
             >
-              <Column field="value_date" header="Value Date" sortable></Column>
+              {columnComponents}
+              <Column
+                headerStyle={{ width: "8rem", textAlign: "center" }}
+                header="Code"
+                bodyStyle={{
+                  textAlign: "center",
+                  overflow: "visible",
+                  justifyContent: "center",
+                }}
+                body={actionTemplate}
+              />
+              {/* <Column field="value_date" header="Value Date" sortable></Column>
               <Column field="remarks" header="Remarks" sortable></Column>
               <Column
                 field="credit_amount"
@@ -318,7 +348,7 @@ const StageTwo = () => {
                   justifyContent: "center",
                 }}
                 body={actionTemplate}
-              ></Column>
+              ></Column> */}
             </DataTable>
           </>
         ) : (

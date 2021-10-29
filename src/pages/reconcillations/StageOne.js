@@ -13,6 +13,7 @@ import { DataTable } from "primereact/datatable";
 import { Row } from "primereact/row";
 import { Column } from "primereact/column";
 import { ColumnGroup } from "primereact/columngroup";
+import { MultiSelect } from "primereact/multiselect";
 import { Dialog } from "primereact/dialog";
 import { Toolbar } from "primereact/toolbar";
 import { Tooltip } from "primereact/tooltip";
@@ -37,10 +38,49 @@ const StageOne = () => {
   reconUpload = acl && acl.reconcillation && acl.reconcillation.upload;
   reconOne = acl && acl.reconcillation && acl.reconcillation.approval_one;
 
+  const approvedTemplate = (data) => {
+    return (
+      <>
+        <span className={`table-badge status-${data.approved_one}`}>
+          {data.approved_one ? "Yes" : "No"}
+        </span>
+      </>
+    );
+  };
+
+  const remarkBodyTemplate = (row) => {
+    return (
+      <React.Fragment>
+        <div className="p-text-wrap" style={{ width: "10rem" }}>
+          {row.remarks}
+        </div>
+        {/* {row.remarks && row.remarks.length > 33
+          ? row.remarks.slice(0, 33) + " . . ."
+          : row.remarks} */}
+      </React.Fragment>
+    );
+  };
+  const columns = [
+    { field: "value_date", header: "Value Date" },
+    { field: "remarks", header: "Remarks", template:  remarkBodyTemplate },
+    { field: "credit_amount", header: "Credit Amount" },
+    { field: "amount_used", header: "Amount Used" },
+    { field: "balance", header: "Balance" },
+    { field: "reference", header: "Ref No" },
+    {
+      field: "cancellation_number",
+      header: "Canc No",
+    },
+    {
+      field: "approved_one",
+      header: "Approved", 
+      template: approvedTemplate ,
+    },
+  ];
   const toast = useRef(null);
   const dt = useRef(null);
+  const [selectedColumns, setSelectedColumn] = useState(columns);
   const [upload, setUpload] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [approval, setApproval] = useState(false);
   const [rowData, setRowData] = useState();
   const [globalFilter, setGlobalFilter] = useState("");
@@ -55,6 +95,7 @@ const StageOne = () => {
     message,
     resetProperty,
     sending,
+    uploading,
     saveApproval,
   } = store;
   useEffect(() => {
@@ -63,11 +104,22 @@ const StageOne = () => {
   const exportCSV = () => {
     dt.current.exportCSV();
   };
+  const onColumnToggle = (event) => {
+    let selectedColumns = event.value;
+    let orderedSelectedColumns = columns.filter((col) =>
+      selectedColumns.some((sCol) => sCol.field === col.field)
+    );
+    setSelectedColumn(orderedSelectedColumns);
+  };
+  const columnComponents = selectedColumns.map((col) => {
+    return (
+      <Column key={col.field} field={col.field} header={col.header} body={col.template?? false} sortable />
+    );
+  });
   const myUploader = (event) => {
     //event.files == files to upload
     const fd = new FormData();
     fd.append("file", event.files[0]);
-    setUploading(true);
     uploadStatement(fd);
   };
   useEffect(() => {
@@ -77,12 +129,10 @@ const StageOne = () => {
         summary: "Success Message",
         detail: message,
       });
-      setUploading(false);
       setApproval(false);
       setUpload(false);
     }
     return () => {
-      setUploading(false);
       resetProperty("message", "");
       resetProperty("action", "");
       setApproval(false);
@@ -99,11 +149,8 @@ const StageOne = () => {
         summary: "Error Message",
         detail: message,
       });
-
-      setUploading(false);
     }
     return () => {
-      setUploading(false);
       resetProperty("error", false);
       resetProperty("message", "");
       resetProperty("action", "");
@@ -112,10 +159,20 @@ const StageOne = () => {
     };
   }, [error]);
 
-  const totalValue = pristine?.reduce((a, b) => a + parseFloat(b.credit_amount), 0) || 0;
+  const totalValue =
+    pristine?.reduce((a, b) => a + parseFloat(b.credit_amount), 0) || 0;
   const tableHeader = (
     <div className="p-d-flex p-jc-between">
       Stage One List
+      <div style={{ textAlign: "left" }}>
+        <MultiSelect
+          value={selectedColumns}
+          options={columns}
+          optionLabel="header"
+          onChange={onColumnToggle}
+          style={{ width: "20em" }}
+        />
+      </div>
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText
@@ -126,16 +183,6 @@ const StageOne = () => {
       </span>
     </div>
   );
-
-  const approvedTemplate = (data) => {
-    return (
-      <>
-        <span className={`product-badge status-${data.approved_one}`}>
-          {data.approved_one ? "Yes" : "No"}
-        </span>
-      </>
-    );
-  };
 
   const actionTemplate = (data) => (
     <span className="p-buttonset">
@@ -171,18 +218,6 @@ const StageOne = () => {
       </React.Fragment>
     );
   };
-  const remarkBodyTemplate = (row) => {
-    return (
-      <React.Fragment>
-        <div className="p-text-wrap" style={{ width: "10rem" }}>
-          {row.remarks}
-        </div>
-        {/* {row.remarks && row.remarks.length > 33
-          ? row.remarks.slice(0, 33) + " . . ."
-          : row.remarks} */}
-      </React.Fragment>
-    );
-  };
 
   let headerGroup = (
     <ColumnGroup>
@@ -192,36 +227,9 @@ const StageOne = () => {
       </Row>
       <Row>
         <Column header="Total Pending" colSpan={2} />
-        <Column header={pristine.length} colSpan={4} />
+        <Column header={`${pristine.length} item(s)`} colSpan={4} />
       </Row>
-      <Row>
-        <Column field="value_date" header="Value Date" sortable></Column>
-        <Column field="remarks" header="Remarks" sortable></Column>
-        <Column field="credit_amount" header="Credit Amount" sortable></Column>
-        <Column field="amount_used" header="Amount Used" sortable></Column>
-        <Column field="balance" header="Balance" sortable></Column>
-        <Column field="reference" header="Ref No" sortable></Column>
-        <Column
-          field="cancellation_number"
-          header="Cancellation No"
-          sortable
-        ></Column>
-        <Column
-          field="approved_one"
-          header="Approved"
-          sortable
-          body={approvedTemplate}
-        ></Column>
-        <Column
-          headerStyle={{ width: "8rem", textAlign: "center" }}
-          bodyStyle={{
-            textAlign: "center",
-            overflow: "visible",
-            justifyContent: "center",
-          }}
-          body={actionTemplate}
-        ></Column>
-      </Row>
+      <Row>{columnComponents}</Row>
     </ColumnGroup>
   );
 
@@ -263,7 +271,18 @@ const StageOne = () => {
               headerColumnGroup={headerGroup}
             >
               {/* <Column headerStyle={{ width: "3em" }}></Column> */}
-              <Column field="value_date" header="Value Date" sortable></Column>
+              {columnComponents}
+              <Column
+                headerStyle={{ width: "8rem", textAlign: "center" }}
+                header="Code"
+                bodyStyle={{
+                  textAlign: "center",
+                  overflow: "visible",
+                  justifyContent: "center",
+                }}
+                body={actionTemplate}
+              />
+              {/* <Column field="value_date" header="Value Date" sortable></Column>
               <Column
                 body={remarkBodyTemplate}
                 header="Remarks"
@@ -281,6 +300,8 @@ const StageOne = () => {
                 sortable
               ></Column>
               <Column field="balance" header="Balance" sortable></Column>
+
+        <Column field="reference" header="Ref No" sortable></Column>
               <Column
                 field="cancellation_number"
                 header="Cancellation No"
@@ -292,15 +313,16 @@ const StageOne = () => {
                 sortable
                 body={approvedTemplate}
               ></Column>
-              <Column
+             <Column
                 headerStyle={{ width: "8rem", textAlign: "center" }}
+                header="Code"
                 bodyStyle={{
                   textAlign: "center",
                   overflow: "visible",
                   justifyContent: "center",
                 }}
                 body={actionTemplate}
-              ></Column>
+              ></Column> */}
             </DataTable>
           </>
         ) : (

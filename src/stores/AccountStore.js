@@ -224,7 +224,7 @@ class AccountStore {
         .put("accounts", data)
         .then((res) => {
           this.sending = false;
-          if (res.status === 200) {
+          if (res.status === 201) {
             this.action = "newStaff";
             this.getUsers();
             this.message = res.data.message;

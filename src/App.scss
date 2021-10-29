@@ -131,7 +131,7 @@
 
     }
 
-    .product-badge {
+    .table-badge {
         border-radius: 2px;
         padding: .25em .5rem;
         text-transform: uppercase;
@@ -139,12 +139,12 @@
         font-size: 12px;
         letter-spacing: .3px;
 
-        &.status-instock {
+        &.status-true {
             background: #C8E6C9;
             color: #256029;
         }
 
-        &.status-outofstock {
+        &.status-false {
             background: #FFCDD2;
             color: #C63737;
         }

@@ -9,6 +9,7 @@ import "prismjs/themes/prism-coy.css";
 import "./layout/flags/flags.css";
 import "./layout/layout.scss";
 import "./App.scss";
+import "./styles.css";
 
 const App = () => {
   return (

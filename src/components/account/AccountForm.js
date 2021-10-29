@@ -96,13 +96,14 @@ const AccountForm = ({
     };
   }, [initial_data, mode]);
   useEffect(() => {
-    const errors = dataHero.validate(schema, values);
+    // if(mode === "Edit")  delete schema.passsword;
+    const errors = dataHero.validate(schema, values); 
     setFormState((formState) => ({
       ...formState,
       isValid:
         errors.firstname.error ||
         errors.lastname.error ||
-        errors.password.error ||
+       (mode === "Edit" ? false : errors.password.error) || 
         errors.email.error ||
         exist
           ? false
@@ -258,6 +259,7 @@ const AccountForm = ({
                 name="email"
                 type="email"
                 value={values.email || ""}
+                readOnly={mode === "Edit" ? true: false}
                 onChange={handleChange}
                 aria-describedby="email-help"
                 className={` ${
