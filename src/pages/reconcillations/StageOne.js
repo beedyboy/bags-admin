@@ -282,47 +282,7 @@ const StageOne = () => {
                 }}
                 body={actionTemplate}
               />
-              {/* <Column field="value_date" header="Value Date" sortable></Column>
-              <Column
-                body={remarkBodyTemplate}
-                header="Remarks"
-                field="remarks"
-                sortable
-              ></Column>
-              <Column
-                field="credit_amount"
-                header="Credit Amount"
-                sortable
-              ></Column>
-              <Column
-                field="amount_used"
-                header="Amount Used"
-                sortable
-              ></Column>
-              <Column field="balance" header="Balance" sortable></Column>
-
-        <Column field="reference" header="Ref No" sortable></Column>
-              <Column
-                field="cancellation_number"
-                header="Cancellation No"
-                sortable
-              ></Column>
-              <Column
-                field="approved_one"
-                header="Approved"
-                sortable
-                body={approvedTemplate}
-              ></Column>
-             <Column
-                headerStyle={{ width: "8rem", textAlign: "center" }}
-                header="Code"
-                bodyStyle={{
-                  textAlign: "center",
-                  overflow: "visible",
-                  justifyContent: "center",
-                }}
-                body={actionTemplate}
-              ></Column> */}
+             
             </DataTable>
           </>
         ) : (

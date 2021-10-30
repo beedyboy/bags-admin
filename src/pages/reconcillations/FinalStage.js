@@ -10,9 +10,10 @@ import ReconStore from "../../stores/ReconStore";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
-import { Row } from 'primereact/row';
+import { Row } from "primereact/row";
 import { Column } from "primereact/column";
-import { ColumnGroup } from 'primereact/columngroup';
+import { MultiSelect } from "primereact/multiselect";
+import { ColumnGroup } from "primereact/columngroup";
 import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
 import { confirmDialog } from "primereact/confirmdialog";
@@ -28,18 +29,39 @@ import Assistant from "../../helpers/Assistant";
 
 const FinalStage = () => {
   let acl;
-  let reconTwo, reconModify;
+  let reconReport, reconModify;
 
   const obj = Utils.get("acl");
   if (obj && obj !== "") {
     acl = JSON.parse(obj);
   }
 
-  // reconReport = acl && acl.reconcillation && acl.reconcillation.report;
+  reconReport = acl && acl.reconcillation && acl.reconcillation.report;
   reconModify = acl && acl.reconcillation && acl.reconcillation.modify;
 
+  const columns = [
+    { field: "value_date", header: "Value Date" },
+    { field: "remarks", header: "Remarks" },
+    { field: "credit_amount", header: "Credit Amount" },
+    { field: "amount_used", header: "Amount Used" },
+    { field: "balance", header: "Balance" },
+    { field: "reference", header: "Ref No" },
+    {
+      field: "cancellation_number",
+      header: "Canc No",
+    },
+    {
+      field: "reconcile_date_one",
+      header: "Reconcile Stage One",
+    },
+    {
+      field: "reconcile_date_two",
+      header: "Reconcile Stage Two",
+    },
+  ];
   const toast = useRef(null);
   const dt = useRef(null);
+  const [selectedColumns, setSelectedColumn] = useState(columns);
   const [upload, setUpload] = useState(false);
   const [activeId, setActiveId] = useState(0);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -59,6 +81,10 @@ const FinalStage = () => {
     reverted,
   } = store;
 
+  const exportColumns = columns.map((col) => ({
+    title: col.header,
+    dataKey: col.field,
+  }));
   const dateFormat = "DD-MM-YYYY";
   const handleSubmit = (e) => {
     // e.preventDefault();
@@ -71,7 +97,40 @@ const FinalStage = () => {
   const exportCSV = () => {
     dt.current.exportCSV();
   };
-
+  const exportPdf = () => {
+    import("jspdf").then((jsPDF) => {
+      import("jspdf-autotable").then(() => {
+        const doc = new jsPDF.default(0, 0);
+        doc.autoTable(exportColumns, finalReport);
+        doc.save("products.pdf");
+      });
+    });
+  };
+  const exportExcel = () => {
+    import("xlsx").then((xlsx) => {
+      const worksheet = xlsx.utils.json_to_sheet(finalReport);
+      const workbook = { Sheets: { data: worksheet }, SheetNames: ["data"] };
+      const excelBuffer = xlsx.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+      saveAsExcelFile(excelBuffer, "report");
+    });
+  };
+  const saveAsExcelFile = (buffer, fileName) => {
+    import("file-saver").then((FileSaver) => {
+      let EXCEL_TYPE =
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+      let EXCEL_EXTENSION = ".xlsx";
+      const data = new Blob([buffer], {
+        type: EXCEL_TYPE,
+      });
+      FileSaver.saveAs(
+        data,
+        fileName + "_export_" + new Date().getTime() + EXCEL_EXTENSION
+      );
+    });
+  };
   useEffect(() => {
     if (action === "approved") {
       toast.current.show({
@@ -119,10 +178,38 @@ const FinalStage = () => {
 
   const totalRecon = finalReport?.reduce((a, b) => a + b.amount_used, 0) || 0;
   const totalValue = finalReport?.reduce((a, b) => a + b.credit_amount, 0) || 0;
+
+  const onColumnToggle = (event) => {
+    let selectedColumns = event.value;
+    let orderedSelectedColumns = columns.filter((col) =>
+      selectedColumns.some((sCol) => sCol.field === col.field)
+    );
+    setSelectedColumn(orderedSelectedColumns);
+  };
+  const columnComponents = selectedColumns.map((col) => {
+    return (
+      <Column
+        key={col.field}
+        field={col.field}
+        header={col.header}
+        body={col.template ?? false}
+        sortable
+      />
+    );
+  });
+
   const tableHeader = (
     <div className="p-d-flex p-jc-between">
       Reconcillation Record
-      
+      <div style={{ textAlign: "left" }}>
+        <MultiSelect
+          value={selectedColumns}
+          options={columns}
+          optionLabel="header"
+          onChange={onColumnToggle}
+          style={{ width: "20em" }}
+        />
+      </div>
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText
@@ -139,7 +226,7 @@ const FinalStage = () => {
       {reverting && activeId === data.id ? (
         <ProgressBar mode="indeterminate" />
       ) : (
-        <> 
+        <>
           <Button
             icon="pi pi-trash"
             className="p-button-rounded p-button-warning"
@@ -149,65 +236,33 @@ const FinalStage = () => {
       )}
     </span>
   );
-  let footerGroup = <ColumnGroup>
-  <Row>
-      <Column footer="Totals:" colSpan={2} footerStyle={{textAlign: 'right'}}/>
-      <Column footer={Assistant.formatCurrency(totalValue)} />
-      <Column footer={Assistant.formatCurrency(totalRecon)} /> 
-  </Row>
-  </ColumnGroup>;
-     
-     let headerGroup = <ColumnGroup>
-      <Row> 
-          <Column header="Total Value" colSpan={2} />
-          <Column header={Assistant.formatCurrency(totalValue)} colSpan={4} />
+  let footerGroup = (
+    <ColumnGroup>
+      <Row>
+        <Column
+          footer="Totals:"
+          colSpan={2}
+          footerStyle={{ textAlign: "right" }}
+        />
+        <Column footer={Assistant.formatCurrency(totalValue)} />
+        <Column footer={Assistant.formatCurrency(totalRecon)} />
+      </Row>
+    </ColumnGroup>
+  );
+
+  let headerGroup = (
+    <ColumnGroup>
+      <Row>
+        <Column header="Total Value" colSpan={2} />
+        <Column header={Assistant.formatCurrency(totalValue)} colSpan={4} />
       </Row>
       <Row>
-          <Column header="Credit Amount" colSpan={2} />
-     <Column header={Assistant.formatCurrency(totalRecon)} colSpan={4} />
-    
+        <Column header="Credit Amount" colSpan={2} />
+        <Column header={Assistant.formatCurrency(totalRecon)} colSpan={4} />
       </Row>
-      <Row>
-       <Column field="value_date" header="Value Date" sortable></Column>
-               <Column field="remarks" header="Remarks" sortable></Column>
-              <Column
-                field="credit_amount"
-                header="Credit Amount"
-                sortable
-              ></Column>
-              <Column
-                field="amount_used"
-                header="Amount Used"
-                sortable
-              ></Column>
-              <Column field="balance" header="Balance" sortable></Column>
-              <Column field="reference" header="Ref No" sortable></Column>
-              <Column
-                field="cancellation_number"
-                header="Cancellation No"
-                sortable
-              ></Column>
-              <Column
-                field="reconcile_date_one"
-                header="Stage One Approval Date"
-                sortable
-              ></Column>
-              <Column
-                field="reconcile_date_one"
-                header="Stage Two Approval Date"
-                sortable
-              ></Column>
-              <Column
-                headerStyle={{ width: "8rem", textAlign: "center" }}
-                bodyStyle={{
-                  textAlign: "center",
-                  overflow: "visible",
-                  justifyContent: "center",
-                }}
-                body={actionTemplate}
-              ></Column>
-      </Row>
-  </ColumnGroup>;
+      <Row>{columnComponents}</Row>
+    </ColumnGroup>
+  );
 
   const confirm = (e, row) => {
     e.persist();
@@ -244,16 +299,48 @@ const FinalStage = () => {
       </React.Fragment>
     );
   };
-   
+
   const rightToolbarTemplate = () => {
     return (
       <React.Fragment>
-        <Button
-          label="Export"
-          icon="pi pi-upload"
-          className="p-button-help"
-          onClick={exportCSV}
-        />
+        {reconReport ? (
+          <div className="p-d-flex p-ai-center export-buttons">
+            <Button
+              type="button"
+              icon="pi pi-file-o"
+              onClick={() => exportCSV(false)}
+              className="p-mr-2"
+              data-pr-tooltip="CSV"
+            />
+            <Button
+              type="button"
+              icon="pi pi-file-excel"
+              onClick={exportExcel}
+              className="p-button-success p-mr-2"
+              data-pr-tooltip="XLS"
+            />
+            <Button
+              type="button"
+              icon="pi pi-file-pdf"
+              onClick={exportPdf}
+              className="p-button-warning p-mr-2"
+              data-pr-tooltip="PDF"
+            />
+            <Button
+              type="button"
+              icon="pi pi-filter"
+              onClick={() => exportCSV(true)}
+              className="p-button-info p-ml-auto"
+              data-pr-tooltip="Selection Only"
+            />
+          </div>
+        ) : // <Button
+        //   label="Export"
+        //   icon="pi pi-upload"
+        //   className="p-button-help"
+        //   onClick={exportCSV}
+        // />
+        null}
       </React.Fragment>
     );
   };
@@ -304,7 +391,7 @@ const FinalStage = () => {
               headerColumnGroup={headerGroup}
               footerColumnGroup={footerGroup}
             >
-              <Column field="value_date" header="Value Date" sortable></Column>
+              {/* <Column field="value_date" header="Value Date" sortable></Column>
                <Column field="remarks" header="Remarks" sortable></Column>
               <Column
                 field="credit_amount"
@@ -332,7 +419,8 @@ const FinalStage = () => {
                 field="reconcile_date_one"
                 header="Stage Two Approval Date"
                 sortable
-              ></Column>
+              ></Column> */}
+              {columnComponents}
               <Column
                 headerStyle={{ width: "8rem", textAlign: "center" }}
                 bodyStyle={{
@@ -372,6 +460,7 @@ const FinalStage = () => {
           position="bottom"
         />
       </Dialog>
+      <Tooltip target=".export-buttons>button" position="bottom" />
     </Fragment>
   );
 };
