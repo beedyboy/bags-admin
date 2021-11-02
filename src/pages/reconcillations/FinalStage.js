@@ -98,38 +98,18 @@ const FinalStage = () => {
     dt.current.exportCSV();
   };
   const exportPdf = () => {
-    import("jspdf").then((jsPDF) => {
-      import("jspdf-autotable").then(() => {
-        const doc = new jsPDF.default(0, 0);
-        doc.autoTable(exportColumns, finalReport);
-        doc.save("products.pdf");
-      });
-    });
+    const fileName =
+      moment(date2[0]).format(dateFormat) +
+      " to " +
+      moment(date2[1]).format(dateFormat);
+    Assistant.exportPdf(finalReport, exportColumns, fileName);
   };
   const exportExcel = () => {
-    import("xlsx").then((xlsx) => {
-      const worksheet = xlsx.utils.json_to_sheet(finalReport);
-      const workbook = { Sheets: { data: worksheet }, SheetNames: ["data"] };
-      const excelBuffer = xlsx.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
-      });
-      saveAsExcelFile(excelBuffer, "report");
-    });
-  };
-  const saveAsExcelFile = (buffer, fileName) => {
-    import("file-saver").then((FileSaver) => {
-      let EXCEL_TYPE =
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-      let EXCEL_EXTENSION = ".xlsx";
-      const data = new Blob([buffer], {
-        type: EXCEL_TYPE,
-      });
-      FileSaver.saveAs(
-        data,
-        fileName + "_export_" + new Date().getTime() + EXCEL_EXTENSION
-      );
-    });
+    const fileName =
+      moment(date2[0]).format(dateFormat) +
+      " to " +
+      moment(date2[1]).format(dateFormat);
+    Assistant.exportExcel(finalReport, fileName);
   };
   useEffect(() => {
     if (action === "approved") {
@@ -305,42 +285,33 @@ const FinalStage = () => {
       <React.Fragment>
         {reconReport ? (
           <div className="p-d-flex p-ai-center export-buttons">
-            <Button
-              type="button"
-              icon="pi pi-file-o"
-              onClick={() => exportCSV(false)}
-              className="p-mr-2"
-              data-pr-tooltip="CSV"
-            />
-            <Button
-              type="button"
-              icon="pi pi-file-excel"
-              onClick={exportExcel}
-              className="p-button-success p-mr-2"
-              data-pr-tooltip="XLS"
-            />
-            <Button
-              type="button"
-              icon="pi pi-file-pdf"
-              onClick={exportPdf}
-              className="p-button-warning p-mr-2"
-              data-pr-tooltip="PDF"
-            />
-            <Button
-              type="button"
-              icon="pi pi-filter"
-              onClick={() => exportCSV(true)}
-              className="p-button-info p-ml-auto"
-              data-pr-tooltip="Selection Only"
-            />
+            {finalReport.length > 0 ? (
+              <>
+                <Button
+                  type="button"
+                  icon="pi pi-file-o"
+                  onClick={() => exportCSV(false)}
+                  className="p-mr-2"
+                  data-pr-tooltip="CSV"
+                />
+                <Button
+                  type="button"
+                  icon="pi pi-file-excel"
+                  onClick={exportExcel}
+                  className="p-button-success p-mr-2"
+                  data-pr-tooltip="XLS"
+                />
+                <Button
+                  type="button"
+                  icon="pi pi-file-pdf"
+                  onClick={exportPdf}
+                  className="p-button-warning p-mr-2"
+                  data-pr-tooltip="PDF"
+                />
+              </>
+            ) : null}
           </div>
-        ) : // <Button
-        //   label="Export"
-        //   icon="pi pi-upload"
-        //   className="p-button-help"
-        //   onClick={exportCSV}
-        // />
-        null}
+        ) : null}
       </React.Fragment>
     );
   };
@@ -391,35 +362,6 @@ const FinalStage = () => {
               headerColumnGroup={headerGroup}
               footerColumnGroup={footerGroup}
             >
-              {/* <Column field="value_date" header="Value Date" sortable></Column>
-               <Column field="remarks" header="Remarks" sortable></Column>
-              <Column
-                field="credit_amount"
-                header="Credit Amount"
-                sortable
-              ></Column>
-              <Column
-                field="amount_used"
-                header="Amount Used"
-                sortable
-              ></Column>
-              <Column field="balance" header="Balance" sortable></Column>
-              <Column field="reference" header="Ref No" sortable></Column>
-              <Column
-                field="cancellation_number"
-                header="Cancellation No"
-                sortable
-              ></Column>
-              <Column
-                field="reconcile_date_one"
-                header="Stage One Approval Date"
-                sortable
-              ></Column>
-              <Column
-                field="reconcile_date_one"
-                header="Stage Two Approval Date"
-                sortable
-              ></Column> */}
               {columnComponents}
               <Column
                 headerStyle={{ width: "8rem", textAlign: "center" }}

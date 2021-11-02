@@ -1,17 +1,18 @@
 import React from "react";
 import { HashRouter as Router, Switch, Redirect } from "react-router-dom";
 import {
-  AccountView,
-  BrandView,
-  DashboardView,
-  LoginView,
-  NotFoundView,
-  ProductView,
-  StageOneView,
-  StageTwoView,
-  FinalStageView,
-  SubCategoryView,
-} from "./pages";
+    AccountView,
+    BrandView,
+    DashboardView,
+    LoginView,
+    NotFoundView,
+    ProductView, 
+    ProfileView,
+    StageOneView,
+    StageTwoView,
+    FinalStageView,
+    SubCategoryView,
+} from './pages';
 import { PrivateRoute, NormalRoute } from "./HOC";
 import MainLayout from "./layout/MainLayout";
 import NormalLayout from "./layout/NormalLayout";
@@ -85,13 +86,13 @@ const Routes = () => {
           path="/subcategory"
         />
      
-          {/*<PrivateRoute
+         <PrivateRoute
         component={ProfileView}
         exact
         layout={MainLayout}
         path="/profile"
       /> 
-      <PrivateRoute
+     {/*<  <PrivateRoute
         component={StaffDetails}
         exact
         layout={MainLayout}

@@ -61,7 +61,7 @@ class AccountStore {
       getProfileById: action,
       resetProperty: action,
       confirmEmail: action,
-      stats: computed,
+      stats: computed, 
       filterProperty: action,
     });
   }
@@ -383,6 +383,7 @@ class AccountStore {
   resetProperty = (key, value) => {
     this[key] = value;
   };
+  
 }
 
 export default createContext(new AccountStore());
