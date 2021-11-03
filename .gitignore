@@ -14,6 +14,7 @@ package-lock.json
 /build
 /idea
 /.idea
+.env
 
 # misc
 .DS_Store

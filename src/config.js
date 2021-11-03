@@ -2,12 +2,12 @@ import axios from "axios";
 import Utils from "./shared/localStorage";
 
 const env = {
-  local: "http://localhost:8080/",
-  production: "https://server.mybagswarehouse.com/",
-  test: "https://bags.youarecaptured.com/",
+  local: process.env.REACT_APP_LOCAL_URL,
+  production: process.env.REACT_APP_PROD_URL,
+  test: process.env.REACT_APP_TEST_URL,
 };
 
-const serverUrl = env.local;
+const serverUrl = env.production;
 
 const db = axios.create({
   baseURL: serverUrl,
