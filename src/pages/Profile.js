@@ -148,7 +148,7 @@ const Profile = () => {
           </div>
           {/* </div> */}
           <div className="p-p-lg-2 p-p-1 p-mr-lg-4" id="blue-500">
-            <div className="p-d-flex p-flex-md-row p-ai-center">
+            {/* <div className="p-d-flex p-flex-md-row p-ai-center">
               <div
                 className="p-d-flex p-flex-column p-ai-center p-px-lg-3 p-px-md-2 p-px-1"
                 id="border-right"
@@ -182,7 +182,7 @@ const Profile = () => {
                   Roles
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
@@ -211,9 +211,10 @@ const Profile = () => {
               </Fragment>
             )}
           </TabPanel>
-          <TabPanel header="Settings">Settings</TabPanel>
+          {/* <TabPanel header="Settings">Settings</TabPanel> */}
         </TabView>
       </div>
+      <Toast ref={toast} position="top-right" />
     </Fragment>
   );
 };

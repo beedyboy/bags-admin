@@ -3,7 +3,7 @@ import React, { useEffect, useState, Fragment } from "react";
 import { Checkbox } from "primereact/checkbox";
 import { Button } from "primereact/button";
 import { RadioButton } from "primereact/radiobutton";
-import { Accordion, AccordionTab } from "primereact/accordion";
+import { Accordion, AccordionTab } from "primereact/accordion"; 
 
 const ACLForm = ({
   reset,
@@ -41,10 +41,12 @@ const ACLForm = ({
   ];
 
   useEffect(() => {
-    const data = initial_data?.roles; 
+    let data = JSON.parse(initial_data?.roles) || {};  
     const id = initial_data?.id;
     setId(id);
-    if (data) {
+    const keys = Object.keys(data);
+    if (keys.length !== 0) { 
+      // console.log({initial_data})
       setPriviledges((state) => ({
         ...state,
         brands: {

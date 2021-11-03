@@ -23,9 +23,11 @@ const Brand = (props) => {
     canDel,
     pageAccess;  
   const obj = Utils.get("acl");
+// acl = Utils.get("acl");
   if (obj && obj !== "") { 
     acl = JSON.parse(obj); 
   }
+  console.log({acl})
   canAdd = acl && acl.brands && acl.brands.add;
   canView = acl && acl.brands && acl.brands.view;
   canDel = acl && acl.brands && acl.brands.del;

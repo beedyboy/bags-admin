@@ -76,12 +76,13 @@ const Dashboard = () => {
   const totalPristineValue = pendingPristines?.reduce((a, b) => a + parseFloat(b.credit_amount), 0) || 0;
   const totalFinaleValue = pendingFinales?.reduce((a, b) => a + parseFloat(b.credit_amount), 0) || 0;
   const totalCompleted = completed?.reduce((a, b) => a + parseFloat(b.credit_amount), 0) || 0;
-
+  const date = new Date().getHours()
+  
   return (
     <Fragment>
       <div className="p-d-flex bg-indigo-200 p-flex-column p-p-5 p-mb-3">
         <div className="text-3xl text-gray-800 p-text-bold p-mb-2">
-          Good Afternoon, Bags 👋
+         {date < 12 ? 'Good Morning!' : date < 18 ? 'Good Afternoon!' : 'Good Night!'}, Bags 👋
         </div>
         <div className="font-medium text-500 mb-3">
           Here is what’s happening in your store:

@@ -20,14 +20,14 @@ import Utils from "./shared/localStorage";
 
 const Routes = () => {
   const loggedIn = Utils.get("admin_token") === "" ? false : true;
-  let acl;
+  // let acl;
  
   if (loggedIn === true) {
-    console.log({ loggedIn });
+    // console.log({ loggedIn });
     const obj = Utils.get("acl");
     if (obj && obj !== "") {
       // console.log({obj})
-      acl = JSON.parse(obj); 
+      // acl = JSON.parse(obj); 
     }
   
   }

@@ -3,7 +3,7 @@ import React, { Fragment, useState, useEffect } from "react";
 import { Inplace, InplaceDisplay, InplaceContent } from "primereact/inplace";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
-import { Badge } from "primereact/badge";
+// import { Badge } from "primereact/badge";
 import { Button } from "primereact/button";
 import { Divider } from "primereact/divider";
 import dataHero from "data-hero";

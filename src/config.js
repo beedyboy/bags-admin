@@ -3,7 +3,7 @@ import Utils from "./shared/localStorage";
 
 const env = {
   local: "http://localhost:8080/",
-  production: "http://server.mybagswarehouse.com/",
+  production: "https://server.mybagswarehouse.com/",
   test: "https://bags.youarecaptured.com/",
 };
 

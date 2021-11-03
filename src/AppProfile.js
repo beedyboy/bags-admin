@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import classNames from "classnames";
 import { CSSTransition } from "react-transition-group";
+import { Link } from "react-router-dom";
 import Utils from "./shared/localStorage";
 
 export const AppProfile = () => {
@@ -30,18 +31,20 @@ export const AppProfile = () => {
       >
         <ul className={classNames({ "layout-profile-expanded": expanded })}>
           <li>
+          <Link to="/profile">
             <button type="button" className="p-link">
               <i className="pi pi-fw pi-user" />
               <span>Account</span>
             </button>
+            </Link>
           </li>
-          <li>
+          {/* <li>
             <button type="button" className="p-link">
               <i className="pi pi-fw pi-inbox" />
               <span>Notifications</span>
               <span className="menuitem-badge">2</span>
             </button>
-          </li>
+          </li> */}
           <li>
             <button type="button" className="p-link"
                 onClick={(e) => Utils.logout()}>
