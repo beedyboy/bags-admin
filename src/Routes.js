@@ -1,18 +1,19 @@
 import React from "react";
 import { HashRouter as Router, Switch, Redirect } from "react-router-dom";
 import {
-    AccountView,
-    BrandView,
-    DashboardView,
-    LoginView,
-    NotFoundView,
-    ProductView, 
-    ProfileView,
-    StageOneView,
-    StageTwoView,
-    FinalStageView,
-    SubCategoryView,
-} from './pages';
+  AccountView,
+  BrandView,
+  DashboardView,
+  LoginView,
+  NotFoundView,
+  ProductView,
+  ProfileView,
+  StageOneView,
+  StageTwoView,
+  FinalStageView,
+  SubCategoryView,
+  ManualView,
+} from "./pages";
 import { PrivateRoute, NormalRoute } from "./HOC";
 import MainLayout from "./layout/MainLayout";
 import NormalLayout from "./layout/NormalLayout";
@@ -21,17 +22,16 @@ import Utils from "./shared/localStorage";
 const Routes = () => {
   const loggedIn = Utils.get("admin_token") === "" ? false : true;
   // let acl;
- 
+
   if (loggedIn === true) {
     // console.log({ loggedIn });
     const obj = Utils.get("acl");
     if (obj && obj !== "") {
       // console.log({obj})
-      // acl = JSON.parse(obj); 
+      // acl = JSON.parse(obj);
     }
-  
   }
-//  console.log({reconOne})
+  //  console.log({reconOne})
   return (
     <Router>
       <Switch>
@@ -40,38 +40,45 @@ const Routes = () => {
           component={BrandView}
           exact
           layout={MainLayout}
-          path="/brands" 
+          path="/brands"
         />
         <PrivateRoute
-        component={DashboardView}
-        exact
-        layout={MainLayout}
-        path="/dashboard"
-      /> 
-      
-      <PrivateRoute
-        component={ProductView}
-        exact
-        layout={MainLayout}
-        path="/products"
-      />
+          component={DashboardView}
+          exact
+          layout={MainLayout}
+          path="/dashboard"
+        />
+
+        <PrivateRoute
+          component={ManualView}
+          exact
+          layout={MainLayout}
+          path="/manual"
+        />
+
+        <PrivateRoute
+          component={ProductView}
+          exact
+          layout={MainLayout}
+          path="/products"
+        />
         <PrivateRoute
           component={StageOneView}
           exact
           layout={MainLayout}
-          path="/stage-one" 
+          path="/stage-one"
         />
         <PrivateRoute
           component={StageTwoView}
           exact
           layout={MainLayout}
-          path="/stage-two" 
+          path="/stage-two"
         />
         <PrivateRoute
           component={FinalStageView}
           exact
           layout={MainLayout}
-          path="/final-stage/:slug" 
+          path="/final-stage/:slug"
         />
         <PrivateRoute
           component={AccountView}
@@ -85,14 +92,14 @@ const Routes = () => {
           layout={MainLayout}
           path="/subcategory"
         />
-     
-         <PrivateRoute
-        component={ProfileView}
-        exact
-        layout={MainLayout}
-        path="/profile"
-      /> 
-     {/*<  <PrivateRoute
+
+        <PrivateRoute
+          component={ProfileView}
+          exact
+          layout={MainLayout}
+          path="/profile"
+        />
+        {/*<  <PrivateRoute
         component={StaffDetails}
         exact
         layout={MainLayout}
@@ -155,13 +162,13 @@ const Routes = () => {
         layout={NormalLayout}
         path="/reset-password/:token/:id"
       />
-     */} 
-     <NormalRoute
-        component={NotFoundView}
-        exact
-        layout={NormalLayout}
-        path="/not-found"
-      /> 
+     */}
+        <NormalRoute
+          component={NotFoundView}
+          exact
+          layout={NormalLayout}
+          path="/not-found"
+        />
         <Redirect to="/not-found" />
       </Switch>
     </Router>
