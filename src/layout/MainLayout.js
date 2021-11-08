@@ -81,6 +81,7 @@ const MainLayout = (props) => {
         },
       ],
     },
+    { label: "Manual", icon: "pi pi-fw pi-info-circle", to: "/manual" },
   ];
 
   const addClass = (element, className) => {
