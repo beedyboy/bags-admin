@@ -125,7 +125,7 @@ const AccountList = ({
             loading={loading}
             header={tableHeader}
           >
-            <Column headerStyle={{ width: "3em" }}></Column>
+            {/* <Column headerStyle={{ width: "3em" }}></Column> */}
             <Column
               // field="name"
               header="Fullname"
@@ -146,7 +146,7 @@ const AccountList = ({
               body={statusBodyTemplate}
             ></Column>
             <Column
-              headerStyle={{ width: "8rem", textAlign: "center" }}
+              headerStyle={{ textAlign: "center" }}
               bodyStyle={{
                 textAlign: "center",
                 overflow: "visible",
