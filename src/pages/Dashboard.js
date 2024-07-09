@@ -143,7 +143,8 @@ const Dashboard = () => {
             <span className="title">Revenue</span>
             <span className="detail">Income for today</span>
             <span className="count revenue">
-              {Assistant.formatCurrency(3200)}
+              N/A
+              {/* {Assistant.formatCurrency(3200)} */}
             </span>
           </div>
         </div>

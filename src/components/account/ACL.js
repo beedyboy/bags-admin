@@ -41,7 +41,7 @@ const ACLForm = ({
   ];
 
   useEffect(() => {
-    let data = {};
+    let data = priviledges;
 
     if (typeof initial_data?.roles === "string") {
       try {
