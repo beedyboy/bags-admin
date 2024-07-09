@@ -6,7 +6,7 @@ import React, {
   useContext,
   useRef,
 } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";  // Updated import
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
@@ -14,6 +14,7 @@ import { Toast } from "primereact/toast";
 import dataHero from "data-hero";
 import AccountStore from "../../stores/AccountStore";
 import { observer } from "mobx-react-lite";
+
 const schema = {
   email: {
     isEmpty: false,
@@ -28,7 +29,7 @@ const schema = {
 };
 
 const Login = () => {
-  const history = useHistory();
+  const navigate = useNavigate();  // Updated hook
   const toast = useRef(null);
   const authStore = useContext(AccountStore);
   const {
@@ -102,7 +103,7 @@ const Login = () => {
         detail: message,
         severity: "success",
       });
-      history.push(`/${home}`);
+      navigate(`/${home}`);  // Updated navigation
     }
     return () => {
       resetProperty("isAuthenticated", false);
@@ -139,7 +140,6 @@ const Login = () => {
           </div>
         </div>
 
-        {/* <div className="p-col-12 p-md-8 p-col-justify-around p-col-align-center"> */}
         <div className="p-col-12 p-md-8">
           <div
             className="p-d-flex p-flex-column p-jc-center p-ai-center"

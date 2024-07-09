@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import classNames from "classnames";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
 import { AppFooter } from "../AppFooter";
 import { AppProfile } from "../AppProfile";
 import { AppMenu } from "../AppMenu";
 import { AppTopbar } from "../AppTopbar";
+
 const MainLayout = (props) => {
   const { children } = props;
 
@@ -15,7 +16,7 @@ const MainLayout = (props) => {
   const [sidebarActive, setSidebarActive] = useState(true);
   const sidebar = useRef();
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   let menuClick = false;
 
@@ -27,8 +28,6 @@ const MainLayout = (props) => {
     }
   }, [sidebarActive]);
  
-  
-
   const onWrapperClick = (event) => {
     if (!menuClick && layoutMode === "overlay") {
       setSidebarActive(false);
@@ -134,7 +133,7 @@ const MainLayout = (props) => {
           <div
             className="layout-logo"
             style={{ cursor: "pointer" }}
-            onClick={() => history.push("/")}
+            onClick={() => navigate("/")}
           >
             {/* <img alt="Logo" src={logo} /> */}
           </div>

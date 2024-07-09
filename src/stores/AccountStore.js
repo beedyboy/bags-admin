@@ -155,6 +155,7 @@ class AccountStore {
       console.log({ error });
     }
   };
+
   addStaff = (data) => {
     try {
       this.sending = true;
@@ -340,6 +341,7 @@ class AccountStore {
         break;
     }
   };
+  
   get stats() {
     switch (this.option) {
       case "All":

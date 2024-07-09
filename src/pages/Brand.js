@@ -27,7 +27,7 @@ const Brand = (props) => {
   if (obj && obj !== "") { 
     acl = JSON.parse(obj); 
   }
-  console.log({acl})
+  // console.log({acl})
   canAdd = acl && acl.brands && acl.brands.add;
   canView = acl && acl.brands && acl.brands.view;
   canDel = acl && acl.brands && acl.brands.del;

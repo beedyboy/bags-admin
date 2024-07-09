@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-import { BrowserRouter as Router } from "react-router-dom";
 import Routes from "./Routes";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -14,9 +13,7 @@ import "./styles.css";
 const App = () => {
   return (
     <Fragment>
-      <Router>
-        <Routes />
-      </Router>
+      <Routes />
     </Fragment>
   );
 };

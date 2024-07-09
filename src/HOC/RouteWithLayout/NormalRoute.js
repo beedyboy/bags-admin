@@ -1,21 +1,12 @@
-import React from 'react';
-import { Route } from 'react-router-dom';  
+import React from "react";
+import { Outlet } from "react-router-dom";
 
-const NormalRoute = props => {
-  const { layout: Layout, component: Component, ...rest } = props;
-
+const NormalRoute = ({ layout: Layout }) => {
   return (
-    <Route
-      {...rest}
-      render={matchProps => ( 
-        <Layout>
-          <Component {...matchProps} />
-        </Layout>
-         
-      )}
-    />
+    <Layout>
+      <Outlet />
+    </Layout>
   );
 };
- 
 
 export default NormalRoute;

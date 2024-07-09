@@ -41,7 +41,18 @@ const ACLForm = ({
   ];
 
   useEffect(() => {
-    let data = JSON.parse(initial_data?.roles) || {};  
+    let data = {};
+
+    if (typeof initial_data?.roles === "string") {
+      try {
+        data = JSON.parse(initial_data.roles);
+      } catch (e) {
+        console.error("Failed to parse roles:", e);
+      }
+    } else if (typeof initial_data?.roles === "object") {
+      data = initial_data.roles;
+    }
+
     const id = initial_data?.id;
     setId(id);
     const keys = Object.keys(data);

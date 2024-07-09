@@ -85,6 +85,7 @@ function ProfileDetails(props) {
       }));
     };
   }, [initial_data]);
+  
   useEffect(() => {
     const errors = dataHero.validate(schema, values);
     setFormState((formState) => ({

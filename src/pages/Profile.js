@@ -12,7 +12,7 @@ import { Toast } from "primereact/toast";
 import { Divider } from "primereact/divider";
 import { observer } from "mobx-react-lite";
 import AccountStore from "../stores/AccountStore";
-import shortId from "short-id";
+import { v4 as uuidv4 } from 'uuid';  // Updated import
 import Loader from "../shared/Loader";
 import { toJS } from "mobx";
 import ProfileDetails from "../components/profile/ProfileDetails";
@@ -33,6 +33,7 @@ const Profile = () => {
   } = store;
   const [loaded, setLoaded] = useState(false);
   let access = toJS(myProfile?.roles);
+  
   useEffect(() => {
     getProfile();
   }, []);
@@ -44,6 +45,7 @@ const Profile = () => {
       setLoaded(true);
     }
   }, [myProfile]);
+  
   useEffect(() => {
     if (action === "updateProfile") {
       toast.current.show({
@@ -73,20 +75,20 @@ const Profile = () => {
       reset("action", "");
     };
   }, [error, action]);
+
   const stretchAccess = (item) => {
     var result = [];
     for (var property in item) {
       result.push(
         <Button
-          key={shortId.generate()}
+          key={uuidv4()}  // Updated key generation
           type="button"
           label={
             item[property] === true ? `Can ${property} ` : `Cannot ${property} `
           }
           icon={`pi ${item[property] === true ? " pi-check" : " pi-times"}`}
-          className={`p-m-2 ${
-            item[property] === true ? " p-button-success" : " p-button-danger"
-          }`}
+          className={`p-m-2 ${item[property] === true ? " p-button-success" : " p-button-danger"
+            }`}
         ></Button>
       );
     }
@@ -94,8 +96,11 @@ const Profile = () => {
   };
 
   const renderRoles = () => {
+    if (access === undefined || access === null)
+      return null;
+
     const keys = Object.keys(access);
-    if (keys.length === 0) {
+    if (keys.length === 0 || keys === undefined || keys === null) {
       return null;
     }
     return (
@@ -104,7 +109,7 @@ const Profile = () => {
           keys.map((key, i) => {
             return (
               <Fragment key={i}>
-                <li key={shortId.generate()}> {key.toUpperCase()} </li>
+                <li key={uuidv4()}> {key.toUpperCase()} </li>
                 {stretchAccess(access[key])}
               </Fragment>
             );
@@ -112,11 +117,11 @@ const Profile = () => {
       </ul>
     );
   };
+
   return (
     <Fragment>
       <section className="p-d-flex p-shadow-1 p-mt-1 p-pt-md-3 p-pt-2">
         <div className="p-d-flex p-flex-md-row p-jc-around p-ai-center w-100">
-          {/* <div className="p-d-flex p-jc-around"> */}
           <div className="p-d-flex  p-flex-md-row p-ai-center w-100">
             <div className="p-p-md-2">
               <img
@@ -146,43 +151,7 @@ const Profile = () => {
               {myProfile?.phone}
             </div>
           </div>
-          {/* </div> */}
           <div className="p-p-lg-2 p-p-1 p-mr-lg-4" id="blue-500">
-            {/* <div className="p-d-flex p-flex-md-row p-ai-center">
-              <div
-                className="p-d-flex p-flex-column p-ai-center p-px-lg-3 p-px-md-2 p-px-1"
-                id="border-right"
-              >
-                <p className="h4">40</p>
-                <div className="text-muted" id="count">
-                  Applications
-                </div>
-              </div>
-              <div
-                className="p-d-flex p-flex-column p-ai-center p-px-lg-3 p-px-md-2 p-px-1"
-                id="border-right"
-              >
-                <p className="h4">117</p>
-                <div className="text-muted" id="count">
-                  Accounts
-                </div>
-              </div>
-              <div
-                className="p-d-flex p-flex-column p-ai-center p-px-lg-3 p-px-md-2 p-px-1"
-                id="border-right"
-              >
-                <p className="h4">58</p>
-                <div className="text-muted" id="count">
-                  Entitlements
-                </div>
-              </div>
-              <div className="p-d-flex p-flex-column p-ai-center p-px-lg-4 p-px-md-2 p-px-sm-1 p-px-2">
-                <p className="h4">03</p>
-                <div className="text-muted" id="count">
-                  Roles
-                </div>
-              </div>
-            </div> */}
           </div>
         </div>
       </section>
@@ -211,12 +180,11 @@ const Profile = () => {
               </Fragment>
             )}
           </TabPanel>
-          {/* <TabPanel header="Settings">Settings</TabPanel> */}
         </TabView>
       </div>
       <Toast ref={toast} position="top-right" />
     </Fragment>
   );
-};
+}
 
 export default observer(Profile);
