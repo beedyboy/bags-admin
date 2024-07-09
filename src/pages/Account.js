@@ -117,7 +117,7 @@ const Account = () => {
     return (
         <Fragment>
             <div className="p-grid">
-                {pageAccess ? (
+                {!pageAccess ? (
                     <>
                         <div className="p-col-12 p-md-12 p-lg-12">
                             <div className="p-d-flex p-jc-between">
