@@ -127,7 +127,7 @@ class AccountStore {
         .post("accounts/auth", data)
         .then((res) => {
           this.sending = false;
-          if (res.status === 201) { 
+          if (res.status === 200) { 
             Utils.save("name", res.data.lastname + " " + res.data.firstname);
             Utils.save("admin_token", res.data.token);
             Utils.save("acl", JSON.stringify(res.data.acl));
