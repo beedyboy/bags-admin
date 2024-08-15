@@ -11,84 +11,83 @@ import { SelectButton } from "primereact/selectbutton";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import ProductStores from "../stores/ProductStores";
-import AccountStore from "../stores/AccountStore";
 import { Link } from "react-router-dom";
 import Assistant from "../helpers/Assistant";
+import useAuthStore from "../stores/AccountStore";
+import Utils from "../shared/localStorage";
+import { useGetDashboardStats } from "../hooks/dashboard";
 // import moment from "moment";
-// const dateFormat = "DD-MM-YYYY";
+const dateFormat = "dd-mm-yy";
 const Dashboard = () => {
-  const [stat, setStat] = useState({
-    open: false,
-    closed: false,
-  });
-  const options = ["All", "Filter"];
-  const [optVal, setOptVal] = useState("All");
-  const [dashDate, setDashDate] = useState(null);
-  const reconStore = useContext(ReconStore);
-  const prodStore = useContext(ProductStores);
-  const userStore = useContext(AccountStore);
-  const {
-    getAllData,
-    pendingPristines,
-    pendingFinales,
-    completed,
-    overdue,
-    filterProperty,
-  } = reconStore;
-  const {
-    stats: totalProduct,
-    getProducts,
-    loading: productLoading,
-    filterProperty: productFilterProperty,
-  } = prodStore;
-  const {
-    stats: totalUser,
-    getUsers,
-    filterProperty: userFilterProperty,
-  } = userStore;
+    const [stat, setStat] = useState({
+        open: false,
+        closed: false,
+    });
+    // const options = ["All", "Filter"];
+    // const [optVal, setOptVal] = useState("All");
+    // const [dashDate, setDashDate] = useState(null);
+    // const reconStore = useContext(ReconStore);
+    // const prodStore = useContext(ProductStores);
+    const {
+        stats: totalUser,
+        // getUsers,
+        filterProperty: userFilterProperty,
+    } = useAuthStore();
+    // const {
+    //   getAllData,
+    //   pendingPristines,
+    //   pendingFinales,
+    //   completed,
+    //   overdue,
+    //   filterProperty,
+    // } = reconStore;
+    // const {
+    //   stats: totalProduct,
+    //   getProducts,
+    //   loading: productLoading,
+    //   filterProperty: productFilterProperty,
+    // } = prodStore;
 
-  useEffect(() => {
-    getProducts();
-    getUsers();
-    getAllData();
-  }, []);
-  const handleOptioon = (d) => {
-    setOptVal(d);
-    if (d === "All") {
-      filterProperty("All", []);
-      productFilterProperty("All", []);
-      userFilterProperty("All", []);
-    }
-  };
-  const filterOption = () => {
-    filterProperty(optVal, dashDate);
-    productFilterProperty(optVal, dashDate);
-    userFilterProperty(optVal, dashDate);
-  };
-  const totalOverdue = overdue && overdue.reduce((a, b) => a + b);
-  const toggleStat = (e, field) => {
-    setStat((formState) => ({
-      ...formState,
-      [field]: !formState[field],
-    }));
-  };
+    const { data } = useGetDashboardStats();
 
-  const totalPristineValue = pendingPristines?.reduce((a, b) => a + parseFloat(b.credit_amount), 0) || 0;
-  const totalFinaleValue = pendingFinales?.reduce((a, b) => a + parseFloat(b.credit_amount), 0) || 0;
-  const totalCompleted = completed?.reduce((a, b) => a + parseFloat(b.credit_amount), 0) || 0;
-  const date = new Date().getHours()
-  
-  return (
-    <Fragment>
-      <div className="p-d-flex bg-indigo-200 p-flex-column p-p-5 p-mb-3">
-        <div className="text-3xl text-gray-800 p-text-bold p-mb-2">
-         {date < 12 ? 'Good Morning!' : date < 18 ? 'Good Afternoon!' : 'Good Night!'}, Bags 👋
-        </div>
-        <div className="font-medium text-500 mb-3">
-          Here is what’s happening in your store:
-        </div>
-      </div>
-      <div className="p-d-flex p-jc-between p-mb-4">
+    console.log({ data });
+
+    const handleOptioon = (d) => {
+        // setOptVal(d);
+        // if (d === "All") {
+        //   filterProperty("All", []);
+        //   productFilterProperty("All", []);
+        //   userFilterProperty("All", []);
+        // }
+    };
+
+    const filterOption = () => {
+        // filterProperty(optVal, dashDate);
+        // productFilterProperty(optVal, dashDate);
+        // userFilterProperty(optVal, dashDate);
+    };
+    // const totalOverdue = overdue && overdue.reduce((a, b) => a + b);
+    const toggleStat = (e, field) => {
+        setStat((formState) => ({
+            ...formState,
+            [field]: !formState[field],
+        }));
+    };
+
+    // const totalPristineValue = pendingPristines?.reduce((a, b) => a + parseFloat(b.credit_amount), 0) || 0;
+    // const totalFinaleValue = pendingFinales?.reduce((a, b) => a + parseFloat(b.credit_amount), 0) || 0;
+    // const totalCompleted = completed?.reduce((a, b) => a + parseFloat(b.credit_amount), 0) || 0;
+    const date = new Date().getHours();
+
+    const isAuthenticated = Utils.get("refresh_token")("auth_token");
+    console.log({ isAuthenticated });
+    return (
+        <Fragment>
+            <div className="p-d-flex bg-indigo-200 p-flex-column p-p-5 p-mb-3">
+                <div className="text-3xl text-gray-800 p-text-bold p-mb-2">{date < 12 ? "Good Morning!" : date < 18 ? "Good Afternoon!" : "Good Night!"}, Bags 👋</div>
+                <div className="font-medium text-500 mb-3">Here is what’s happening in your store:</div>
+            </div>
+            {/* <div className="p-d-flex p-jc-between p-mb-4">
         <div className="p-d-flex">
           <span className="p-p-2 p-text-bold">Dashboard Analysis! </span>
           <SelectButton
@@ -106,11 +105,15 @@ const Dashboard = () => {
               selectionMode="range"
               showIcon
               readOnlyInput
-              // dateFormat ={dateFormat}
+              onClearButtonClick={(e) => setDashDate(null)}
+              showButtonBar={true}
+              onTodayButtonClick={(e) => setDashDate(new Date())}
+              dateFormat ={dateFormat}
             />
             <Button
               type="button"
               icon="pi pi-search"
+              disabled={!dashDate}
               className="p-button-rounded p-ml-3"
               onClick={filterOption}
             />
@@ -144,7 +147,7 @@ const Dashboard = () => {
             <span className="detail">Income for today</span>
             <span className="count revenue">
               N/A
-              {/* {Assistant.formatCurrency(3200)} */}
+              // { {Assistant.formatCurrency(3200)} }
             </span>
           </div>
         </div>
@@ -210,7 +213,7 @@ const Dashboard = () => {
               <span>FR</span>
             </div>
             <div className="highlight-details ">
-              {/* <i className="pi pi-question-circle"></i> */}
+              <i className="pi pi-question-circle"></i>
               <span>Stage Two Reconcillation</span>
               <span className="amount fr">  {Assistant.formatCurrency(totalFinaleValue)}</span> 
               <span className="count">
@@ -290,8 +293,8 @@ const Dashboard = () => {
             </div>
           </>
         ) : null}
-      </div>
-    </Fragment>
-  );
+      </div> */}
+        </Fragment>
+    );
 };
 export default observer(Dashboard);

@@ -3,7 +3,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import Utils from '../../shared/localStorage';
 
 const PrivateRoute = ({ layout: Layout }) => {
-  const isAuthenticated = Utils.get("admin_token");
+  const isAuthenticated = Utils.isAuthenticated();
   return isAuthenticated ? (
     <Layout>
       <Outlet />

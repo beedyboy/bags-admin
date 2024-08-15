@@ -34,47 +34,47 @@ const Profile = () => {
   const [loaded, setLoaded] = useState(false);
   let access = toJS(myProfile?.roles);
   
-  useEffect(() => {
-    getProfile();
-  }, []);
+  // useEffect(() => {
+  //   getProfile();
+  // }, []);
 
-  useEffect(() => {
-    const pf = Object.keys(myProfile);
-    // console.log('roles',pf)
-    if (pf.length > 0) {
-      setLoaded(true);
-    }
-  }, [myProfile]);
+  // useEffect(() => {
+  //   const pf = Object.keys(myProfile);
+  //   // console.log('roles',pf)
+  //   if (pf.length > 0) {
+  //     setLoaded(true);
+  //   }
+  // }, [myProfile]);
   
-  useEffect(() => {
-    if (action === "updateProfile") {
-      toast.current.show({
-        severity: "success",
-        summary: "Success Message",
-        detail: message,
-      });
-    }
-    return () => {
-      reset("saved", false);
-      reset("message", "");
-      reset("action", "");
-    };
-  }, [action]);
+  // useEffect(() => {
+  //   if (action === "updateProfile") {
+  //     toast.current.show({
+  //       severity: "success",
+  //       summary: "Success Message",
+  //       detail: message,
+  //     });
+  //   }
+  //   return () => {
+  //     reset("saved", false);
+  //     reset("message", "");
+  //     reset("action", "");
+  //   };
+  // }, [action]);
 
-  useEffect(() => {
-    if (error === true && action === "profileUpdateError") {
-      toast.current.show({
-        severity: "error",
-        summary: "Error Message",
-        detail: message,
-      });
-    }
-    return () => {
-      reset("error", false);
-      reset("message", "");
-      reset("action", "");
-    };
-  }, [error, action]);
+  // useEffect(() => {
+  //   if (error === true && action === "profileUpdateError") {
+  //     toast.current.show({
+  //       severity: "error",
+  //       summary: "Error Message",
+  //       detail: message,
+  //     });
+  //   }
+  //   return () => {
+  //     reset("error", false);
+  //     reset("message", "");
+  //     reset("action", "");
+  //   };
+  // }, [error, action]);
 
   const stretchAccess = (item) => {
     var result = [];

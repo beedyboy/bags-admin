@@ -1,19 +1,11 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, {
-  Fragment,
-  useState,
-  useEffect,
-  useContext,
-  useRef,
-} from "react";
-import { useNavigate } from "react-router-dom";  // Updated import
+import React, { Fragment, useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import dataHero from "data-hero";
-import AccountStore from "../../stores/AccountStore";
-import { observer } from "mobx-react-lite";
+import useAuthStore from "../../stores/AccountStore";
 
 const schema = {
   email: {
@@ -24,14 +16,14 @@ const schema = {
   password: {
     min: 6,
     isEmpty: false,
-    message: "a minimum of 6 characters password is required",
+    message: "A minimum of 6 characters password is required",
   },
 };
 
 const Login = () => {
-  const navigate = useNavigate();  // Updated hook
+  const navigate = useNavigate();
   const toast = useRef(null);
-  const authStore = useContext(AccountStore);
+
   const {
     isAuthenticated,
     resetProperty,
@@ -41,7 +33,8 @@ const Login = () => {
     errMessage,
     home,
     sending,
-  } = authStore;
+  } = useAuthStore();
+
   const [formState, setFormState] = useState({
     isValid: false,
     values: {
@@ -57,7 +50,7 @@ const Login = () => {
     const errors = dataHero.validate(schema, values);
     setFormState((formState) => ({
       ...formState,
-      isValid: errors.email.error || errors.password.error ? false : true,
+      isValid: !errors.email.error && !errors.password.error,
       errors: errors || {},
     }));
   }, [values]);
@@ -91,34 +84,38 @@ const Login = () => {
       },
     }));
   };
+
   const handleSignIn = (event) => {
     event.preventDefault();
     login(formState.values);
   };
 
-  useEffect(() => {
-    if (isAuthenticated === true) {
+  useEffect(() =>
+  {
+    if (isAuthenticated) {
       toast.current.show({
-        summary: "Server Response.",
+        summary: "Server Response",
         detail: message,
         severity: "success",
       });
-      navigate(`/${home}`);  // Updated navigation
+      navigate(`/${home}`);
     }
     return () => {
-      resetProperty("isAuthenticated", false);
-      resetProperty("message", "");
+      // resetProperty("isAuthenticated", false);
+      // resetProperty("message", "");
     };
-  }, [isAuthenticated]);
+  }, [home, isAuthenticated, message, navigate, resetProperty]);
+
   useEffect(() => {
-    if (error === true) {
+    if (error) {
       toast.current.show({
-        summary: "Server Response.",
+        summary: "Server Response",
         detail: errMessage,
         severity: "error",
       });
     }
   }, [error]);
+
   const hasError = (field) => touched[field] && errors[field].error;
 
   return (
@@ -136,7 +133,7 @@ const Login = () => {
             <div className="p-mb-2">
               <img src="/assets/layout/images/logo.png" alt="logo" />
             </div>
-            <div className="p-mb-2 p-mt-3"> Bags, Footwears & More</div>
+            <div className="p-mb-2 p-mt-3">Bags, Footwears & More</div>
           </div>
         </div>
 
@@ -145,7 +142,7 @@ const Login = () => {
             className="p-d-flex p-flex-column p-jc-center p-ai-center"
             style={{ height: "100%", width: "100%" }}
           >
-            <div className="p-mb-4">Login </div>
+            <div className="p-mb-4">Login</div>
             <div className="card p-fluid">
               <div className="p-field">
                 <label htmlFor="email">Email</label>
@@ -156,9 +153,7 @@ const Login = () => {
                   value={values.email || ""}
                   onChange={handleChange}
                   aria-describedby="email-help"
-                  className={` ${
-                    hasError("email") ? "p-invalid" : null
-                  } " p-d-block"`}
+                  className={` ${hasError("email") ? "p-invalid" : ""} p-d-block`}
                 />
                 <small id="email-help" className="p-error p-d-block">
                   {hasError("email")
@@ -170,13 +165,13 @@ const Login = () => {
               <div className="p-field">
                 <label htmlFor="password">Password</label>
                 <Password
-                  onChange={(e) => handlePasswordChange(e)}
+                  onChange={handlePasswordChange}
                   toggleMask
                   value={values.password || ""}
                   aria-describedby="password-help"
                   className={` ${
-                    hasError("password") ? "p-invalid" : null
-                  } " p-d-block"`}
+                    hasError("password") ? "p-invalid" : ""
+                  } p-d-block`}
                 />
                 <small id="password-help" className="p-error p-d-block">
                   {hasError("password")
@@ -205,4 +200,4 @@ const Login = () => {
   );
 };
 
-export default observer(Login);
+export default Login;

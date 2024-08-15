@@ -1,394 +1,193 @@
-/* eslint-disable no-unreachable */
-import { makeObservable, observable, action, computed } from "mobx";
-import { createContext } from "react";
+import { create } from "zustand";
 import backend from "../config";
 import moment from "moment";
 
-class ReconStore {
-  error = false;
-  exist = false;
-  loading = false;
-  uploading = false;
-  sending = false;
-  reverting = false;
-  reverted = false;
-  removed = false;
-  reconcillations = [];
-  finalReport = [];
-  pristine = [];
-  finales = [];
-  brand = [];
-  message = "";
-  action = null;
-  option = "All";
-  startDate = "";
-  endDate = "";
+const useReconStore = create((set, get) => ({
+    isStepOneFormOpened: false,
+    isStepTwoFormOpened: false,
+    upload: false,
+    error: false,
+    exist: false,
+    loading: false,
+    stage_one_initial_data: {},
+    stage_two_initial_data: {},
+    initial_data: {},
+    sending: false,
+    reverting: false,
+    reverted: false,
+    removed: false,
+    reconcillations: [],
+    finalReport: [],
+    finales: [],
+    brand: [],
+    message: "",
+    action: null,
+    option: "All",
+    startDate: "",
+    endDate: "",
 
-  constructor() {
-    makeObservable(this, {
-      message: observable,
-      uploading: observable,
-      sending: observable,
-      error: observable,
-      option: observable,
-      startDate: observable,
-      endDate: observable,
-      action: observable,
-      removed: observable,
-      finalReport: observable,
-      stats: computed,
-      pendingPristines: computed,
-      pendingFinales: computed,
-      overduePristines: computed,
-      overdueFinales: computed,
-      completed: computed,
-      overdue: computed,
-      loading: observable,
-      reverting: observable,
-      reverted: observable,
-      finales: observable,
-      pristine: observable,
-      reconcillations: observable,
-      getAllData: action,
-      uploadStatement: action,
-      getFinalReport: action,
-      saveApproval: action,
-      pristineRecord: action,
-      finaleRecord: action,
-      removeRecord: action,
-      revertRecord: action,
-      resetProperty: action,
-      filterProperty: action,
-    });
-  }
-  getAllData = () => {
-    this.loading = true;
-    try {
-      backend.get("/reconcillations").then((res) => {
-        this.loading = false;
-        if (res.status === 200) {
-          this.reconcillations = res.data;
+    toggleUpload: () => set((state) => ({ upload: !state.upload })),
+
+    toggleStepOneForm: () => set((state) => ({ isStepOneFormOpened: !state.isStepOneFormOpened })),
+    toggleStepTwoForm: () => set((state) => ({ isStepTwoFormOpened: !state.isStepTwoFormOpened })),
+
+    modifyStepOneData: (data, open) =>
+    {
+        const { credit_amount, amount_used, balance } = data;
+        let deductFrom = credit_amount;
+        let amountLeft = credit_amount - (amount_used ?? 0 + balance ?? 0);
+        if (amountLeft > 0 && amountLeft < credit_amount)
+        {
+            deductFrom = amountLeft;
+            
         }
-      });
-    } catch (err) {
-      this.error = err;
-    }
-  };
-
-  pristineRecord = () => {
-    this.loading = true;
-    try {
-      backend.get(`reconcillations/approved_one/false`).then((res) => {
-        this.loading = false;
-        if (res.status === 200) {
-          this.pristine = res.data;
+        const defaultValues = {
+            id: data.id,
+            value_date: data.value_date,
+            credit_amount: deductFrom,
+            amount_used: 0,
+            balance: 0,
+            approved_one: false,
+        };
+        set({ stage_one_initial_data: defaultValues, isStepOneFormOpened: open })
+    },
+    modifyStepTwoData: (data, open) =>
+    {
+        const { credit_amount, amount_used, balance } = data;
+        let deductFrom = credit_amount;
+        let amountLeft = credit_amount - (amount_used ?? 0 + balance ?? 0);
+        if (amountLeft > 0 && amountLeft < credit_amount)
+        {
+            deductFrom = amountLeft;
+            
         }
-      });
-    } catch (err) {
-      this.error = err;
-    }
-  };
+        const defaultValues = {
+            id: data.id,
+            value_date: data.value_date,
+            credit_amount: deductFrom,
+            amount_used: 0,
+            balance: 0,
+            approved_one: data.approved_one,
+            approved_two: false,
+        };
+        set({ stage_two_initial_data: defaultValues, isStepTwoFormOpened: open })
+    },
 
-  finaleRecord = () => {
-    this.loading = true;
-    try {
-      backend.get(`reconcillations/approved_two/false`).then((res) => {
-        this.loading = false;
-        if (res.status === 200) {
-          this.finales = res.data;
-        }
-      });
-    } catch (err) {
-      this.error = err;
-    }
-  };
-
-  getFinalReport = (data) => {
-    this.loading = true;
-    this.sending = true;
-    try {
-      backend.post("reconcillations/final/report", data).then((res) => {
-        this.loading = false;
-        this.sending = false;
-        if (res.status === 200) {
-          this.finalReport = res.data;
-        }
-      });
-    } catch (err) {
-      this.loading = false;
-      this.sending = false;
-      this.error = err;
-    }
-  };
-
-  uploadStatement = (data) => {
-    try {
-      this.sending = true;
-      this.uploading = true;
-      backend
-        .post("reconcillations", data)
-        .then((res) => {
-          this.sending = false;
-          this.uploading = false;
-          if (res.status === 201) {
-            this.getAllData();
-            this.pristineRecord();
-            this.message = res.data.message;
-            this.action = "accountUploaded";
-          } else {
-            this.message = res.data.error;
-            this.action = "uploadError";
-            this.error = true;
-          }
-        })
-        .catch((err) => {
-          this.sending = false;
-          this.uploading = false;
-          if (err.response && err.response.status === 404) {
-            console.log("error in axios catch");
-            this.message = err.response.data.message;
-            this.error = true;
-          } else {
-            console.log({ err });
-          }
-        });
-    } catch (err) {
-      this.sending = false;
-      this.uploading = false;
-      if (err.response.status === 500) {
-        this.message =
-          "Error uploading. Please check your network and retry!!!";
-        console.log("There was a problem with the server");
-        this.error = true;
-      } else {
-        this.message = err.response.data.msg;
-        this.error = true;
-        console.log(err.response.data.msg);
-      }
-    }
-  };
-
-  saveApproval = (data, stage) => {
-    try {
-      const url = stage === "first" ? "first-approval" : "second-approval";
-      this.sending = true;
-      backend
-        .post(`reconcillations/${url}`, data)
-        .then((res) => {
-          this.sending = false;
-          if (res.status === 200) {
-            if (stage === "first") {
-              this.pristineRecord();
-            } else {
-              this.finaleRecord();
+    finaleRecord: async () => {
+        set({ loading: true });
+        try {
+            const res = await backend.get("transaction-processing/approved_two/false");
+            if (res.status === 200) {
+                set({ finales: res.data, loading: false });
             }
-            this.message = res.data.message;
-            this.action = "approved";
-          } else {
-            this.message = res.data.error;
-            this.error = true;
-            this.action = "approvedError";
-          }
-        })
-        .catch((err) => {
-          this.sending = false;
-          console.log({ err });
-          if (err && err.response) {
-            console.log("status", err.response.status);
-          }
+        } catch (err) {
+            set({ error: err, loading: false });
+        }
+    },
+
+    getFinalReport: async (data) => {
+        set({ loading: true, sending: true });
+        try {
+            const res = await backend.post("transaction-processing/final/report", data);
+            if (res.status === 200) {
+                set({ finalReport: res.data, loading: false, sending: false });
+            }
+        } catch (err) {
+            set({ error: err, loading: false, sending: false });
+        }
+    },
+
+    removeRecord: async (id) => {
+        set({ removed: false });
+        try {
+            const res = await backend.delete(`transaction-processing/${id}`);
+            if (res.status === 200) {
+                set({ message: res.data.message, removed: true });
+            } else {
+                set({ message: res.data.error, error: true, removed: false });
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
+    resetProperty: (key, value) => set({ [key]: value }),
+
+    filterProperty: (option, data) => {
+        if (option === "All") {
+            set({ option, startDate: "", endDate: "" });
+        } else if (option === "Filter") {
+            set({
+                option,
+                startDate: moment(data[0]).format("DD-MM-YYYY"),
+                endDate: moment(data[1]).format("DD-MM-YYYY"),
+            });
+        }
+    },
+
+    stats: () => get().reconcillations.length || 0,
+
+    pendingPristines: () => {
+        const { reconcillations, option, startDate, endDate } = get();
+        return reconcillations.filter((d) => {
+            const date = moment(d.created_at);
+            if (option === "All") {
+                return !d.approved_one;
+            }
+            if (option === "Filter" && date.isBetween(moment(startDate), moment(endDate), null, "[]")) {
+                return !d.approved_one;
+            }
+            return false;
         });
-    } catch (error) {
-      this.sending = false;
-      console.log({ error });
-    }
-  };
+    },
 
-  removeRecord = (id) => {
-    this.removed = false;
-    try {
-      backend.delete(`reconcillations/${id}`).then((res) => {
-        if (res.status === 200) {
-          this.getAllData();
-          this.message = res.data.message;
-          this.removed = true;
-        } else {
-          this.message = res.data.error;
-          this.error = true;
-          this.removed = false;
-        }
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    pendingFinales: () => {
+        const { reconcillations, option, startDate, endDate } = get();
+        return reconcillations.filter((d) => {
+            const date = moment(d.reconcile_date_one);
+            if (option === "All") {
+                return d.approved_one && !d.approved_two;
+            }
+            if (option === "Filter" && date.isBetween(moment(startDate), moment(endDate), null, "[]")) {
+                return d.approved_one && !d.approved_two;
+            }
+            return false;
+        });
+    },
 
-  revertRecord = (data) => {
-    this.reverting = true;
-    try {
-      backend.post("reconcillations/overturn", data).then((res) => {
-        this.reverting = false;
-        if (res.status === 200) {
-          this.getAllData();
-          // this.
-          this.message = res.data.message;
-          this.reverted = true;
-        } else {
-          this.message = res.data.error;
-          this.error = true;
-          this.reverted = false;
-        }
-      });
-    } catch (error) {
-      this.reverting = false;
-      console.log(error);
-    }
-  };
-  resetProperty = (key, value) => {
-    this[key] = value;
-  };
-  filterProperty = (option, data) => {
-    this.option = option;
-    switch (option) {
-      case "All":
-        this.startDate = "";
-        this.endDate = "";
-        break;
-      case "Filter":
-        this.startDate = moment(data[0]).format("YYYY-MM-DD");
-        this.endDate = moment(data[1]).format("YYYY-MM-DD");
-        break;
+    completed: () => {
+        const { reconcillations, option, startDate, endDate } = get();
+        return reconcillations.filter((d) => {
+            const date = moment(d.reconcile_date_two);
+            if (option === "All") {
+                return d.approved_one && d.approved_two;
+            }
+            if (option === "Filter" && date.isBetween(moment(startDate), moment(endDate), null, "[]")) {
+                return d.approved_one && d.approved_two;
+            }
+            return false;
+        });
+    },
 
-      default:
-        break;
-    }
-  };
-  get stats() {
-    return (this.reconcillations && this.reconcillations.length) || 0;
-  }
-  get pendingPristines() {
-    switch (this.option) {
-      case "All":
-        return (
-          (this.reconcillations &&
-            this.reconcillations.filter((d) => d.approved_one === false)) ||
-          []
-        );
-        break;
-      case "Filter":
-        var result =
-          this.reconcillations &&
-          this.reconcillations.filter((d) => {
-            var date = moment(d.created_at).format("YYYY-MM-DD");
-            return (
-              d.approved_one === false &&
-              date >= this.startDate &&
-              date <= this.endDate
-            );
-          });
-        return result || [];
-      // break;startDate
+    overduePristines: () => {
+        const { reconcillations } = get();
+        return reconcillations.filter((d) => {
+            const date = moment(d.created_at);
+            return !d.approved_one && moment().diff(date, "days") >= 30;
+        }).length;
+    },
 
-      default:
-        break;
-    }
-    return 0;
-  }
-  get pendingFinales() {
-    switch (this.option) {
-      case "All":
-        return (
-          (this.reconcillations &&
-            this.reconcillations.filter(
-              (d) => d.approved_one === true && d.approved_two === false
-            )) ||
-          []
-        );
-        break;
-      case "Filter":
-        var result =
-          this.reconcillations &&
-          this.reconcillations.filter((d) => {
-            var date = moment(d.created_at).format("YYYY-MM-DD");
-            return (
-              d.approved_one === true &&
-              d.approved_two === false &&
-              date >= this.startDate &&
-              date <= this.endDate
-            );
-          });
-        return result || [];
-        break;
+    overdueFinales: () => {
+        const { reconcillations } = get();
+        return reconcillations.filter((d) => {
+            const date = moment(d.created_at);
+            return d.approved_one && !d.approved_two && moment().diff(date, "days") >= 30;
+        }).length;
+    },
 
-      default:
-        break;
-    }
-    return 0;
-  }
-  get completed() {
-    switch (this.option) {
-      case "All":
-        return (
-          (this.reconcillations &&
-            this.reconcillations.filter(
-              (d) => d.approved_one === true && d.approved_two === true
-            )) ||
-          []
-        );
-        break;
-      case "Filter":
-        var result =
-          this.reconcillations &&
-          this.reconcillations.filter((d) => {
-            var date = moment(d.created_at).format("YYYY-MM-DD");
-            return (
-              d.approved_one === true &&
-              d.approved_two === true &&
-              date >= this.startDate &&
-              date <= this.endDate
-            );
-          });
-        return result || [];
-        break;
+    overdue: () => {
+        return [get().overduePristines(), get().overdueFinales()];
+    },
+}));
 
-      default:
-        break;
-    }
-    return [];
-  }
-  get overdue() {
-    return [this.overduePristines, this.overdueFinales];
-  }
-
-  get overduePristines() {
-    var result =
-      this.reconcillations &&
-      this.reconcillations.filter((d) => {
-        var date = moment(d.created_at).format("YYYY-MM-DD");
-        var today = moment();
-        const actual = today.diff(date, "days");
-        return d.approved_one === false && actual >= 30;
-      });
-    return result.length || 0;
-  }
-
-  get overdueFinales() {
-    var result =
-      this.reconcillations &&
-      this.reconcillations.filter((d) => {
-        var date = moment(d.created_at).format("YYYY-MM-DD");
-        var today = moment();
-        const actual = today.diff(date, "days");
-        return (
-          d.approved_one === true && d.approved_two === false && actual >= 30
-        );
-      });
-    return result.length || 0;
-  }
-  // get reconcillations() {
-  //   return Object.keys(this.brandList || {}).map((key) => ({
-  //     ...this.reconcillations[key],
-  //   }));
-  // }
-}
-
-export default createContext(new ReconStore());
+export default useReconStore;

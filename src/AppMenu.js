@@ -53,7 +53,7 @@ const AppSubmenu = (props) => {
     if (item.to) {
       return (
         <NavLink
-          activeClassName="active-route"
+          className="active-route"
           to={item.to}
           onClick={(e) => onMenuItemClick(e, item, i)}
           exact

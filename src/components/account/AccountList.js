@@ -4,17 +4,20 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { toJS } from "mobx";
+import { useGetStaffs } from "../../hooks/account";
+import useAccountStore from "../../stores/AccountStore";
 
 const AccountList = ({
-  data,
-  setMode,
-  loading,
   removeData,
   rowData,
-  toggle,
   setModal,
-  setTitle,
-}) => {
+}) =>
+{
+  const { accountModal } = useAccountStore();
+   
+  const { data, isLoading } = useGetStaffs();
+  // console.log({ data }) TODO:  remove 
+
   const [globalFilter, setGlobalFilter] = useState("");
 
   const tableHeader = (
@@ -94,10 +97,8 @@ const AccountList = ({
 
   const editData = (e, row) => {
     e.persist();
-    setMode("Edit");
-    setTitle("Edit Staff");
-    rowData(row);
-    toggle(true);
+    console.log({ row })
+    accountModal("Edit", "Edit Staff", row, true);
   };
 
   const deleteData = (e, id) => {
@@ -122,7 +123,7 @@ const AccountList = ({
             rowHover
             globalFilter={globalFilter}
             emptyMessage="No account found."
-            loading={loading}
+            loading={isLoading}
             header={tableHeader}
           >
             {/* <Column headerStyle={{ width: "3em" }}></Column> */}

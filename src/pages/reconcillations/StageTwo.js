@@ -2,11 +2,8 @@
 import React, {
   Fragment,
   useState,
-  useEffect,
-  useContext,
   useRef,
 } from "react";
-import ReconStore from "../../stores/ReconStore";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
@@ -20,24 +17,24 @@ import { Toolbar } from "primereact/toolbar";
 import { Tooltip } from "primereact/tooltip";
 import { Toast } from "primereact/toast";
 import { ProgressBar } from "primereact/progressbar";
-import { observer } from "mobx-react-lite";
 import NoAccess from "../../widgets/NoAccess";
 import StepTwoForm from "../../components/recon/StepTwoForm";
-import Utils from "../../shared/localStorage";
 import Assistant from "../../helpers/Assistant";
+import { getPermissions } from "../../helpers/permissions";
+import { useGetStageTwoTransactions, useOverturn } from "../../hooks/reconcillations";
+import useReconStore from "../../stores/ReconStore";
 
-const StageTwo = () => {
-  let acl;
-  let reconTwo;
+const StageTwo = () =>
+{
+  
+  const { canApproveStageTwo } = getPermissions("reconcillation");
+  
+  const { data: stageTwoData, isLoading } = useGetStageTwoTransactions();
+  const {  isLoading: isReverting  } = useOverturn();
+  const { modifyStepTwoData, toggleStepTwoForm, isStepTwoFormOpened } = useReconStore();
 
-  const obj = Utils.get("acl");
-  if (obj && obj !== "") {
-    acl = JSON.parse(obj);
-  }
 
-  reconTwo = acl && acl.reconcillation && acl.reconcillation.approval_two;
-  // reconReport = acl && acl.reconcillation && acl.reconcillation.report;
-  // reconModify = acl && acl.reconcillation && acl.reconcillation.modify;
+
   const approvedTemplate = (data) => {
     return (
       <>
@@ -72,81 +69,16 @@ const StageTwo = () => {
   const toast = useRef(null);
   const dt = useRef(null);
   const [selectedColumns, setSelectedColumn] = useState(columns);
-  const [upload, setUpload] = useState(false);
-  const [approval, setApproval] = useState(false);
   const [activeId, setActiveId] = useState(0);
-  const [rowData, setRowData] = useState();
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const store = useContext(ReconStore);
-  const {
-    loading,
-    finaleRecord,
-    error,
-    action,
-    finales,
-    message,
-    resetProperty,
-    sending,
-    saveApproval,
-    revertRecord,
-    reverting,
-    reverted,
-  } = store;
-  useEffect(() => {
-    finaleRecord();
-  }, []);
+  // useEffect(() => {
+  //   finaleRecord();
+  // }, []);
+
   const exportCSV = () => {
     dt.current.exportCSV();
   };
-
-  useEffect(() => {
-    if (action === "approved") {
-      toast.current.show({
-        severity: "success",
-        summary: "Success Message",
-        detail: message,
-      });
-      setApproval(false);
-    }
-    return () => {
-      resetProperty("message", "");
-      resetProperty("action", "");
-      setApproval(false);
-    };
-  }, [action]);
-  useEffect(() => {
-    if (error === true && action === "approvedError") {
-      toast.current.show({
-        severity: "error",
-        summary: "Error Message",
-        detail: message,
-      });
-    }
-    return () => {
-      resetProperty("error", false);
-      resetProperty("message", "");
-      resetProperty("action", "");
-      setApproval(false);
-    };
-  }, [error]);
-
-  useEffect(() => {
-    if (reverted) {
-      toast.current.show({
-        severity: "success",
-        summary: "Success Message",
-        detail: message,
-      });
-      setActiveId(0);
-      finaleRecord();
-    }
-    return () => {
-      resetProperty("message", "");
-      resetProperty("reverted", false);
-      setActiveId(0);
-    };
-  }, [reverted]);
 
   const onColumnToggle = (event) => {
     let selectedColumns = event.value;
@@ -167,7 +99,7 @@ const StageTwo = () => {
     );
   });
 
-  const totalValue = finales?.reduce((a, b) => a + b.credit_amount, 0) || 0;
+  const totalValue = stageTwoData?.reduce((a, b) => a + b.credit_amount, 0) || 0;
   const tableHeader = (
     <div className="p-d-flex p-jc-between">
       Stage Two List
@@ -193,7 +125,7 @@ const StageTwo = () => {
 
   const actionTemplate = (data) => (
     <span className="p-buttonset" id={data.id}>
-      {reverting && activeId === data.id ? (
+      {isReverting && activeId === data.id ? (
         <ProgressBar mode="indeterminate" />
       ) : (
         <>
@@ -205,7 +137,7 @@ const StageTwo = () => {
           <Button
             icon="pi pi-trash"
             className="p-button-rounded p-button-warning"
-            onClick={(e) => confirm(e, data)}
+            // onClick={(e) => confirm(e, data)}
           />
         </>
       )}
@@ -220,7 +152,7 @@ const StageTwo = () => {
       </Row>
       <Row>
         <Column header="Total Pending" colSpan={2} />
-        <Column header={`${finales.length} item(s)`} colSpan={4} />
+        <Column header={`${stageTwoData?.length} item(s)`} colSpan={4} />
       </Row> 
         <Row>{columnComponents}</Row> 
     </ColumnGroup>
@@ -255,8 +187,7 @@ const StageTwo = () => {
 
   const editData = (e, row) => {
     e.persist();
-    setRowData(row);
-    setApproval(true);
+    modifyStepTwoData(row, true);
   };
   const revertData = (row) => {
     const values = {
@@ -266,14 +197,14 @@ const StageTwo = () => {
       approved_one: false,
       approved_two: false,
     };
-    setActiveId(row.id);
-    revertRecord(values);
+    // setActiveId(row.id);
+    // revertRecord(values);
   };
   return (
     <Fragment>
       <Toast ref={toast} position="top-right" />
       <div className="card">
-        {reconTwo ? (
+        {!canApproveStageTwo ? (
           <>
             {" "}
             <Toolbar
@@ -283,7 +214,7 @@ const StageTwo = () => {
             ></Toolbar>
             <DataTable
               ref={dt}
-              value={finales}
+              value={stageTwoData}
               paginator
               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
               rowsPerPageOptions={[10, 25, 50]}
@@ -295,7 +226,7 @@ const StageTwo = () => {
               rowHover
               globalFilter={globalFilter}
               emptyMessage="No record found."
-              loading={loading}
+              loading={isLoading}
               header={tableHeader}
               headerColumnGroup={headerGroup}
             >
@@ -310,52 +241,14 @@ const StageTwo = () => {
                 }}
                 body={actionTemplate}
               />
-              {/* <Column field="value_date" header="Value Date" sortable></Column>
-              <Column field="remarks" header="Remarks" sortable></Column>
-              <Column
-                field="credit_amount"
-                header="Credit Amount"
-                sortable
-              ></Column>
-              <Column
-                field="amount_used"
-                header="Amount Used"
-                sortable
-              ></Column>
-              <Column field="balance" header="Balance" sortable></Column>
-              <Column field="reference" header="Ref No" sortable></Column>
-              <Column
-                field="cancellation_number"
-                header="Cancellation No"
-                sortable
-              ></Column>
-              <Column
-                field="approved_one"
-                header="Approved"
-                sortable
-                body={approvedTemplate}
-              ></Column>
-              <Column
-                field="reconcile_date_one"
-                header="Stage One Approval Date"
-                sortable
-              ></Column>
-              <Column
-                headerStyle={{ width: "8rem", textAlign: "center" }}
-                bodyStyle={{
-                  textAlign: "center",
-                  overflow: "visible",
-                  justifyContent: "center",
-                }}
-                body={actionTemplate}
-              ></Column> */}
+             
             </DataTable>
           </>
         ) : (
           <NoAccess page="stage two" />
         )}{" "}
       </div>
-      <Dialog
+      {/* <Dialog
         visible={upload}
         onHide={(e) => setUpload(false)}
         breakpoints={{ "960px": "75vw", "640px": "100vw" }}
@@ -377,28 +270,19 @@ const StageTwo = () => {
           content="Clear"
           position="bottom"
         />
-      </Dialog>
+      </Dialog> */}
 
       <Dialog
-        visible={approval}
-        onHide={(e) => setApproval(false)}
+        visible={isStepTwoFormOpened}
+        onHide={toggleStepTwoForm}
         breakpoints={{ "960px": "75vw", "640px": "100vw" }}
         style={{ width: "50vw" }}
         header="Approve Record"
       >
-        <StepTwoForm
-          action={action}
-          error={error}
-          message={message}
-          sending={sending}
-          saveApproval={saveApproval}
-          toggle={setApproval}
-          initial_data={rowData}
-          reset={resetProperty}
-        />
+        <StepTwoForm />
       </Dialog>
     </Fragment>
   );
 };
 
-export default observer(StageTwo);
+export default StageTwo;

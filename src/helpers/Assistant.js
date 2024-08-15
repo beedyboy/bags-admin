@@ -67,7 +67,7 @@ const Assistant = {
         fileName + "_export_" + new Date().getTime() + EXCEL_EXTENSION
       );
     });
-  }
+  },
 };
 
 module.exports = Assistant;
