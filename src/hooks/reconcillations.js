@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Utils from "../shared/localStorage";
 import toast from "react-hot-toast";
-import { approveStageOne, approveStageTwo, getStageOneList, getStageTwoList, revertRecord, uploadStatement } from "../apis/reconciliation";
+import { approveStageOne, approveStageTwo, getFinalStageList, getStageOneList, getStageTwoList, revertRecord, uploadStatement } from "../apis/reconciliation";
 import useReconStore from "../stores/ReconStore";
 
 // Utility function to handle API errors
@@ -67,6 +67,7 @@ export const useGetStageTwoTransactions = () => {
 // Hook for first approval
 export const useFirstApproval = () => {
     const { refetch } = useGetStageOneTransactions();
+    const { toggleStepOneForm } = useReconStore();
 
     return useMutation({
         mutationFn: async (payload) => {
@@ -76,6 +77,7 @@ export const useFirstApproval = () => {
         onSuccess: (data) => {
             console.log("First approval successful:", data.message);
             refetch();
+            toggleStepOneForm();
             toast.success(data.message || "Approval successful", {
                 position: "top-right",
             });
@@ -89,15 +91,15 @@ export const useFirstApproval = () => {
 // Hook for second approval
 export const useSecondApproval = () => {
     const { refetch } = useGetStageTwoTransactions();
+    const { toggleStepTwoForm } = useReconStore();
 
     return useMutation({
-        mutationFn: async (payload) => {
-            const { id, ...body } = payload;
-            return await approveStageTwo(id, body);
+        mutationFn: async (id) => {
+            return await approveStageTwo(id);
         },
         onSuccess: (data) => {
-            console.log("Second approval successful:", data.message);
             refetch();
+            toggleStepTwoForm();
             toast.success(data.message || "Approval successful", {
                 position: "top-right",
             });
@@ -124,5 +126,19 @@ export const useOverturn = () => {
         onError: (error) => {
             handleError(error, "Reversion error:");
         },
+    });
+};
+
+export const useGetFinalStageTransactions = (query) => {
+    return useQuery({
+        queryKey: ["finalStage", query],
+        queryFn: async () => {
+            const { data } = await getFinalStageList(query);
+            console.log({ data });
+            return data?.data || [];
+        },
+        refetchOnWindowFocus: true,
+        staleTime: 6000000,
+        enabled: Utils.isAuthenticated(),
     });
 };

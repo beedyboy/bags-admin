@@ -34,7 +34,25 @@ const useAccountStore = create((set) => ({
     myProfile: {},
     profile: [],
     users: [],
-    requestSent: false,
+    defaultPermissions: {
+        brands: { add: false, view: false, del: false },
+        category: { add: false, view: false, del: false },
+        company: { manage: false },
+        subscribers: { add: false, view: false, del: false },
+        product: { add: false, view: false, del: false },
+        staff: { add: false, view: false, del: false, modify: false },
+        reconcillation: {
+            upload: false,
+            del: false,
+            approval_one: false,
+            approval_two: false,
+            modify: false,
+            report: false,
+        },
+        report: { manage: false },
+    },
+    roleModalOpened: false,
+    roleData: {},
     passwordChanged: false,
     isAuthenticated: false,
     action: null,
@@ -148,24 +166,17 @@ const useAccountStore = create((set) => ({
             console.log({ err });
         }
     },
-
-    getProfile: async () => {
-        set({ profileLoading: true });
-        try {
-            const res = await backend.get("accounts/profile");
-            set({
-                myProfile: res.status === 200 ? res.data : [],
-                profileLoading: false,
-            });
-        } catch (err) {
-            set({
-                profileLoading: false,
-                error: true,
-                errMessage: err.response?.data.error || "Network Connection seems slow.",
-                action: err.response?.status === 401 ? "logout" : "",
-            });
+    setMyProfile: (data) =>
+    {
+        if (data) {
+            set({ myProfile: data });
+        }
+        else
+        {
+            set({ myProfile: {} });
         }
     },
+    
 
     getProfileById: async (id) => {
         set({ profileLoading: true });
@@ -184,34 +195,13 @@ const useAccountStore = create((set) => ({
             });
         }
     },
-
-    updateProfile: async (data) => {
-        set({ sending: true });
-        try {
-            const res = await backend.put("accounts/profile", data);
-            if (res.status === 200) {
-                useAccountStore.getState().getProfile();
-                set({
-                    sending: false,
-                    message: res.data.message,
-                    action: "updateProfile",
-                });
-            } else {
-                set({
-                    sending: false,
-                    message: res.data.error,
-                    action: "profileUpdateError",
-                    error: true,
-                });
-            }
-        } catch (err) {
-            set({
-                profileLoading: false,
-                error: true,
-                message: err.response?.data.error || "Network Connection seems slow.",
-                action: err.response?.status === 422 ? "profileUpdateError" : "",
-            });
-        }
+    toggleRoleForm: (data = null) =>
+    {
+        console.log({ data })
+        set((state) => ({
+            roleModalOpened: !state.roleModalOpened,
+            roleData: data || state.defaultPermissions, 
+        }));
     },
 
     filterProperty: (option, data) => {
@@ -339,32 +329,7 @@ export default useAccountStore;
 //     });
 //   }
 
-//   getUsers = () => {
-//     this.loading = true;
-//     try {
-//       backend
-//         .get("accounts")
-//         .then((res) => {
-//           this.loading = false;
-//           if (res.status === 200) {
-//             this.error = false;
-//             this.users = res.data;
-//           }
-//         })
-//         .catch((err) => {
-//           console.log({ err });
-//           this.loading = false;
-//           this.error = true;
-//           this.message = err.response
-//             ? "failed to load users"
-//             : "Network Connection seems slow.";
-//         });
-//     } catch (error) {
-//       console.log({ error });
-//       console.log(error.response);
-//     }
-//   };
-
+ 
 //   confirmEmail = (email) => {
 //     try {
 //       this.checking = true;
@@ -428,38 +393,7 @@ export default useAccountStore;
 //       console.log({ error });
 //     }
 //   };
-
-//   addStaff = (data) => {
-//     try {
-//       this.sending = true;
-//       backend
-//         .post("accounts", data)
-//         .then((res) => {
-//           this.sending = false;
-//           if (res.status === 201) {
-//             this.getUsers();
-//             this.message = res.data.message;
-//             this.action = "newStaff";
-//             this.saved = true;
-//           } else {
-//             this.action = "newStaffError";
-//             this.message = res.data.error;
-//             this.error = true;
-//           }
-//         })
-//         .catch((err) => {
-//           this.sending = false;
-//           console.log({ err });
-//           if (err && err.response) {
-//             console.log("status", err.response.status);
-//           }
-//         });
-//     } catch (error) {
-//       this.sending = false;
-//       console.log({ error });
-//     }
-//   };
-
+ 
 //   setRole = (data) => {
 //     try {
 //       this.sending = true;
@@ -521,31 +455,7 @@ export default useAccountStore;
 //       console.log({ error });
 //     }
 //   };
-
-//   getProfile = () => {
-//     this.profileLoading = true;
-//     try {
-//       backend
-//         .get("accounts/profile")
-//         .then((res) => {
-//           if (res.status === 200) {
-//             this.myProfile = res.data;
-//             this.profileLoading = false;
-//           }
-//         })
-//         .catch((err) => {
-//           this.profileLoading = false;
-//           this.error = true;
-//           if (err?.response?.status === 401) {
-//             this.errMessage = err.response.data.error;
-//             this.action = "logout";
-//           } else {
-//             this.message = "Network Connection seems slow.";
-//           }
-//         });
-//     } catch (error) {}
-//   };
-
+ 
 //   getProfileById = (id) => {
 //     this.profileLoading = true;
 //     try {
@@ -569,35 +479,7 @@ export default useAccountStore;
 //         });
 //     } catch (error) {}
 //   };
-
-//   updateProfile = (data) => {
-//     this.sending = true;
-//     backend
-//       .put("accounts/profile", data)
-//       .then((res) => {
-//         this.sending = false;
-//         if (res.status === 200) {
-//           this.getProfile();
-//           this.message = res.data.message;
-//           this.action = "updateProfile";
-//         } else {
-//           this.message = res.data.error;
-//           this.action = "profileUpdateError";
-//           this.error = true;
-//         }
-//       })
-//       .catch((err) => {
-//         this.profileLoading = false;
-//         this.error = true;
-//         if (err?.response?.status === 422) {
-//           this.message = err.response.data.error;
-//           this.action = "profileUpdateError";
-//         } else {
-//           this.message = "Network Connection seems slow.";
-//         }
-//       });
-//   };
-
+ 
 //   filterProperty = (option, data) => {
 //     this.option = option;
 //     switch (option) {

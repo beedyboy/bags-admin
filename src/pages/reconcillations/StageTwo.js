@@ -14,7 +14,6 @@ import { MultiSelect } from "primereact/multiselect";
 import { Dialog } from "primereact/dialog";
 import { confirmDialog } from "primereact/confirmdialog";
 import { Toolbar } from "primereact/toolbar";
-import { Tooltip } from "primereact/tooltip";
 import { Toast } from "primereact/toast";
 import { ProgressBar } from "primereact/progressbar";
 import NoAccess from "../../widgets/NoAccess";
@@ -52,6 +51,7 @@ const StageTwo = () =>
     { field: "amount_used", header: "Amount Used" },
     { field: "balance", header: "Balance" },
     { field: "reference", header: "Ref No" },
+    { field: "way_bill_number", header: "Waybill No" },
     {
       field: "cancellation_number",
       header: "Canc No",
@@ -248,29 +248,6 @@ const StageTwo = () =>
           <NoAccess page="stage two" />
         )}{" "}
       </div>
-      {/* <Dialog
-        visible={upload}
-        onHide={(e) => setUpload(false)}
-        breakpoints={{ "960px": "75vw", "640px": "100vw" }}
-        style={{ width: "50vw" }}
-        header="Upload Statement"
-      >
-        <Tooltip
-          target=".custom-choose-btn"
-          content="Choose"
-          position="bottom"
-        />
-        <Tooltip
-          target=".custom-upload-btn"
-          content="Upload"
-          position="bottom"
-        />
-        <Tooltip
-          target=".custom-cancel-btn"
-          content="Clear"
-          position="bottom"
-        />
-      </Dialog> */}
 
       <Dialog
         visible={isStepTwoFormOpened}

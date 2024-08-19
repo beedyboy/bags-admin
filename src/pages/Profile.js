@@ -1,122 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {
   Fragment,
-  useContext,
-  useState,
-  useEffect,
-  useRef,
 } from "react";
 import { TabView, TabPanel } from "primereact/tabview";
-import { Button } from "primereact/button";
-import { Toast } from "primereact/toast";
 import { Divider } from "primereact/divider";
-import { observer } from "mobx-react-lite";
-import AccountStore from "../stores/AccountStore";
-import { v4 as uuidv4 } from 'uuid';  // Updated import
 import Loader from "../shared/Loader";
-import { toJS } from "mobx";
 import ProfileDetails from "../components/profile/ProfileDetails";
+import { useGetProfile } from "../hooks/account";
+import MyPermissions from "../components/profile/MyPermissions";
+import useAccountStore from "../stores/AccountStore";
 
 const Profile = () => {
-  const toast = useRef(null);
-  const store = useContext(AccountStore);
-  const {
-    getProfile,
-    myProfile,
-    profileLoading,
-    updateProfile,
-    resetProperty: reset,
-    error,
-    action,
-    message,
-    sending,
-  } = store;
-  const [loaded, setLoaded] = useState(false);
-  let access = toJS(myProfile?.roles);
-  
-  // useEffect(() => {
-  //   getProfile();
-  // }, []);
 
-  // useEffect(() => {
-  //   const pf = Object.keys(myProfile);
-  //   // console.log('roles',pf)
-  //   if (pf.length > 0) {
-  //     setLoaded(true);
-  //   }
-  // }, [myProfile]);
-  
-  // useEffect(() => {
-  //   if (action === "updateProfile") {
-  //     toast.current.show({
-  //       severity: "success",
-  //       summary: "Success Message",
-  //       detail: message,
-  //     });
-  //   }
-  //   return () => {
-  //     reset("saved", false);
-  //     reset("message", "");
-  //     reset("action", "");
-  //   };
-  // }, [action]);
+  const { isLoading } = useGetProfile();
 
-  // useEffect(() => {
-  //   if (error === true && action === "profileUpdateError") {
-  //     toast.current.show({
-  //       severity: "error",
-  //       summary: "Error Message",
-  //       detail: message,
-  //     });
-  //   }
-  //   return () => {
-  //     reset("error", false);
-  //     reset("message", "");
-  //     reset("action", "");
-  //   };
-  // }, [error, action]);
-
-  const stretchAccess = (item) => {
-    var result = [];
-    for (var property in item) {
-      result.push(
-        <Button
-          key={uuidv4()}  // Updated key generation
-          type="button"
-          label={
-            item[property] === true ? `Can ${property} ` : `Cannot ${property} `
-          }
-          icon={`pi ${item[property] === true ? " pi-check" : " pi-times"}`}
-          className={`p-m-2 ${item[property] === true ? " p-button-success" : " p-button-danger"
-            }`}
-        ></Button>
-      );
-    }
-    return <>{result}</>;
-  };
-
-  const renderRoles = () => {
-    if (access === undefined || access === null)
-      return null;
-
-    const keys = Object.keys(access);
-    if (keys.length === 0 || keys === undefined || keys === null) {
-      return null;
-    }
-    return (
-      <ul>
-        {keys.length > 0 &&
-          keys.map((key, i) => {
-            return (
-              <Fragment key={i}>
-                <li key={uuidv4()}> {key.toUpperCase()} </li>
-                {stretchAccess(access[key])}
-              </Fragment>
-            );
-          })}
-      </ul>
-    );
-  };
+  const { myProfile } = useAccountStore();
+ 
 
   return (
     <Fragment>
@@ -158,33 +57,28 @@ const Profile = () => {
       <div className="pl-lg-5 pt-lg-2 pt-md-1">
         <TabView>
           <TabPanel header="User Profile">
-            {profileLoading ? (
+            {isLoading ? (
               <Loader />
             ) : (
-              <ProfileDetails
-                saveData={updateProfile}
-                sending={sending}
-                initial_data={myProfile}
-              />
+              <ProfileDetails />
             )}
           </TabPanel>
           <TabPanel header="Access">
-            {profileLoading ? (
+            {isLoading ? (
               <Loader />
             ) : (
               <Fragment>
                 <Divider align="center" type="dashed">
                   <span className="p-tag">Roles</span>
                 </Divider>
-                {loaded ? renderRoles() : "Fetching"}
+                {!isLoading ? <MyPermissions data={myProfile.roles} /> : "Fetching"}
               </Fragment>
             )}
           </TabPanel>
         </TabView>
       </div>
-      <Toast ref={toast} position="top-right" />
     </Fragment>
   );
 }
 
-export default observer(Profile);
+export default Profile;

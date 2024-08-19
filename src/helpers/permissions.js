@@ -15,6 +15,7 @@ export const getPermissions = (pageName) => {
         canUpload: permissions.upload || false,
         canApproveStageOne: permissions.approval_one || false,
         canApproveStageTwo: permissions.approval_two || false,
+        canReport: permissions.report || false,
     };
 };
 

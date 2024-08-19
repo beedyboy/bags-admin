@@ -28,11 +28,11 @@ const Dashboard = () => {
     // const [dashDate, setDashDate] = useState(null);
     // const reconStore = useContext(ReconStore);
     // const prodStore = useContext(ProductStores);
-    const {
-        stats: totalUser,
-        // getUsers,
-        filterProperty: userFilterProperty,
-    } = useAuthStore();
+    // const {
+    //     stats: totalUser,
+    //     // getUsers,
+    //     filterProperty: userFilterProperty,
+    // } = useAuthStore();
     // const {
     //   getAllData,
     //   pendingPristines,
@@ -79,7 +79,7 @@ const Dashboard = () => {
     // const totalCompleted = completed?.reduce((a, b) => a + parseFloat(b.credit_amount), 0) || 0;
     const date = new Date().getHours();
 
-    const isAuthenticated = Utils.get("refresh_token")("auth_token");
+    const isAuthenticated = Utils.isAuthenticated();
     console.log({ isAuthenticated });
     return (
         <Fragment>

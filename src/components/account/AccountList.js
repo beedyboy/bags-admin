@@ -3,20 +3,16 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import { toJS } from "mobx";
 import { useGetStaffs } from "../../hooks/account";
 import useAccountStore from "../../stores/AccountStore";
 
 const AccountList = ({
   removeData,
-  rowData,
-  setModal,
 }) =>
 {
-  const { accountModal } = useAccountStore();
+  const { accountModal, toggleRoleForm } = useAccountStore();
    
   const { data, isLoading } = useGetStaffs();
-  // console.log({ data }) TODO:  remove 
 
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -90,9 +86,14 @@ const AccountList = ({
 
   const setAcl = (e, row) => {
     e.persist();
-    const d = toJS(row);
-    rowData(d);
-    setModal(true);
+    if (row.roles)
+    {
+      
+      toggleRoleForm(row?.roles[0]);
+    } else
+    {
+      toggleRoleForm();
+    }
   };
 
   const editData = (e, row) => {

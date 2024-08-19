@@ -6,7 +6,6 @@ import {
   DashboardView,
   LoginView,
   NotFoundView,
-  ProductView,
   ProfileView,
   StageOneView,
   StageTwoView,
@@ -37,11 +36,11 @@ const AppRoutes = () => {
       element: <PrivateRoute layout={MainLayout} />,
       children: [{ path: "", element: <ManualView /> }],
     },
-    {
-      path: "/products",
-      element: <PrivateRoute layout={MainLayout} />,
-      children: [{ path: "", element: <ProductView /> }],
-    },
+    // {
+    //   path: "/products",
+    //   element: <PrivateRoute layout={MainLayout} />,
+    //   children: [{ path: "", element: <ProductView /> }],
+    // },
     {
       path: "/stage-one",
       element: <PrivateRoute layout={MainLayout} />,

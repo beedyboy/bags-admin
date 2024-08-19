@@ -18,10 +18,8 @@ const Account = () =>
 
     const toast = useRef(null);
 
-    const { accountModal, isAccountFormOpened, toggleAccountForm, error, action, message, removed, sending, resetProperty, title, setRole, removeStaff } = useAccountStore();
-
-    const [modal, setModal] = useState(false);
-    const [rowData, setRowData] = useState();
+    const { accountModal, isAccountFormOpened, toggleAccountForm, roleModalOpened, toggleRoleForm, error, action, message, removed, sending, resetProperty, title, removeStaff } = useAccountStore();
+ 
 
     const createNew = () => {
         accountModal("Add", "Add Staff", {}, true);
@@ -53,7 +51,7 @@ const Account = () =>
                             </div>
                         </div>
                         <div className="p-col-12 p-md-12 p-lg-12">
-                            <AccountList toggle={toggleAccountForm} setModal={setModal} rowData={setRowData} removeData={removeStaff} canAdd={canAdd} canDel={canDel} />
+                            <AccountList toggle={toggleAccountForm} removeData={removeStaff} canAdd={canAdd} canDel={canDel} />
                         </div>
                     </>
                 ) : (
@@ -63,8 +61,8 @@ const Account = () =>
             <Dialog visible={isAccountFormOpened} onHide={() => toggleAccountForm(false)} breakpoints={{ "960px": "75vw", "640px": "100vw" }} style={{ width: "50vw" }} header={title} className="p-fluid">
                 <AccountForm handleClose={toggleAccountForm} />
             </Dialog>
-            <Dialog visible={modal} onHide={() => setModal(false)} breakpoints={{ "960px": "75vw", "640px": "100vw" }} style={{ width: "50vw" }} modal header="Set Roles" className="p-fluid">
-                <ACLForm error={error} action={action} message={message} sending={sending} reset={resetProperty} assignRole={setRole} toggle={setModal} initial_data={rowData} />
+            <Dialog visible={roleModalOpened} onHide={toggleRoleForm} breakpoints={{ "960px": "75vw", "640px": "100vw" }} style={{ width: "50vw" }} modal header="Set Roles" className="p-fluid">
+                <ACLForm error={error} action={action} message={message} sending={sending} />
             </Dialog>
             <Toast ref={toast} position="top-right" />
         </Fragment>

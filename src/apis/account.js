@@ -13,25 +13,18 @@ export const updateStaff = async (id, data) =>
     return await backend.put(`accounts/${id}`, data);
 };
 
-export const getProfileAPI = async (id, data) =>
+export const getProfileAPI = async () =>
 {
-    return await backend.get(`accounts/profile`, data);
+    return await backend.get(`accounts/profile`);
 };
 
-getProfile: async () => {
-    set({ profileLoading: true });
-    try {
-        const res = await backend.get("accounts/profile");
-        set({
-            myProfile: res.status === 200 ? res.data : [],
-            profileLoading: false,
-        });
-    } catch (err) {
-        set({
-            profileLoading: false,
-            error: true,
-            errMessage: err.response?.data.error || "Network Connection seems slow.",
-            action: err.response?.status === 401 ? "logout" : "",
-        });
-    }
-},
+
+export const updateProfile = async (data) =>
+{
+    return await backend.put(`accounts/profile/update`, data);
+};
+
+export const setRoleAPI = async (data) =>
+{
+    return await backend.put(`accounts/profile/roles`, data);
+};

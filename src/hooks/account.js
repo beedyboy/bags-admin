@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { addStaff, getStaffs, updateStaff } from '../apis/account';
+import { addStaff, getProfileAPI, getStaffs, setRoleAPI, updateProfile, updateStaff } from '../apis/account';
 import Utils from '../shared/localStorage';
 import useAccountStore from '../stores/AccountStore';
 import toast from 'react-hot-toast';
@@ -74,5 +74,68 @@ export const useGetStaffs = () => {
     refetchOnWindowFocus: true,
     staleTime: 6000000,
     enabled: Utils.isAuthenticated(),
+  });
+};
+
+export const useGetProfile = () =>
+{
+  const { setMyProfile } = useAccountStore();
+  return useQuery({
+    queryKey: ['my-profile'],
+    queryFn: async () => {
+      const { data } = await getProfileAPI();
+      const myProfile = data?.data || {};
+      setMyProfile(myProfile);
+      return myProfile;
+    },
+    refetchOnWindowFocus: true,
+    staleTime: 6000000,
+    enabled: Utils.isAuthenticated(),
+  });
+};
+
+// update my profile
+export const useUpdateProfile = () => {
+  const { refetch } = useGetProfile();
+  return useMutation({
+    mutationFn: async (payload) => {
+      return updateProfile(payload);
+    },
+    onSettled: (res) => {
+      if (res && res.status === 200)
+      {
+        refetch();
+        toast.success(res.data.message, {
+          position: 'top-right'
+        });
+      } else {
+        toast.error(res?.message ?? 'Something went wrong', {
+          position: 'top-right'
+        });
+      }
+    }
+  });
+};
+
+export const useSetRole = () => {
+  const { refetch } = useGetProfile();
+  const { toggle } = useAccountStore();
+  return useMutation({
+    mutationFn: async (payload) => {
+      return setRoleAPI(payload);
+    },
+    onSettled: (res) => {
+      if (res && res.status === 200)
+      {
+        refetch();
+        toast.success(res.data.message, {
+          position: 'top-right'
+        });
+      } else {
+        toast.error(res?.message ?? 'Something went wrong', {
+          position: 'top-right'
+        });
+      }
+    }
   });
 };

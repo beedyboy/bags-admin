@@ -28,12 +28,17 @@ export const approveStageOne = async (id, data) =>
     return response.data;
 };
 
-export const approveStageTwo = async (id, data) => {
-    const response = await backend.put(`${transaction}/approve-stage-two/${id}`, data);
+export const approveStageTwo = async (id) => {
+    const response = await backend.put(`${transaction}/approve-stage-two/${id}`);
     return response.data;
 };
 
 export const revertRecord = async (data) => {
     const response = await backend.post(`${transaction}/overturn`, data);
     return response.data;
+};
+
+export const getFinalStageList = async (query) => {
+    const url = `${transaction}/final-report${query ? `?${query}` : ''}`;
+    return await backend.get(url);
 };

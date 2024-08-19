@@ -79,44 +79,10 @@ const StepTwoForm = () =>
   //     }));
   //   };
   // }, [initial_data]);
-  // useEffect(() => {
-  //   const errors = dataHero.validate(schema, values);
-  //   setFormState((formState) => ({
-  //     ...formState,
-  //     isValid: errors.approved_two.error ? false : true,
-  //     errors: errors || {},
-  //   }));
-  // }, [values]);
 
-  // useEffect(() => {
-  //   if (action === "approved") {
-  //     resetForm();
-  //     toggle(false);
-  //   }
-  //   return () => {
-  //     resetForm();
-  //     toggle(false);
-  //   };
-  // }, [action]);
-
-  // const handleApproval = (event) => {
-  //   setFormState((formState) => ({
-  //     ...formState,
-  //     values: {
-  //       ...formState.values,
-  //       approved_two: event.checked,
-  //     },
-  //     touched: {
-  //       ...formState.touched,
-  //       approved_two: true,
-  //     },
-  //   }));
-  // };
-  // const hasError = (field) => touched[field] && errors[field].error;
 
 const onSubmit = (data) => {
-    console.log({ data });
-    mutate(data);
+    mutate(data.id);
   };
 
   return (
