@@ -12,6 +12,7 @@ import { useFirstApproval } from "../../hooks/reconcillations";
 
 const schema = yup.object().shape({
   credit_amount: yup.number().required("Credit Amount is required"),
+  credit_amount_to_use: yup.number().required("Credit Amount is required"),
   amount_used: yup.number()
     .required("Amount Used is required")
     .max(
@@ -67,6 +68,24 @@ const StepOneForm = () => {
                   <small className="p-error p-d-block">{errors.credit_amount.message}</small>
                 )}
               </div>
+              <div className="p-field">
+                <label htmlFor="credit_amount_to_use">Available Balance</label>
+                <Controller
+                  name="credit_amount_to_use"
+                  control={control}
+                  render={({ field }) => (
+                    <InputText
+                      id="credit_amount_to_use"
+                      {...field}
+                      type="text"
+                      disabled
+                    />
+                  )}
+                />
+                {errors.credit_amount_to_use && (
+                  <small className="p-error p-d-block">{errors.credit_amount_to_use.message}</small>
+                )}
+              </div>
 
               <div className="p-field">
                 <label htmlFor="amount_used">Amount Used</label>
@@ -82,7 +101,7 @@ const StepOneForm = () => {
                       value={field.value}
                       onValueChange={(e) => {
                         const newValue = e.value;
-                        const creditAmount = stage_one_initial_data.credit_amount || 0;
+                        const creditAmount = stage_one_initial_data.credit_amount_to_use || 0;
                         const newBalance = calculateBalance(creditAmount, newValue);
                         setValue("balance", newBalance);
                         field.onChange(newValue);

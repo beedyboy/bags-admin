@@ -33,8 +33,8 @@ export const approveStageTwo = async (id) => {
     return response.data;
 };
 
-export const revertRecord = async (data) => {
-    const response = await backend.post(`${transaction}/overturn`, data);
+export const revertRecord = async (id) => {
+    const response = await backend.post(`${transaction}/overturn/${id}`, {});
     return response.data;
 };
 

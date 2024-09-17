@@ -1,15 +1,16 @@
 import { useState, useRef } from "react";
-import { useGetFinalStageTransactions } from "./reconcillations";
+import { useGetFinalStageTransactions, useOverturn } from "./reconcillations";
 import { InputText } from "primereact/inputtext";
 import { MultiSelect } from "primereact/multiselect";
 import { ColumnGroup } from "primereact/columngroup";
 import { confirmDialog } from "primereact/confirmdialog";
 import { Column } from "primereact/column";
-import { ProgressBar } from "primereact/progressbar";
 import { Row } from "primereact/row";
-import { Button } from "primereact/button";
 import moment from "moment";
 import Assistant from "../helpers/Assistant";
+import useReconStore from "../stores/ReconStore";
+import { ProgressBar } from "primereact/progressbar";
+import { Button } from "primereact/button";
 
 export const useFinalStageColumns = () => {
   const columns = [
@@ -18,6 +19,7 @@ export const useFinalStageColumns = () => {
     { field: "credit_amount", header: "Credit Amount" },
     { field: "amount_used", header: "Amount Used" },
     { field: "balance", header: "Balance" },
+    { field: "way_bill_number", header: "Waybill No" },
     { field: "reference", header: "Ref No" },
     {
       field: "cancellation_number",
@@ -37,10 +39,11 @@ export const useFinalStageColumns = () => {
   const dt = useRef(null);
   const [selectedColumns, setSelectedColumn] = useState(columns);
   const [globalFilter, setGlobalFilter] = useState("");
-  const [date2, setDate2] = useState(null);
-  const [query, setQuery] = useState("");
 
-  const { data: finalReport, isLoading } = useGetFinalStageTransactions(query);
+
+  const { finalDate, finalReportQuery, setFinalReportQuery, setRevertId, revertId } = useReconStore();
+  const {  isPending: isReverting, mutate  } = useOverturn("final");
+  const { data: finalReport, isLoading, refetch } = useGetFinalStageTransactions(finalReportQuery);
 
   const exportColumns = columns.map((col) => ({
     title: col.header,
@@ -51,9 +54,11 @@ export const useFinalStageColumns = () => {
 
   const handleSubmit = () => {
     const data = new URLSearchParams();
-    data.append("start_date", moment(date2[0]).format(dateFormat));
-    data.append("end_date", moment(date2[1]).format(dateFormat));
-    setQuery(data);
+    data.append("start_date", moment(finalDate[0]).format(dateFormat));
+    if (finalDate[1]) {
+      data.append("end_date", moment(finalDate[1]).format(dateFormat));
+    }
+    setFinalReportQuery(data.toString());
   };
 
   const exportCSV = () => {
@@ -62,17 +67,17 @@ export const useFinalStageColumns = () => {
 
   const exportPdf = () => {
     const fileName =
-      moment(date2[0]).format(dateFormat) +
+      moment(finalDate[0]).format(dateFormat) +
       " to " +
-      moment(date2[1]).format(dateFormat);
+      moment(finalDate[1]).format(dateFormat);
     Assistant.exportPdf(finalReport, exportColumns, fileName);
   };
 
   const exportExcel = () => {
     const fileName =
-      moment(date2[0]).format(dateFormat) +
+      moment(finalDate[0]).format(dateFormat) +
       " to " +
-      moment(date2[1]).format(dateFormat);
+      moment(finalDate[1]).format(dateFormat);
     Assistant.exportExcel(finalReport, fileName);
   };
 
@@ -124,17 +129,15 @@ export const useFinalStageColumns = () => {
 
   const actionTemplate = (data) => (
     <span className="p-buttonset" id={data.id}>
-      {/* {activeId === data.id ? (
+      {isReverting && revertId && data.id === parseInt(revertId) ? (
         <ProgressBar mode="indeterminate" />
       ) : (
-        <>
           <Button
             icon="pi pi-trash"
             className="p-button-rounded p-button-warning"
             onClick={(e) => confirm(e, data)}
           />
-        </>
-      )} */}
+      )}
     </span>
   );
 
@@ -160,6 +163,7 @@ export const useFinalStageColumns = () => {
         <Column header="Credit Amount" colSpan={1} />
         <Column header="Amount Used" colSpan={1} />
         <Column header="Balance" rowSpan={2} />
+        <Column header="way_bill_number" rowSpan={2} />
         <Column header="Ref No" rowSpan={2} />
         <Column header="Canc No" rowSpan={2} />
         <Column header="Reconcile Stage One" rowSpan={2} />
@@ -168,25 +172,34 @@ export const useFinalStageColumns = () => {
     </ColumnGroup>
   );
 
-  const confirm = (event, data) => {
+  const confirm = (e, row) => {
+    e.persist();
     confirmDialog({
-      message: `Do you want to delete record from ${data.value_date}?`,
+      message: `Do you want to delete record for ${row.reference}?`,
       header: "Delete Confirmation",
       icon: "pi pi-info-circle",
       acceptClassName: "p-button-danger",
-    //   accept: () => handleDelete(data.id),
+      accept: () => revertData(row),
     });
   };
 
+  const revertData = (row) =>
+    {
+      setRevertId(row.id);
+    mutate(row.id, {
+      onSuccess: () => {
+        refetch(); 
+      },
+    });
+  };
+  
   return {
     toast,
     dt,
     selectedColumns,
     globalFilter,
-    date2,
     setSelectedColumn,
     setGlobalFilter,
-    setDate2,
     finalReport,
     isLoading,
     exportCSV,

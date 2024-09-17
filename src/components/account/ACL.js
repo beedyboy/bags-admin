@@ -1,13 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from "react";
+import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Checkbox } from "primereact/checkbox";
 import { Button } from "primereact/button";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { RadioButton } from "primereact/radiobutton";
 import useAccountStore from "../../stores/AccountStore";
+import { useSetRole } from "../../hooks/account";
 
-const ACLForm = ({ sending, assignRole }) => {
+const ACLForm = () => {
     const { roleData } = useAccountStore();
     const {
         handleSubmit,
@@ -23,43 +24,17 @@ const ACLForm = ({ sending, assignRole }) => {
         { name: "Dashboard", key: "dashboard" },
     ];
 
-    // useEffect(() => {
-    //     if (roleData) {
-    //         Object.keys(roleData).forEach((key) => {
-    //             setValue(key, roleData[key]);
-    //         });
-    //     }
-    // }, [roleData]);
+    const { mutate: assignRole, isPending } = useSetRole();
 
-    // useEffect(() => {
-    //     if (action === "hasRole") {
-    //         resetForm();
-    //     }
-    //     return () => {
-    //         reset("saved", false);
-    //         reset("message", "");
-    //         resetForm();
-    //         toggleRoleForm();
-    //     };
-    // }, [action]);
 
-    // useEffect(() => {
-    //     if (error === true && action === "hasRoleError") {
-    //     }
-    //     return () => {
-    //         reset("error", false);
-    //         reset("message", "");
-    //         resetForm();
-    //         toggleRoleForm();
-    //     };
-    // }, [error]);
-
-    const onSubmit = (data) => {
-        const formData = {
-            ...data,
-            id: roleData?.id || "",
-        };
-        assignRole(formData);
+    const onSubmit = (data) =>
+    {
+        const { home, ...rest } = data;
+        const payload = {
+            home,
+            roles: [rest]
+        }
+        assignRole(payload);
     };
 
     return (
@@ -122,16 +97,16 @@ const ACLForm = ({ sending, assignRole }) => {
 
                             <AccordionTab header="Staff">
                                 <div className="p-d-flex p-flex-column p-flex-md-row  p-jc-between">
-                                    <Controller name="staff.add" control={control} render={({ field }) => <Checkbox inputId="add" {...field} checked={field.value} />} />
+                                    <Controller name="staffs.add" control={control} render={({ field }) => <Checkbox inputId="add" {...field} checked={field.value} />} />
                                     <label htmlFor="add">Add</label>
 
-                                    <Controller name="staff.view" control={control} render={({ field }) => <Checkbox inputId="view" {...field} checked={field.value} />} />
+                                    <Controller name="staffs.view" control={control} render={({ field }) => <Checkbox inputId="view" {...field} checked={field.value} />} />
                                     <label htmlFor="view">View</label>
 
-                                    <Controller name="staff.del" control={control} render={({ field }) => <Checkbox inputId="del" {...field} checked={field.value} />} />
+                                    <Controller name="staffs.del" control={control} render={({ field }) => <Checkbox inputId="del" {...field} checked={field.value} />} />
                                     <label htmlFor="del">Del</label>
 
-                                    <Controller name="staff.modify" control={control} render={({ field }) => <Checkbox inputId="modify" {...field} checked={field.value} />} />
+                                    <Controller name="staffs.modify" control={control} render={({ field }) => <Checkbox inputId="modify" {...field} checked={field.value} />} />
                                     <label htmlFor="modify">Modify</label>
                                 </div>
                             </AccordionTab>
@@ -177,7 +152,7 @@ const ACLForm = ({ sending, assignRole }) => {
                         </Accordion>
 
                         <div className="p-d-flex p-jc-end p-mt-3">
-                            <Button type="submit" label={sending ? "Sending..." : "Save"} className="p-button-success" disabled={sending} />
+                            <Button type="submit" label={isPending ? "isPending..." : "Save"} className="p-button-success" disabled={isPending} />
                         </div>
                     </div>
                 </div>

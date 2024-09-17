@@ -22,7 +22,7 @@ import useReconStore from "../../stores/ReconStore";
 const StageOne = () => {
     const { canAdd, canApproveStageOne, canUpload } = getPermissions("reconcillation");
     const pageAccess = hasPageAccess("staffs");
-
+console.log({ canAdd, canApproveStageOne })
     const { data: stageOneData, isLoading } = useGetStageOneTransactions();
 
     const approvedTemplate = (data) => {
@@ -49,6 +49,7 @@ const StageOne = () => {
         { field: "value_date", header: "Value Date" },
         { field: "remarks", header: "Remarks", template: remarkBodyTemplate },
         { field: "credit_amount", header: "Credit Amount" },
+        { field: "credit_amount_to_use", header: "Available Amount" },
         { field: "amount_used", header: "Amount Used" },
         { field: "balance", header: "Balance" },
         { field: "reference", header: "Ref No" },
@@ -70,7 +71,7 @@ const StageOne = () => {
   
     const { modifyStepOneData, toggleUpload, upload, toggleStepOneForm, isStepOneFormOpened } = useReconStore();
  
-    const { mutate: uploadStatement, isLoading: isUploading } = useUploadStatement();
+    const { mutate: uploadStatement, isPending: isUploading } = useUploadStatement();
 
     const handleUpload = (event) => {
         const data = new FormData();
@@ -91,7 +92,7 @@ const StageOne = () => {
     });
 
 
-    const totalValue = stageOneData?.reduce((a, b) => a + parseFloat(b.credit_amount), 0) || 0;
+    const totalValue = stageOneData?.reduce((a, b) => a + parseFloat(b.credit_amount_to_use), 0) || 0;
     const tableHeader = (
         <div className="p-d-flex p-jc-between">
             Stage One List
@@ -118,7 +119,7 @@ const StageOne = () => {
     const rightToolbarTemplate = () => {
         return (
             <React.Fragment>
-                <Button label="New" icon="pi pi-plus" className="p-mr-2 p-d-inline-block" onClick={toggleUpload} />
+                {canUpload && (<Button label="New" icon="pi pi-plus" className="p-mr-2 p-d-inline-block" onClick={toggleUpload} />)}
                 <Button label="Export" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
             </React.Fragment>
         );

@@ -126,6 +126,7 @@ const AccountForm = ({ handleClose }) => {
                   <Password
                     id="password"
                     {...register("password")}
+                    onChange={(e) => setValue('password', e.target.value)}
                     toggleMask
                     className={`${errors.password ? "p-invalid" : ""} p-d-block`}
                   />

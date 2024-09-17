@@ -68,7 +68,6 @@ export const useGetStaffs = () => {
     queryKey: ['staffs'],
     queryFn: async () => {
       const { data } = await getStaffs();
-      console.log({ data });
       return data?.data || [];
     },
     refetchOnWindowFocus: true,
@@ -118,11 +117,13 @@ export const useUpdateProfile = () => {
 };
 
 export const useSetRole = () => {
-  const { refetch } = useGetProfile();
-  const { toggle } = useAccountStore();
+  const { refetch } = useGetStaffs();
+  const { toggleRoleForm, selectedStaffId: id } = useAccountStore();
   return useMutation({
-    mutationFn: async (payload) => {
-      return setRoleAPI(payload);
+    mutationFn: async (payload) =>
+    {
+      if (!id) return
+      return setRoleAPI(id, payload);
     },
     onSettled: (res) => {
       if (res && res.status === 200)
@@ -131,6 +132,7 @@ export const useSetRole = () => {
         toast.success(res.data.message, {
           position: 'top-right'
         });
+        toggleRoleForm();
       } else {
         toast.error(res?.message ?? 'Something went wrong', {
           position: 'top-right'

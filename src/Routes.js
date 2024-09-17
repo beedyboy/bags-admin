@@ -21,11 +21,11 @@ import NormalLayout from './layout/NormalLayout';
 const AppRoutes = () => {
   const routes = useRoutes([
     { path: "/", element: <Navigate to="/dashboard" /> },
-    {
-      path: "/brands",
-      element: <PrivateRoute layout={MainLayout} />,
-      children: [{ path: "", element: <BrandView /> }],
-    },
+    // {
+    //   path: "/brands",
+    //   element: <PrivateRoute layout={MainLayout} />,
+    //   children: [{ path: "", element: <BrandView /> }],
+    // },
     {
       path: "/dashboard",
       element: <PrivateRoute layout={MainLayout} />,
@@ -61,11 +61,11 @@ const AppRoutes = () => {
       element: <PrivateRoute layout={MainLayout} />,
       children: [{ path: "", element: <AccountView /> }],
     },
-    {
-      path: "/subcategory",
-      element: <PrivateRoute layout={MainLayout} />,
-      children: [{ path: "", element: <SubCategoryView /> }],
-    },
+    // {
+    //   path: "/subcategory",
+    //   element: <PrivateRoute layout={MainLayout} />,
+    //   children: [{ path: "", element: <SubCategoryView /> }],
+    // },
     {
       path: "/profile",
       element: <PrivateRoute layout={MainLayout} />,

@@ -1,11 +1,10 @@
 import { Button } from "primereact/button"; 
 import { Calendar } from "primereact/calendar";
 import { getPermissions } from "../helpers/permissions";
+import useReconStore from "../stores/ReconStore";
 
 export const useFinalStageActions = ({
-  finalReport,
-  date2,
-  setDate2,
+  isLoading,
   exportCSV,
   exportPdf,
   exportExcel,
@@ -13,6 +12,8 @@ export const useFinalStageActions = ({
 }) => { 
 
   const { canReport } = getPermissions("reconcillation");
+  const { finalDate, setFinalReportDate } = useReconStore();
+  
   const leftToolbarTemplate = () => (
     <>
       <Button
@@ -42,8 +43,8 @@ export const useFinalStageActions = ({
   const rightToolbarTemplate = () => (
     <>
       <Calendar
-        value={date2}
-        onChange={(e) => setDate2(e.value)}
+        value={finalDate}
+        onChange={(e) => setFinalReportDate(e.value)}
         selectionMode="range"
         readOnlyInput
         placeholder="Select Date"
@@ -53,7 +54,8 @@ export const useFinalStageActions = ({
         icon="pi pi-check"
         className="p-button-primary"
         onClick={handleSubmit}
-        disabled={!canReport || !date2}
+        isLoading={isLoading}
+        disabled={!canReport || !finalDate?.length || isLoading}
       />
     </>
   );

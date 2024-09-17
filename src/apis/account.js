@@ -24,7 +24,13 @@ export const updateProfile = async (data) =>
     return await backend.put(`accounts/profile/update`, data);
 };
 
-export const setRoleAPI = async (data) =>
+export const setRoleAPI = async (id, data) =>
 {
-    return await backend.put(`accounts/profile/roles`, data);
+    return await backend.put(`accounts/${id}/roles`, data);
+};
+
+// logout
+export const logout = async () =>
+{
+    return await backend.post(`accounts/logout`, {});
 };

@@ -26,11 +26,11 @@ import useReconStore from "../../stores/ReconStore";
 const StageTwo = () =>
 {
   
-  const { canApproveStageTwo } = getPermissions("reconcillation");
+  const { canApproveStageTwo, canDel } = getPermissions("reconcillation");
   
   const { data: stageTwoData, isLoading } = useGetStageTwoTransactions();
-  const {  isLoading: isReverting  } = useOverturn();
-  const { modifyStepTwoData, toggleStepTwoForm, isStepTwoFormOpened } = useReconStore();
+  const {  isPending: isReverting, mutate  } = useOverturn("two");
+  const { modifyStepTwoData, toggleStepTwoForm, isStepTwoFormOpened, revertId, setRevertId } = useReconStore();
 
 
 
@@ -69,12 +69,8 @@ const StageTwo = () =>
   const toast = useRef(null);
   const dt = useRef(null);
   const [selectedColumns, setSelectedColumn] = useState(columns);
-  const [activeId, setActiveId] = useState(0);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  // useEffect(() => {
-  //   finaleRecord();
-  // }, []);
 
   const exportCSV = () => {
     dt.current.exportCSV();
@@ -99,7 +95,8 @@ const StageTwo = () =>
     );
   });
 
-  const totalValue = stageTwoData?.reduce((a, b) => a + b.credit_amount, 0) || 0;
+  const totalValue = stageTwoData?.reduce((a, b) => a + b.amount_used, 0) || 0;
+
   const tableHeader = (
     <div className="p-d-flex p-jc-between">
       Stage Two List
@@ -125,7 +122,7 @@ const StageTwo = () =>
 
   const actionTemplate = (data) => (
     <span className="p-buttonset" id={data.id}>
-      {isReverting && activeId === data.id ? (
+      {isReverting && revertId && data.id === parseInt(revertId) ? (
         <ProgressBar mode="indeterminate" />
       ) : (
         <>
@@ -134,11 +131,11 @@ const StageTwo = () =>
             className="p-button-rounded p-button-success p-mr-2"
             onClick={(e) => editData(e, data)}
           />
-          <Button
+          {canDel && (<Button
             icon="pi pi-trash"
             className="p-button-rounded p-button-warning"
-            // onClick={(e) => confirm(e, data)}
-          />
+            onClick={(e) => confirm(e, data)}
+          />)}
         </>
       )}
     </span>
@@ -189,22 +186,24 @@ const StageTwo = () =>
     e.persist();
     modifyStepTwoData(row, true);
   };
-  const revertData = (row) => {
-    const values = {
-      id: row.id,
-      amount_used: Number(0),
-      balance: Number(0),
-      approved_one: false,
-      approved_two: false,
-    };
-    // setActiveId(row.id);
-    // revertRecord(values);
+  const revertData = (row) =>
+  {
+    // TODO: consider for removal
+    // const values = {
+    //   id: row.id,
+    //   amount_used: Number(0),
+    //   balance: Number(0),
+    //   approved_one: false,
+    //   approved_two: false,
+    // };
+    setRevertId(row.id);
+    mutate(row.id);
   };
   return (
     <Fragment>
       <Toast ref={toast} position="top-right" />
       <div className="card">
-        {!canApproveStageTwo ? (
+        {canApproveStageTwo ? (
           <>
             {" "}
             <Toolbar
@@ -253,7 +252,7 @@ const StageTwo = () =>
         visible={isStepTwoFormOpened}
         onHide={toggleStepTwoForm}
         breakpoints={{ "960px": "75vw", "640px": "100vw" }}
-        style={{ width: "50vw" }}
+        style={{ width: "35vw" }}
         header="Approve Record"
       >
         <StepTwoForm />

@@ -1,5 +1,6 @@
 import axios from "axios";
 import Utils from "./shared/localStorage";
+import toast from "react-hot-toast";
 
 const env = {
   local: process.env.REACT_APP_LOCAL_URL,
@@ -7,7 +8,7 @@ const env = {
   test: process.env.REACT_APP_TEST_URL,
 };
 
-const serverUrl = env.local || env.production || env.test;
+const serverUrl = env.production || env.production || env.test;
 
 // Create an Axios instance
 const db = axios.create({
@@ -40,11 +41,13 @@ const refreshToken = async () => {
 
     // Save the new access token (or set it in a cookie)
     localStorage.setItem('access_token', accessToken); // Update localStorage
-    document.cookie = `auth_token=${accessToken}; path=/; max-age=900`; // Example of saving token as cookie
-
+    document.cookie = `auth_token=${accessToken}; path=/; max-age=900`; 
     return accessToken;
   } catch (error) {
     console.error('Error refreshing token:', error);
+    toast.error("Session could not be refresed! kindly login again", {
+      position: "top-right",
+  });
     // Utils.logout(); // Redirect to login or handle accordingly
     throw error; // Re-throw to handle in the interceptor
   }
@@ -65,6 +68,9 @@ db.interceptors.response.use(
         return db(error.config);
       } catch (refreshError) {
         console.error('Error refreshing token:', refreshError);
+        toast.error("Session expired", {
+          position: "top-right",
+      });
         Utils.logout();
       }
     }

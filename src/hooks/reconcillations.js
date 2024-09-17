@@ -55,7 +55,6 @@ export const useGetStageTwoTransactions = () => {
         queryKey: ["stageTwo"],
         queryFn: async () => {
             const { data } = await getStageTwoList();
-            console.log({ data });
             return data?.data || [];
         },
         refetchOnWindowFocus: true,
@@ -75,7 +74,6 @@ export const useFirstApproval = () => {
             return await approveStageOne(id, body);
         },
         onSuccess: (data) => {
-            console.log("First approval successful:", data.message);
             refetch();
             toggleStepOneForm();
             toast.success(data.message || "Approval successful", {
@@ -111,14 +109,25 @@ export const useSecondApproval = () => {
 };
 
 // Hook to revert a record
-export const useOverturn = () => {
+export const useOverturn = (stage) => {
     const { refetch } = useGetStageTwoTransactions();
+    const { setRevertId } = useReconStore();
 
     return useMutation({
-        mutationFn: async () => await revertRecord(),
+        mutationFn: async (id) => await revertRecord(id),
         onSuccess: (data) => {
-            console.log("Second approval successful:", data.message);
-            refetch();
+            console.log("Approval overturned:", data.message);
+            switch (stage) {
+                case "one":
+                    refetch();
+                    break;
+                case "two":
+                    refetch();
+                    break;
+                default:
+                    break;
+            }
+            setRevertId(null);
             toast.success(data.message || "Revert successful", {
                 position: "top-right",
             });
@@ -134,7 +143,7 @@ export const useGetFinalStageTransactions = (query) => {
         queryKey: ["finalStage", query],
         queryFn: async () => {
             const { data } = await getFinalStageList(query);
-            console.log({ data });
+            // console.log({ data });
             return data?.data || [];
         },
         refetchOnWindowFocus: true,

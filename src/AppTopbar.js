@@ -2,8 +2,16 @@ import React from "react";
 // import { InputText } from 'primereact/inputtext';
 import { Link } from "react-router-dom";
 import Utils from "./shared/localStorage";
+import { logout } from "./apis/account";
 
-export const AppTopbar = (props) => {
+export const AppTopbar = (props) =>
+{
+  const logUserOut = async (e) => {
+    e.preventDefault();
+    await logout();
+    Utils.logout();
+};
+
   return (
     <div className="layout-topbar clearfix">
       <button
@@ -36,7 +44,7 @@ export const AppTopbar = (props) => {
         <button
           type="button"
           className="p-link"
-          onClick={(e) => Utils.logout()}
+          onClick={logUserOut}
         >
           <span className="layout-topbar-item-text">Logout</span>
           <span className="layout-topbar-icon pi pi-power-off" />
