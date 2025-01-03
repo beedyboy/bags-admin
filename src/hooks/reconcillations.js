@@ -143,7 +143,6 @@ export const useGetFinalStageTransactions = (query) => {
         queryKey: ["finalStage", query],
         queryFn: async () => {
             const { data } = await getFinalStageList(query);
-            // console.log({ data });
             return data?.data || [];
         },
         refetchOnWindowFocus: true,

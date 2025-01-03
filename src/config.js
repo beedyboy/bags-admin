@@ -8,7 +8,7 @@ const env = {
   test: process.env.REACT_APP_TEST_URL,
 };
 
-const serverUrl = env.production || env.production || env.test;
+const serverUrl = env.local || env.production || env.test;
 
 // Create an Axios instance
 const db = axios.create({

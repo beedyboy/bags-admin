@@ -8,145 +8,134 @@ import { AppMenu } from "../AppMenu";
 import { AppTopbar } from "../AppTopbar";
 
 const MainLayout = (props) => {
-  const { children } = props;
+    const { children } = props;
 
-  const [layoutMode] = useState("static");
-  const [layoutColorMode] = useState("dark");
-  const [inputStyle] = useState("outlined"); 
-  const [sidebarActive, setSidebarActive] = useState(true);
-  const sidebar = useRef();
+    const [layoutMode] = useState("static");
+    const [layoutColorMode] = useState("dark");
+    const [inputStyle] = useState("outlined");
+    const [sidebarActive, setSidebarActive] = useState(true);
+    const sidebar = useRef();
 
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  let menuClick = false;
+    let menuClick = false;
 
-  useEffect(() => {
-    if (sidebarActive) {
-      addClass(document.body, "body-overflow-hidden");
-    } else {
-      removeClass(document.body, "body-overflow-hidden");
-    }
-  }, [sidebarActive]);
- 
-  const onWrapperClick = (event) => {
-    if (!menuClick && layoutMode === "overlay") {
-      setSidebarActive(false);
-    }
-    menuClick = false;
-  };
+    useEffect(() => {
+        if (sidebarActive) {
+            addClass(document.body, "body-overflow-hidden");
+        } else {
+            removeClass(document.body, "body-overflow-hidden");
+        }
+    }, [sidebarActive]);
 
-  const onToggleMenu = (event) => {
-    menuClick = true;
+    const onWrapperClick = (event) => {
+        if (!menuClick && layoutMode === "overlay") {
+            setSidebarActive(false);
+        }
+        menuClick = false;
+    };
 
-    setSidebarActive((prevState) => !prevState);
+    const onToggleMenu = (event) => {
+        menuClick = true;
 
-    event.preventDefault();
-  };
+        setSidebarActive((prevState) => !prevState);
 
-  const onSidebarClick = () => {
-    menuClick = true;
-  };
+        event.preventDefault();
+    };
 
-  const onMenuItemClick = (event) => {
-    if (!event.item.items && layoutMode === "overlay") {
-      setSidebarActive(false);
-    }
-  };
+    const onSidebarClick = () => {
+        menuClick = true;
+    };
 
-  const menu = [
-    { label: "Dashboard", icon: "pi pi-fw pi-home", to: "/" },
-    { label: "Brand", icon: "pi pi-fw pi-briefcase", to: "/brands" },
-    { label: "Sub Category", icon: "pi pi-fw pi-sitemap", to: "/subcategory" },
-    { label: "Staff", icon: "pi pi-fw pi-users", to: "/staffs" },
-    { label: "Product", icon: "pi pi-fw pi-book", to: "/products" },
-    {
-      label: "Reconcillation",
-      icon: "pi pi-fw pi-dollar",
-      items: [
+    const onMenuItemClick = (event) => {
+        if (!event.item.items && layoutMode === "overlay") {
+            setSidebarActive(false);
+        }
+    };
+
+    const menu = [
+        { label: "Dashboard", icon: "pi pi-fw pi-home", to: "/" },
+        { label: "Brand", icon: "pi pi-fw pi-briefcase", to: "/brands" },
         {
-          label: "Stage One",
-          icon: "pi pi-fw pi-check-square",
-          to: "/stage-one",
+            label: "Card Management",
+            icon: "pi pi-fw pi-credit-card",
+            items: [
+                { label: "Cards", icon: "pi pi-fw pi-credit-card", to: "/card-management" },
+                { label: "Cashier", icon: "pi pi-fw pi-shopping-cart", to: "/cashier" },
+                { label: "Report", icon: "pi pi-fw pi-chart-line", to: "/card-report" },
+            ],
         },
+        { label: "Sub Category", icon: "pi pi-fw pi-sitemap", to: "/subcategory" },
+        { label: "Staff", icon: "pi pi-fw pi-users", to: "/staffs" },
+        { label: "Product", icon: "pi pi-fw pi-book", to: "/products" },
         {
-          label: "Stage Two",
-          icon: "pi pi-fw pi-check-square",
-          to: "/stage-two",
+            label: "Reconcillation",
+            icon: "pi pi-fw pi-dollar",
+            items: [
+                {
+                    label: "Stage One",
+                    icon: "pi pi-fw pi-check-square",
+                    to: "/stage-one",
+                },
+                {
+                    label: "Stage Two",
+                    icon: "pi pi-fw pi-check-square",
+                    to: "/stage-two",
+                },
+                {
+                    label: "Final Stage",
+                    icon: "pi pi-fw pi-check-square",
+                    to: "/final-stage/default",
+                },
+            ],
         },
-        {
-          label: "Final Stage",
-          icon: "pi pi-fw pi-check-square",
-          to: "/final-stage/default",
-        },
-      ],
-    },
-    { label: "Manual", icon: "pi pi-fw pi-info-circle", to: "/manual" },
-  ];
+        { label: "Manual", icon: "pi pi-fw pi-info-circle", to: "/manual" },
+    ];
 
-  const addClass = (element, className) => {
-    if (element.classList) element.classList.add(className);
-    else element.className += " " + className;
-  };
+    const addClass = (element, className) => {
+        if (element.classList) element.classList.add(className);
+        else element.className += " " + className;
+    };
 
-  const removeClass = (element, className) => {
-    if (element.classList) element.classList.remove(className);
-    else
-      element.className = element.className.replace(
-        new RegExp(
-          "(^|\\b)" + className.split(" ").join("|") + "(\\b|$)",
-          "gi"
-        ),
-        " "
-      );
-  };
+    const removeClass = (element, className) => {
+        if (element.classList) element.classList.remove(className);
+        else element.className = element.className.replace(new RegExp("(^|\\b)" + className.split(" ").join("|") + "(\\b|$)", "gi"), " ");
+    };
 
-  const isSidebarVisible = () => {
-    return sidebarActive;
-  };
- 
-  const wrapperClass = classNames("layout-wrapper", {
-    "layout-overlay": layoutMode === "overlay",
-    "layout-static": layoutMode === "static",
-    "layout-active": sidebarActive,
-    "p-input-filled": inputStyle === "filled", 
-  });
+    const isSidebarVisible = () => {
+        return sidebarActive;
+    };
 
-  const sidebarClassName = classNames("layout-sidebar", {
-    "layout-sidebar-dark": layoutColorMode === "dark",
-    "layout-sidebar-light": layoutColorMode === "light",
-  });
-  return (
-    <div className={wrapperClass} onClick={onWrapperClick}>
-      <AppTopbar onToggleMenu={onToggleMenu} />
+    const wrapperClass = classNames("layout-wrapper", {
+        "layout-overlay": layoutMode === "overlay",
+        "layout-static": layoutMode === "static",
+        "layout-active": sidebarActive,
+        "p-input-filled": inputStyle === "filled",
+    });
 
-      <CSSTransition
-        classNames="layout-sidebar"
-        timeout={{ enter: 200, exit: 200 }}
-        in={isSidebarVisible()}
-        unmountOnExit
-      >
-        <div
-          ref={sidebar}
-          className={sidebarClassName}
-          onClick={onSidebarClick}
-        >
-          <div
-            className="layout-logo"
-            style={{ cursor: "pointer" }}
-            onClick={() => navigate("/")}
-          >
-            {/* <img alt="Logo" src={logo} /> */}
-          </div>
-          <AppProfile />
-          <AppMenu model={menu} onMenuItemClick={onMenuItemClick} />
+    const sidebarClassName = classNames("layout-sidebar", {
+        "layout-sidebar-dark": layoutColorMode === "dark",
+        "layout-sidebar-light": layoutColorMode === "light",
+    });
+    return (
+        <div className={wrapperClass} onClick={onWrapperClick}>
+            <AppTopbar onToggleMenu={onToggleMenu} />
+
+            <CSSTransition classNames="layout-sidebar" timeout={{ enter: 200, exit: 200 }} in={isSidebarVisible()} unmountOnExit>
+                <div ref={sidebar} className={sidebarClassName} onClick={onSidebarClick}>
+                    <div className="layout-logo" style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
+                        {/* <img alt="Logo" src={logo} /> */}
+                    </div>
+                    <AppProfile />
+                    <AppMenu model={menu} onMenuItemClick={onMenuItemClick} />
+                </div>
+            </CSSTransition>
+
+            <div className="layout-main">{children}</div>
+
+            <AppFooter />
         </div>
-      </CSSTransition>
-
-      <div className="layout-main">{children}</div>
-
-      <AppFooter />
-    </div>
-  );
+    );
 };
 
 export default MainLayout;

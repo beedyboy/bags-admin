@@ -8,7 +8,7 @@ import useAccountStore from "../../stores/AccountStore";
 import { getPermissions } from "../../helpers/permissions";
 
 const AccountList = ({ removeData }) => {
-    const { canAdd, canModify, canDel } = getPermissions("staffs");
+    const { canView, canDel } = getPermissions("staffs");
     const { accountModal, toggleRoleForm } = useAccountStore();
 
     const { data, isLoading } = useGetStaffs();
@@ -56,8 +56,8 @@ const AccountList = ({ removeData }) => {
 
     const actionTemplate = (data) => (
         <span className="p-buttonset">
-            {canModify && <Button icon="pi pi-pencil" className={`p-button-rounded p-button-success p-mr-2`} onClick={(e) => editData(e, data)} />}
-            {canModify && <Button icon="pi pi-key" className="p-button-rounded p-button-success p-mr-2" onClick={(e) => setAcl(e, data)} />}
+            {canView && <Button icon="pi pi-pencil" className={`p-button-rounded p-button-success p-mr-2`} onClick={(e) => editData(e, data)} />}
+            {canView && <Button icon="pi pi-key" className="p-button-rounded p-button-success p-mr-2" onClick={(e) => setAcl(e, data)} />}
             {canDel && <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={(e) => deleteData(e, data.id)} />}
         </span>
     );

@@ -21,6 +21,7 @@ const ACLForm = () => {
         { name: "Stage One", key: "stage-one" },
         { name: "Stage Two", key: "stage-two" },
         { name: "Final Stage", key: "final-stage" },
+        { name: "Card", key: "card-management" },
         { name: "Dashboard", key: "dashboard" },
     ];
 
@@ -137,6 +138,27 @@ const ACLForm = () => {
                                 <div className="p-d-flex p-flex-column p-flex-md-row">
                                     <Controller name="company.manage" control={control} render={({ field }) => <Checkbox inputId="manage" {...field} checked={field.value} />} />
                                     <label htmlFor="manage">Manage</label>
+                                </div>
+                            </AccordionTab>
+                            <AccordionTab header="Card Management">
+                                <div className="p-d-flex p-flex-column p-flex-md-row  p-jc-between">
+                                    <Controller name="card.create" control={control} render={({ field }) => <Checkbox inputId="create" {...field} checked={field.value} />} />
+                                    <label htmlFor="create">Create</label>
+
+                                    <Controller name="card.review" control={control} render={({ field }) => <Checkbox inputId="review" {...field} checked={field.value} />} />
+                                    <label htmlFor="review">Review request</label>
+
+                                    <Controller name="card.load" control={control} render={({ field }) => <Checkbox inputId="load" {...field} checked={field.value} />} />
+                                    <label htmlFor="load">Load</label>
+
+                                    <Controller name="card.view" control={control} render={({ field }) => <Checkbox inputId="view" {...field} checked={field.value} />} />
+                                    <label htmlFor="view">View</label>
+
+                                    <Controller name="card.cashier" control={control} render={({ field }) => <Checkbox inputId="cashier" {...field} checked={field.value} />} />
+                                    <label htmlFor="cashier">Cashier</label>
+
+                                    <Controller name="card.report" control={control} render={({ field }) => <Checkbox inputId="report" {...field} checked={field.value} />} />
+                                    <label htmlFor="report">Report</label>
                                 </div>
                             </AccordionTab>
                             <AccordionTab header="Default Homepage">

@@ -49,6 +49,16 @@ const useAccountStore = create((set) => ({
             modify: false,
             report: false,
         },
+        card: {
+            create: false,
+            charge: false,
+            load: false,
+            review: false,
+            cashier: false,
+            view: false,
+            report: false,
+
+        },
         report: { manage: false },
     },
     roleModalOpened: false,

@@ -5,11 +5,11 @@ const Utils = {
     save: (key, value) => {
         localStorage.setItem(key, value);
     },
-    get: (key) => {
-        if (localStorage.getItem(key) === null) {
-            return "";
-        }
-        return localStorage.getItem(key);
+    get: (key) =>
+    {
+        const value = localStorage.getItem(key);
+        if (!value) return null;
+        return value;
   },
   isAuthenticated: () =>
   {
